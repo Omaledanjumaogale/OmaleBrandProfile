@@ -5,11 +5,19 @@
 	let formData = $state({
 		fullName: '',
 		email: '',
+		whatsappNumber: '',
+		mobileNumber: '',
+		address: '',
+		stateOfResidence: '',
+		lgaOfResidence: '',
 		company: '',
 		serviceType: 'App Development 📱',
 		description: '',
 		budget: '',
-		sessionId: getSessionId()
+		bestTimeToReach: 'Morning (8AM - 12PM)',
+		urgency: 'Immediately ⚡',
+		preferredCommunication: 'WhatsApp 📱',
+		needType: 'Personal Need 👤'
 	});
 
 	let loading = $state(false);
@@ -33,20 +41,33 @@
 		'Other'
 	];
 
+	const timeSlots = ['Morning (8AM - 12PM)', 'Afternoon (12PM - 4PM)', 'Evening (4PM - 8PM)', 'Anytime 🕒'];
+	const urgencyLevels = ['Immediately ⚡', 'In 1 Day 🗓️', 'In 3 Days ⏳', 'In 1 Week 📅', 'In 1 Month 🌙'];
+	const commMediums = ['WhatsApp 📱', 'Email 📧', 'Phone Call 📞', 'Text Message 💬'];
+	const needTypes = ['Personal Need 👤', 'Business Need 💼', 'Official Need 🏛️'];
+
 	async function handleSubmit() {
 		loading = true;
 		error = '';
 		try {
-			await convex.mutation(api.functions.submitServiceRequestWorkflow, formData);
+			await convex.mutation(api.functions.submitServiceRequest, formData);
 			success = true;
 			formData = {
 				fullName: '',
 				email: '',
+				whatsappNumber: '',
+				mobileNumber: '',
+				address: '',
+				stateOfResidence: '',
+				lgaOfResidence: '',
 				company: '',
 				serviceType: 'App Development 📱',
 				description: '',
 				budget: '',
-				sessionId: getSessionId()
+				bestTimeToReach: 'Morning (8AM - 12PM)',
+				urgency: 'Immediately ⚡',
+				preferredCommunication: 'WhatsApp 📱',
+				needType: 'Personal Need 👤'
 			};
 			setTimeout(() => {
 				success = false;
@@ -89,48 +110,50 @@
 	>
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 			<div class="space-y-2">
-				<label for="fullName" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Full Name *</label>
-				<input
-					type="text"
-					id="fullName"
-					bind:value={formData.fullName}
-					required
-					placeholder="John Doe"
-					class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors"
-				/>
+				<label for="fullName" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Full Name *</label>
+				<input type="text" id="fullName" bind:value={formData.fullName} required placeholder="John Doe" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
 			</div>
 			<div class="space-y-2">
-				<label for="email" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Email Address *</label>
-				<input
-					type="email"
-					id="email"
-					bind:value={formData.email}
-					required
-					placeholder="john@example.com"
-					class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors"
-				/>
+				<label for="email" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Email Address *</label>
+				<input type="email" id="email" bind:value={formData.email} required placeholder="john@example.com" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
 			</div>
 		</div>
 
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 			<div class="space-y-2">
-				<label for="company" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Company (Optional)</label>
-				<input
-					type="text"
-					id="company"
-					bind:value={formData.company}
-					placeholder="Acme Corp"
-					class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors"
-				/>
+				<label for="whatsappNumber" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">WhatsApp Number *</label>
+				<input type="tel" id="whatsappNumber" bind:value={formData.whatsappNumber} required placeholder="+234..." class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
 			</div>
 			<div class="space-y-2">
-				<label for="serviceType" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Service Type *</label>
-				<select
-					id="serviceType"
-					bind:value={formData.serviceType}
-					required
-					class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none"
-				>
+				<label for="mobileNumber" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Mobile Number *</label>
+				<input type="tel" id="mobileNumber" bind:value={formData.mobileNumber} required placeholder="080..." class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
+			</div>
+		</div>
+
+		<div class="space-y-2">
+			<label for="address" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Home/Office Address *</label>
+			<input type="text" id="address" bind:value={formData.address} required placeholder="No. 123 Street Name..." class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
+		</div>
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+			<div class="space-y-2">
+				<label for="stateOfResidence" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">State of Residence *</label>
+				<input type="text" id="stateOfResidence" bind:value={formData.stateOfResidence} required placeholder="e.g. Lagos" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
+			</div>
+			<div class="space-y-2">
+				<label for="lgaOfResidence" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">LGA *</label>
+				<input type="text" id="lgaOfResidence" bind:value={formData.lgaOfResidence} required placeholder="e.g. Ikeja" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+			<div class="space-y-2">
+				<label for="company" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Company (Optional)</label>
+				<input type="text" id="company" bind:value={formData.company} placeholder="Acme Corp" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
+			</div>
+			<div class="space-y-2">
+				<label for="serviceType" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Service Category *</label>
+				<select id="serviceType" bind:value={formData.serviceType} required class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none">
 					{#each services as service}
 						<option value={service}>{service}</option>
 					{/each}
@@ -138,15 +161,47 @@
 			</div>
 		</div>
 
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+			<div class="space-y-2">
+				<label for="urgency" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">When is this required? *</label>
+				<select id="urgency" bind:value={formData.urgency} required class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none">
+					{#each urgencyLevels as level}
+						<option value={level}>{level}</option>
+					{/each}
+				</select>
+			</div>
+			<div class="space-y-2">
+				<label for="needType" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Type of Need *</label>
+				<select id="needType" bind:value={formData.needType} required class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none">
+					{#each needTypes as type}
+						<option value={type}>{type}</option>
+					{/each}
+				</select>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+			<div class="space-y-2">
+				<label for="bestTime" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Best Time to Reach You *</label>
+				<select id="bestTime" bind:value={formData.bestTimeToReach} required class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none">
+					{#each timeSlots as slot}
+						<option value={slot}>{slot}</option>
+					{/each}
+				</select>
+			</div>
+			<div class="space-y-2">
+				<label for="preferredComm" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Preferred Medium *</label>
+				<select id="preferredComm" bind:value={formData.preferredCommunication} required class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors appearance-none">
+					{#each commMediums as medium}
+						<option value={medium}>{medium}</option>
+					{/each}
+				</select>
+			</div>
+		</div>
+
 		<div class="space-y-2">
-			<label for="budget" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Budget Range (Optional)</label>
-			<input
-				type="text"
-				id="budget"
-				bind:value={formData.budget}
-				placeholder="e.g. ₦500k - ₦1M"
-				class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors"
-			/>
+			<label for="budget" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Budget Estimate *</label>
+			<input type="text" id="budget" bind:value={formData.budget} required placeholder="e.g. ₦500k - ₦1M" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-[13px] focus:border-gold outline-none transition-colors" />
 		</div>
 
 		<div class="space-y-2">

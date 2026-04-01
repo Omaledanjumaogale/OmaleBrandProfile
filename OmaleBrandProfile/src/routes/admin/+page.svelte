@@ -9,7 +9,7 @@
 	let serviceRequests = $state([]);
 	let auditLogs = $state([]);
 	let activeSessions = $state([]);
-	let activeTab = $state('requests'); // 'requests', 'applications', 'logs', 'sessions', 'tasks', 'broadcast'
+	let activeTab = $state('requests'); // 'requests', 'applications', 'history', 'logs', 'sessions', 'tasks', 'broadcast'
 	let loading = $state(true);
 
 	// New States
@@ -23,6 +23,7 @@
 	let taskDeadline = $state('');
 	let tasks = $state([]);
 	let broadcasts = $state([]);
+	let history = $state([]);
 
 	async function fetchData() {
 		try {
@@ -30,18 +31,20 @@
 				console.warn("Convex API functions not yet generated.");
 				return;
 			}
-			const [apps, requests, logs, sessions, mm, ro, tks, bcasts] = await Promise.all([
+			const [apps, requests, logs, sessions, mm, ro, tks, bcasts, hist] = await Promise.all([
 				convex.query(api.functions.getApplications),
 				convex.query(api.functions.getServiceRequests),
 				convex.query(api.functions.getAuditLogs),
 				convex.query(api.functions.getActiveSessions),
 				convex.query(api.functions.getSetting, { key: 'maintenance_mode' }),
 				convex.query(api.functions.getSetting, { key: 'registration_open' }),
-				convex.query(api.functions.getTasksForAdmin || api.functions.getApplications), // Fallback if not yet implemented
-				convex.query(api.functions.getLatestBroadcasts)
+				convex.query(api.functions.getTasksForAdmin || api.functions.getApplications),
+				convex.query(api.functions.getLatestBroadcasts),
+				convex.query(api.functions.getHistory || api.functions.getServiceRequests) // Placeholder until backend function is ready
 			]);
-			applications = apps || [];
-			serviceRequests = requests || [];
+			applications = apps?.filter(a => a.status !== 'archived' && a.status !== 'declined') || [];
+			serviceRequests = requests?.filter(r => r.status === 'pending' || r.status === 'contacted') || [];
+			history = [...(apps || []), ...(requests || [])].filter(i => i.status === 'archived' || i.status === 'completed' || i.status === 'declined') || [];
 			auditLogs = logs || [];
 			activeSessions = sessions || [];
 			maintenanceMode = mm;
@@ -197,6 +200,12 @@
 						IAM Apps 🌍
 					</button>
 					<button 
+						onclick={() => activeTab = 'history'}
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'history' ? 'text-gold' : 'text-muted hover:text-text'}"
+					>
+						History 📦
+					</button>
+					<button 
 						onclick={() => activeTab = 'tasks'}
 						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'tasks' ? 'text-gold' : 'text-muted hover:text-text'}"
 					>
@@ -298,6 +307,39 @@
 								{/each}
 							{/if}
 						</div>
+					{:else if activeTab === 'history'}
+						<div class="space-y-4">
+							{#if history.length === 0}
+								<p class="text-center py-10 text-muted text-[12px]">No archived history yet.</p>
+							{:else}
+								{#each history as item}
+									<div class="p-4 bg-bg border border-border rounded-xl flex justify-between items-center group hover:border-gold/30 transition-all opacity-70 hover:opacity-100">
+										<div class="flex items-center gap-4">
+											<div class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-[12px]">
+												{item.serviceType ? '🛠️' : '🌍'}
+											</div>
+											<div>
+												<h4 class="text-[13px] font-bold text-text">{item.fullName}</h4>
+												<p class="text-[10px] text-muted uppercase tracking-tighter">
+													{item.serviceType || 'IAM Application'} · {new Date(item.createdAt).toLocaleDateString()}
+												</p>
+											</div>
+										</div>
+										<div class="flex items-center gap-3">
+											<span class="px-2 py-0.5 bg-surface text-muted text-[8px] font-bold uppercase tracking-widest rounded border border-border">
+												{item.status}
+											</span>
+											<button 
+												onclick={() => { selectedItem = item; showModal = true; }}
+												class="p-2 hover:text-gold transition-colors"
+											>
+												📑
+											</button>
+										</div>
+									</div>
+								{/each}
+							{/if}
+						</div>
 					{:else if activeTab === 'tasks'}
 						<div class="space-y-4">
 							{#if tasks.length === 0}
@@ -383,14 +425,44 @@
 				<div class="space-y-8">
 					{#if selectedItem.serviceType}
 						<!-- Service Request Details -->
+						<div class="grid grid-cols-2 gap-6">
+							<div class="space-y-2">
+								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">WhatsApp / Mobile</label>
+								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.whatsappNumber} / {selectedItem.mobileNumber}</div>
+							</div>
+							<div class="space-y-2">
+								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Preferred Medium</label>
+								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-gold font-bold">{selectedItem.preferredCommunication}</div>
+							</div>
+							<div class="space-y-2">
+								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Best Time to Reach</label>
+								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.bestTimeToReach}</div>
+							</div>
+							<div class="space-y-2">
+								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Urgency</label>
+								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-teal2 font-bold">{selectedItem.urgency}</div>
+							</div>
+						</div>
+
+						<div class="space-y-2">
+							<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Location & Address</label>
+							<div class="p-4 bg-bg border border-border rounded-xl text-[12px] leading-relaxed">
+								{selectedItem.address}<br/>
+								<span class="text-gold">{selectedItem.lgaOfResidence}, {selectedItem.stateOfResidence}</span>
+							</div>
+						</div>
+
 						<div class="grid grid-cols-2 gap-8">
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Service Category</label>
-								<div class="p-4 bg-bg border border-border rounded-xl text-gold font-bold">{selectedItem.serviceType}</div>
+								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Service Category & Need</label>
+								<div class="p-4 bg-bg border border-border rounded-xl text-gold font-bold">
+									{selectedItem.serviceType}<br/>
+									<span class="text-[10px] text-muted font-normal uppercase tracking-tighter">Type: {selectedItem.needType}</span>
+								</div>
 							</div>
 							<div class="space-y-2">
 								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Budget Estimate</label>
-								<div class="p-4 bg-bg border border-border rounded-xl">{selectedItem.budget || 'N/A'}</div>
+								<div class="p-4 bg-bg border border-border rounded-xl font-bold">{selectedItem.budget || 'N/A'}</div>
 							</div>
 						</div>
 						<div class="space-y-2">
@@ -399,7 +471,15 @@
 						</div>
 						<div class="flex gap-4 pt-4">
 							<a href="mailto:{selectedItem.email}" class="flex-grow py-4 bg-gold text-bg text-[11px] font-bold uppercase tracking-widest rounded-xl text-center">Send Quotation 📩</a>
-							<button class="flex-grow py-4 border border-border text-text text-[11px] font-bold uppercase tracking-widest rounded-xl">Archive Request</button>
+							<button 
+								onclick={async () => {
+									await updateRequestStatus(selectedItem._id, 'archived');
+									showModal = false;
+								}}
+								class="flex-grow py-4 border border-border text-text text-[11px] font-bold uppercase tracking-widest rounded-xl hover:bg-surface"
+							>
+								Archive Request 📦
+							</button>
 						</div>
 					{:else}
 						<!-- IAM Application Details -->

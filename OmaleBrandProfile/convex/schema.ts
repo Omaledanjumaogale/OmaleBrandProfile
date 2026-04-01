@@ -60,13 +60,23 @@ export default defineSchema({
   serviceRequests: defineTable({
     fullName: v.string(),
     email: v.string(),
-    company: v.optional(v.string()),
-    serviceType: v.string(), // App Dev, AI, etc.
+    whatsappNumber: v.string(),
+    mobileNumber: v.string(),
+    address: v.string(),
+    stateOfResidence: v.string(),
+    lgaOfResidence: v.string(),
+    serviceType: v.string(),
+    budget: v.string(),
     description: v.string(),
-    budget: v.optional(v.string()),
+    company: v.optional(v.string()),
+    bestTimeToReach: v.string(),
+    urgency: v.string(), // Immediately, 1 day, etc.
+    preferredCommunication: v.string(), // email, whatsapp, etc.
+    needType: v.string(), // official, personal, business
     status: v.union(v.literal("pending"), v.literal("contacted"), v.literal("completed"), v.literal("archived")),
     createdAt: v.number(),
   }).index("by_status", ["status"]).index("by_email", ["email"]),
+
 
   auditLogs: defineTable({
     action: v.string(),

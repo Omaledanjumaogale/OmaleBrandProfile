@@ -9,53 +9,30 @@ const validateEmail = (email: string) => {
 
 // --- ORCHESTRATION WORKFLOWS ---
 
-/**
- * Orchestration Workflow: Submit Service Request
- * Includes validation and background task scheduling
- */
-export const submitServiceRequestWorkflow = mutation({
+export const submitServiceRequest = mutation({
   args: {
     fullName: v.string(),
     email: v.string(),
-    company: v.optional(v.string()),
+    whatsappNumber: v.string(),
+    mobileNumber: v.string(),
+    address: v.string(),
+    stateOfResidence: v.string(),
+    lgaOfResidence: v.string(),
     serviceType: v.string(),
+    budget: v.string(),
     description: v.string(),
-    budget: v.optional(v.string()),
-    sessionId: v.optional(v.string()), // For session tracking
+    company: v.optional(v.string()),
+    bestTimeToReach: v.string(),
+    urgency: v.string(),
+    preferredCommunication: v.string(),
+    needType: v.string(),
   },
   handler: async (ctx, args) => {
-    // 1. Validation
-    if (!validateEmail(args.email)) {
-      throw new Error("Invalid email format provided.");
-    }
-    if (args.fullName.length < 2) {
-      throw new Error("Full name must be at least 2 characters.");
-    }
-
-    // 2. Data Insertion
-    const requestId = await ctx.db.insert("serviceRequests", {
-      fullName: args.fullName,
-      email: args.email,
-      company: args.company,
-      serviceType: args.serviceType,
-      description: args.description,
-      budget: args.budget,
+    return await ctx.db.insert("serviceRequests", {
+      ...args,
       status: "pending",
       createdAt: Date.now(),
     });
-
-    // 3. Orchestrate Background Tasks
-    await ctx.scheduler.runAfter(0, internal.functions.orchestrateBackgroundTasks, {
-      type: "SERVICE_REQUEST_SUBMITTED",
-      payload: { 
-        requestId, 
-        email: args.email, 
-        fullName: args.fullName,
-        sessionId: args.sessionId 
-      }
-    });
-
-    return requestId;
   },
 });
 
