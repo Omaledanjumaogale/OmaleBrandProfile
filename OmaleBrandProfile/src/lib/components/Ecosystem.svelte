@@ -1,0 +1,116 @@
+<script lang="ts">
+	const platforms = [
+		{
+			badge: 'Headquarters 🏢',
+			name: 'E-WIN Hub 🌍',
+			overview: 'The central command platform for the Elite Workforce Impact Nigeria ecosystem — housing the mission, activator programmes, I-AM Network portal, and strategic intelligence for all sub-platforms.',
+			link: 'Explore Platform →',
+			domain: 'ewinproject.org',
+			href: 'https://ewinproject.org',
+			icon: '🏢'
+		},
+		{
+			badge: 'Marketplace 🛒',
+			name: 'DealxHire 🤝',
+			overview: 'A domestic and professional services marketplace connecting vetted service providers to clients across Nigeria. The centralized hub for E-Deals mobile application platform — arbitraging supply and demand at scale.',
+			link: 'Explore Platform →',
+			domain: 'dealxhire.org',
+			href: 'https://dealxhire.org',
+			icon: '🛒'
+		},
+		{
+			badge: 'Education 🎓',
+			name: 'AkademyX 🧠',
+			overview: 'An AI-powered upskilling and decentralised education platform delivering hyper-personalised skill development pathways in tech, business, and the digital economy — closing the knowledge gap for ambitious learners across Africa.',
+			link: 'Explore Platform →',
+			domain: 'akademyx.org',
+			href: 'https://akademyx.org',
+			icon: '🎓'
+		},
+		{
+			badge: 'Alternative Ed 💡',
+			name: 'Alt AkademyX 🚀',
+			overview: 'The alternative education arm — offering non-traditional, outcomes-focused learning experiences that challenge conventional academic pathways and deliver real-world skills with immediate economic application.',
+			link: 'Explore Platform →',
+			domain: 'alternativeakademyx.org',
+			href: 'https://alternativeakademyx.org',
+			icon: '💡'
+		},
+		{
+			badge: 'Community 👥',
+			name: 'I-AM Network 🌍',
+			overview: 'The Impact Ambassador Network — a decentralised workforce of vetted, trained professionals performing distributed work across the E-WIN ecosystem. Collaborative networking with distributive revenue sharing built in.',
+			link: 'Join Network →',
+			domain: 'Coming Soon ⏳',
+			href: '#',
+			icon: '👥'
+		},
+		{
+			badge: 'Intelligence 🧠',
+			name: 'DEALS Platform 📊',
+			overview: 'Digital Emerging Arbitrage and Leverage Services — the technological backbone of the E-WIN revenue model, powering white-label freelance marketplaces, service arbitrage, and the done-for-you business infrastructure for the ecosystem.',
+			link: 'Explore Platform →',
+			domain: 'DEALS · E-WIN 💼',
+			href: '#',
+			icon: '📈'
+		}
+	];
+</script>
+
+<section id="ecosystem" class="bg-bg px-6 lg:px-12 py-20">
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-end mb-14">
+		<div class="reveal">
+			<div
+				class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-gold mb-[14px] flex items-center gap-[10px]"
+			>
+				<span class="w-6 h-[1px] bg-gold"></span> E-WIN Ecosystem 🌍
+			</div>
+			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
+				Six platforms.<br />One mission.
+			</h2>
+		</div>
+		<div class="text-[15px] leading-[1.8] text-muted2 font-light reveal delay-100">
+			<p>
+				The E-WIN Project is an interconnected ecosystem of digital platforms united by a single conviction: that <strong>Africa's workforce gap is solvable</strong> — not through charity, but through intelligent, scalable systems built by Africans for Africans. 🌍<br /><br />Tagline: <strong>Learn. Work. Earn. 💰</strong>
+			</p>
+		</div>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+		{#each platforms as platform, i}
+			<a
+				href={platform.href}
+				target={platform.href.startsWith('http') ? '_blank' : ''}
+				class="bg-surface border border-border p-8 rounded-[var(--radius)] relative overflow-hidden transition-all duration-350 hover:border-gold-line hover:translate-y-[-4px] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group reveal delay-{i * 100}"
+			>
+				<div
+					class="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 transition-opacity duration-350 group-hover:opacity-100"
+				></div>
+				<div
+					class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold to-teal2 scale-x-0 origin-left transition-transform duration-400 group-hover:scale-x-100"
+				></div>
+				<div
+					class="inline-block font-['Space_Mono'] text-[8px] tracking-[2px] uppercase px-2.5 py-1 border border-border2 text-muted rounded-[4px] mb-4 transition-all duration-250 group-hover:border-gold-line group-hover:text-gold flex items-center gap-2"
+				>
+					{platform.badge}
+				</div>
+				<div class="font-['Bebas_Neue'] text-[26px] tracking-[1px] mb-2.5 flex items-center gap-3">
+					{platform.name}
+				</div>
+				<p class="text-[12px] leading-[1.75] text-muted2 font-light mb-6">
+					{platform.overview}
+				</p>
+				<div
+					class="font-['Space_Mono'] text-[10px] tracking-[2px] uppercase text-gold flex items-center gap-2 transition-all duration-250 group-hover:gap-[14px]"
+				>
+					{platform.link}
+				</div>
+				<div
+					class="absolute bottom-6 right-6 font-['Space_Mono'] text-[9px] text-border2 tracking-[1px] transition-colors duration-250 group-hover:text-muted"
+				>
+					{platform.domain}
+				</div>
+			</a>
+		{/each}
+	</div>
+</section>

@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #060608;
+  --color-surface: #0d0d12;
+  --color-surface2: #13131a;
+  --color-surface3: #1a1a24;
+  --color-gold: #c9a84c;
+  --color-gold2: #f0cc7a;
+  --color-teal: #1a6b5c;
+  --color-teal2: #22917a;
+}
+
+:root {
+  --bg: #060608;
+  --surface: #0d0d12;
+  --surface2: #13131a;
+  --surface3: #1a1a24;
+  --gold: #c9a84c;
+  --gold2: #f0cc7a;
+  --gold-dim: rgba(201, 168, 76, 0.15);
+  --gold-line: rgba(201, 168, 76, 0.25);
+  --teal: #1a6b5c;
+  --teal2: #22917a;
+  --text: #eeeae2;
+  --muted: #6b6860;
+  --muted2: #9b9690;
+  --border: rgba(201, 168, 76, 0.12);
+  --border2: rgba(255, 255, 255, 0.06);
+  --radius: 12px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    @apply bg-bg text-[#eeeae2];
+  }
+
+  body {
+    @apply font-sans overflow-x-hidden;
+    cursor: default;
+  }
+
+  /* Global Anti-Overflow Rules */
+  * {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface3);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-dim);
+  }
+}
+
+@layer components {
+  .reveal {
+    @apply opacity-0 translate-y-8 transition-all duration-700 ease-out;
+  }
+  .reveal.visible {
+    @apply opacity-100 translate-y-0;
+  }
+}
