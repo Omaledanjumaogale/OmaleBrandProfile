@@ -41,8 +41,8 @@
 			name: 'I-AM Network 🌍',
 			overview: 'The Impact Ambassador Network — a decentralised workforce of vetted, trained professionals performing distributed work across the E-WIN ecosystem. Collaborative networking with distributive revenue sharing built in.',
 			link: 'Join Network →',
-			domain: 'Coming Soon ⏳',
-			href: '#',
+			domain: 'Join I-AM 🚀',
+			href: '/register/iam',
 			icon: '👥'
 		},
 		{
@@ -53,6 +53,105 @@
 			domain: 'DEALS · E-WIN 💼',
 			href: '#',
 			icon: '📈'
+		},
+		{
+			badge: 'Learning 📚',
+			name: 'AkademyX Draft 🎓',
+			overview: 'AI-powered lesson structures and interactive educational content for the E-WIN ecosystem.',
+			link: 'Open Draft →',
+			domain: 'AkademyX · E-WIN',
+			href: '/platforms/AkademyxDraft.html',
+			icon: '🎓'
+		},
+		{
+			badge: 'Analysis ⚽',
+			name: 'BetxPredicts 📈',
+			overview: 'Data-driven sports predictions and analytical modeling for informed decision making.',
+			link: 'Open Platform →',
+			domain: 'BetxPredicts · E-WIN',
+			href: '/platforms/BetxPredicts.html',
+			icon: '📈'
+		},
+		{
+			badge: 'Business 👔',
+			name: 'Biznex Draft 💼',
+			overview: 'Strategic business planning and operational modeling for emerging market enterprises.',
+			link: 'Open Draft →',
+			domain: 'Biznex · E-WIN',
+			href: '/platforms/BiznexDraft.html',
+			icon: '👔'
+		},
+		{
+			badge: 'Tertiary Ed 🏛️',
+			name: 'College CBT 🏫',
+			overview: 'Advanced computer-based testing infrastructure for higher education institutions.',
+			link: 'Open Platform →',
+			domain: 'CollegeCBT · E-WIN',
+			href: '/platforms/CollegeCBT.html',
+			icon: '🏛️'
+		},
+		{
+			badge: 'Finance 🏦',
+			name: 'Financial Auditor 💰',
+			overview: 'Automated financial auditing and verification systems for transparent economic activity.',
+			link: 'Open Platform →',
+			domain: 'Auditor · E-WIN',
+			href: '/platforms/FinancialAuditor.html',
+			icon: '🏦'
+		},
+		{
+			badge: 'Healthcare 🩺',
+			name: 'MedPharmRx 💊',
+			overview: 'Pharmaceutical supply chain tracking and medical inventory management solutions.',
+			link: 'Open Platform →',
+			domain: 'MedPharm · E-WIN',
+			href: '/platforms/MedPharmRx.html',
+			icon: '🩺'
+		},
+		{
+			badge: 'Mentorship 💡',
+			name: 'MentorMe 🤝',
+			overview: 'Peer-to-peer professional mentorship network connecting experienced leaders with emerging talent.',
+			link: 'Open Network →',
+			domain: 'MentorMe · E-WIN',
+			href: '/platforms/MentorMe.html',
+			icon: '💡'
+		},
+		{
+			badge: 'K-12 Ed 📖',
+			name: 'School CBT 🎒',
+			overview: 'Computer-based testing and digital assessment platform for primary and secondary schools.',
+			link: 'Open Platform →',
+			domain: 'SchoolCBT · E-WIN',
+			href: '/platforms/SchoolCBT.html',
+			icon: '📖'
+		},
+		{
+			badge: 'Media 📻',
+			name: 'TradexNews 📰',
+			overview: 'Real-time market news, economic analysis, and financial reporting for the African trade sector.',
+			link: 'Read News →',
+			domain: 'TradexNews · E-WIN',
+			href: '/platforms/TradexNews.html',
+			icon: '📻'
+		},
+		{
+			badge: 'Commerce 📦',
+			name: 'TradezMarket 🏪',
+			overview: 'Decentralized marketplace for physical and digital goods, powered by the E-WIN infrastructure.',
+			link: 'Shop Market →',
+			domain: 'Tradez · E-WIN',
+			href: '/platforms/TradezMarket.html',
+			icon: '📦'
+		},
+		{
+			badge: 'Strategy 🎯',
+			name: 'VantagePoint 🔭',
+			overview: 'High-level strategic insights and data visualization for ecosystem-wide performance monitoring.',
+			link: 'View Insights →',
+			domain: 'Vantage · E-WIN',
+			href: '/platforms/VantagePoint.html',
+			icon: '🎯'
 		}
 	];
 </script>
@@ -66,7 +165,7 @@
 				<span class="w-6 h-[1px] bg-gold"></span> E-WIN Ecosystem 🌍
 			</div>
 			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
-				Six platforms.<br />One mission.
+				Seventeen platforms.<br />One mission.
 			</h2>
 		</div>
 		<div class="text-[15px] leading-[1.8] text-muted2 font-light reveal delay-100">
@@ -81,7 +180,7 @@
 			<a
 				href={platform.href}
 				target={platform.href.startsWith('http') ? '_blank' : ''}
-				class="bg-surface border border-border p-8 rounded-[var(--radius)] relative overflow-hidden transition-all duration-350 hover:border-gold-line hover:translate-y-[-4px] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group reveal delay-{i * 100}"
+				class="bg-surface border border-border p-8 rounded-[var(--radius)] relative overflow-hidden transition-all duration-350 hover:border-gold-line hover:translate-y-[-4px] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group reveal delay-{(i % 6) * 100}"
 			>
 				<div
 					class="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 transition-opacity duration-350 group-hover:opacity-100"

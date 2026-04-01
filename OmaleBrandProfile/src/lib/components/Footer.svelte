@@ -3,7 +3,7 @@
 		<span class="text-gold">E</span>-WIN PROJECT
 	</div>
 	<div class="font-['Space_Mono'] text-[9px] text-muted tracking-[1px] text-center sm:text-left">
-		© 2026 Danjuma Omale-Ogale & E-WIN Project. All rights reserved. 🇳🇬
+		© 2026 Danjuma Umar Omale Ogale & E-WIN Project. All rights reserved. 🇳🇬
 	</div>
 	<div class="flex gap-6">
 		<a
@@ -19,10 +19,10 @@
 			Platforms 🌍
 		</a>
 		<a
-			href="/#thought"
-			class="text-[10px] tracking-[1.5px] uppercase text-muted hover:text-gold transition-colors duration-200 font-medium"
+			href="/admin/login"
+			class="text-[10px] tracking-[1.5px] uppercase text-gold hover:text-gold2 transition-colors duration-200 font-bold"
 		>
-			Insights 💡
+			Admin 🛡️
 		</a>
 		<a
 			href="/#contact"

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { user, auth } from '$lib/stores/auth';
+	import { openServiceModal } from '$lib/stores/ui';
 
-	let scrolled = false;
-	let menuOpen = false;
+	let scrolled = $state(false);
+	let menuOpen = $state(false);
 
 	const toggleMenu = () => {
 		menuOpen = !menuOpen;
@@ -29,14 +32,28 @@
 
 	const navLinks = [
 		{ name: 'About', href: '/#about', icon: '👤' },
-		{ name: 'Expertise', href: '/#expertise', icon: '🛠️' },
+		{ name: 'Services', href: '/#services', icon: '🛠️' },
+		{ name: 'Expertise', href: '/#expertise', icon: '🧠' },
 		{ name: 'Career', href: '/#career', icon: '💼' },
 		{ name: 'E-WIN', href: '/#ecosystem', icon: '🌍' },
-		{ name: 'Insights', href: '/#thought', icon: '💡' },
-		{ name: 'User Dashboard', href: '/dashboard', icon: '📊' },
-		{ name: 'Admin Portal', href: '/admin', icon: '🛡️' },
-		{ name: 'Connect', href: '/#contact', icon: '🤝', cta: true }
+		{ name: 'Insights', href: '/#thought', icon: '💡' }
 	];
+
+	// Authenticated Links (Only shown when logged in)
+	const authLinks = [
+		{ name: 'Admin Portal', href: '/admin', icon: '🛡️' }
+	];
+
+	const handleLogout = async () => {
+		if (!auth) return;
+		try {
+			await auth.signOut();
+			closeMenu();
+			goto('/');
+		} catch (e) {
+			console.error('Logout failed:', e);
+		}
+	};
 </script>
 
 <nav
@@ -46,72 +63,112 @@
 		: ''}"
 >
 	<a href="/#hero" class="text-2xl font-['Bebas_Neue'] tracking-widest text-text flex items-center gap-1">
-		<span class="text-gold italic font-normal">E</span>-WIN PROJECT
+		<span class="text-gold italic font-normal">O</span>MALE OGALE ProfileX
 	</a>
 
-	<!-- Desktop Nav Links (Hidden on mobile) -->
-	<ul class="hidden lg:flex items-center gap-9 list-none">
-		{#each navLinks.filter(l => !l.cta) as link}
-			<li>
-				<a
-					href={link.href}
-					class="text-[11px] font-medium tracking-[2px] uppercase text-muted2 hover:text-gold transition-colors duration-200"
-				>
-					{link.name}
-				</a>
-			</li>
-		{/each}
-		<li>
-			<a
-				href="/#contact"
-				class="px-[22px] py-[9px] border border-gold-line text-gold rounded-md hover:bg-gold hover:text-bg transition-all duration-250 text-[11px] font-medium tracking-[2px] uppercase"
-			>
-				Connect
-			</a>
-		</li>
-	</ul>
-
-	<!-- Hamburger Button -->
+	<!-- Hamburger Button (Always Visible) -->
 	<button
-		class="lg:flex flex-col gap-[5px] cursor-pointer z-[1001] p-2"
-		on:click={toggleMenu}
+		class="flex flex-col gap-[6px] cursor-pointer z-[1001] p-3 hover:opacity-70 transition-opacity bg-gold/10 rounded-lg border border-gold/20"
+		onclick={toggleMenu}
 		aria-label="Toggle Menu"
 	>
 		<span
-			class="w-[22px] h-[1.5px] bg-text transition-all duration-300 {menuOpen
-				? 'rotate-45 translate-y-[6.5px]'
+			class="w-[28px] h-[2.5px] bg-gold shadow-[0_0_8px_rgba(201,168,76,0.5)] transition-all duration-300 {menuOpen
+				? 'rotate-45 translate-y-[8.5px]'
 				: ''}"
 		></span>
 		<span
-			class="w-[22px] h-[1.5px] bg-text transition-all duration-300 {menuOpen ? 'opacity-0' : ''}"
+			class="w-[28px] h-[2.5px] bg-gold shadow-[0_0_8px_rgba(201,168,76,0.5)] transition-all duration-300 {menuOpen ? 'opacity-0' : ''}"
 		></span>
 		<span
-			class="w-[22px] h-[1.5px] bg-text transition-all duration-300 {menuOpen
-				? '-rotate-45 -translate-y-[6.5px]'
+			class="w-[28px] h-[2.5px] bg-gold shadow-[0_0_8px_rgba(201,168,76,0.5)] transition-all duration-300 {menuOpen
+				? '-rotate-45 -translate-y-[8.5px]'
 				: ''}"
 		></span>
 	</button>
 </nav>
 
-<!-- Mobile Menu Overlay -->
+<!-- Right Sidebar Navigation Menu -->
 <div
-	class="fixed inset-0 bg-[#060608fa] backdrop-blur-3xl z-[999] flex flex-col items-center justify-center gap-8 transition-all duration-500 {menuOpen
+	class="fixed inset-0 bg-[#060608eb] backdrop-blur-xl z-[999] transition-all duration-500 {menuOpen
 		? 'opacity-100 pointer-events-auto'
 		: 'opacity-0 pointer-events-none'}"
+	onclick={closeMenu}
+	onkeydown={(e) => e.key === 'Escape' && closeMenu()}
+	role="button"
+	tabindex="0"
+	aria-label="Close Menu Overlay"
 >
-	<div class="flex flex-col items-center gap-6 w-full max-w-md px-6">
-		{#each navLinks as link}
-			<a
-				href={link.href}
-				on:click={closeMenu}
-				class="font-['Bebas_Neue'] text-4xl sm:text-5xl tracking-[3px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-4"
+	<div 
+		class="absolute right-0 top-0 h-full w-full max-w-[400px] bg-surface border-l border-border shadow-2xl p-12 pt-32 flex flex-col gap-8 transition-transform duration-500 {menuOpen ? 'translate-x-0' : 'translate-x-full'}"
+		onclick={(e) => e.stopPropagation()}
+		onkeydown={(e) => e.stopPropagation()}
+		role="menu"
+		tabindex="-1"
+	>
+		<div class="flex flex-col gap-6 w-full">
+			<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-muted mb-4">Navigation 🧭</div>
+			
+			{#each navLinks as link}
+				<a
+					href={link.href}
+					onclick={closeMenu}
+					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-4 group"
+				>
+					<span class="text-2xl group-hover:scale-110 transition-transform">{link.icon}</span>
+					{link.name}
+				</a>
+			{/each}
+
+			<div class="h-[1px] w-full bg-border my-4"></div>
+			<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-muted mb-4">Portal & Contact 🛡️</div>
+
+			{#if $user}
+				{#each authLinks as link}
+					<a
+						href={link.href}
+					onclick={closeMenu}
+					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-gold hover:text-gold2 transition-colors duration-200 flex items-center gap-4 group"
+				>
+						<span class="text-2xl group-hover:scale-110 transition-transform">{link.icon}</span>
+						{link.name}
+					</a>
+				{/each}
+				<button
+					onclick={handleLogout}
+					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-red-400 hover:text-red-500 transition-colors duration-200 flex items-center gap-4 group text-left"
+				>
+					<span class="text-2xl group-hover:scale-110 transition-transform">🚪</span>
+					Logout
+				</button>
+			{:else}
+				<a
+					href="/admin/login"
+					onclick={closeMenu}
+					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-4 group"
+				>
+					<span class="text-2xl group-hover:scale-110 transition-transform">🗝️</span>
+					Admin Login
+				</a>
+			{/if}
+
+			<button
+				onclick={() => { closeMenu(); openServiceModal(); }}
+				class="mt-6 w-full py-4 bg-gold text-bg text-[11px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-y-[-2px] transition-all shadow-lg shadow-gold/20 flex items-center justify-center gap-3"
 			>
-				<span class="text-3xl">{link.icon}</span>
-				{link.name}
-			</a>
-		{/each}
+				<span>🤝</span> Connect Now
+			</button>
+		</div>
+
+		<div class="mt-auto pt-10 border-t border-border">
+			<p class="text-[11px] text-muted leading-relaxed">
+				© 2026 Danjuma Omale-Ogale<br />
+				E-WIN Project · Build for Impact 🌍
+			</p>
+		</div>
 	</div>
 </div>
+
 
 <style>
 	#nav {

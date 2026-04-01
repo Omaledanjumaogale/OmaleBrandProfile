@@ -1,7 +1,7 @@
 <script lang="ts">
 	const stats = [
 		{ num: '10M+', label: 'Youth Targeted 🎯' },
-		{ num: '4', label: 'Platforms Live 💻' },
+		{ num: '25+', label: 'Platforms Live & Coming Soon 💻' },
 		{ num: '∞', label: 'Impact Potential 🚀' }
 	];
 
@@ -51,7 +51,7 @@
 
 		<div class="reveal delay-200">
 			<p class="text-[15px] leading-[1.85] text-muted2 font-light mb-5">
-				I am <strong>Danjuma Umoru Omale-Ogale</strong> — a sociologist turned AI developer, business strategist, and serial founder operating from Abuja, Nigeria. My academic foundation at Ahmadu Bello University Zaria in Sociology and Law Enforcement gave me a deep lens through which I read systems, power, and human behaviour. 🇳🇬
+				I am <strong>Danjuma Umar Omale Ogale</strong> — a sociologist turned AI developer, business strategist, and serial founder operating from Abuja, Nigeria. My academic foundation at Ahmadu Bello University Zaria in Sociology and Law Enforcement gave me a deep lens through which I read systems, power, and human behaviour. 🇳🇬
 			</p>
 			<p class="text-[15px] leading-[1.85] text-muted2 font-light mb-5">
 				That lens became the blueprint for the <strong>E-WIN Project</strong> — Elite Workforce Impact Nigeria — a decentralised ecosystem designed to upskill unemployed youth, create sustainable earning pathways, and disrupt the traditional service sector through technology, AI, and collaborative networking. 🚀

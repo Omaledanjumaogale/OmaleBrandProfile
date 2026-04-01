@@ -1,42 +1,52 @@
-# sv
+# OmaleBrandProfile 🏢
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Enterprise-grade personal branding and workforce innovation platform for **Danjuma Omale-Ogale**.
 
-## Creating a project
+## Tech Stack 🚀
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Framework**: SvelteKit 5 (Svelte 5)
+- **Styling**: Tailwind CSS v4
+- **Backend**: Convex (Real-time DB & Functions)
+- **Auth**: Firebase Authentication
+- **Deployment**: Cloudflare Pages
+- **Icons**: Colorful Emoji-based Icons ✨
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Features 🛠️
 
-To recreate this project with the same configuration:
+- **Elite Landing Page**: High-performance, SEO-optimized personal brand portal.
+- **E-WIN Ecosystem**: Integration with 6 core platforms (E-Deals, AkademyX, DealxHire, etc.).
+- **User Dashboard**: Secure portal for workforce participants to track earnings and projects.
+- **Admin Command Center**: Advanced infrastructure management and system audit tools.
+- **Mobile Responsive**: 100% responsive design with global anti-overflow protection.
 
-```sh
-# recreate this project
-pnpm dlx sv@0.13.1 create --template minimal --types ts --add tailwindcss="plugins:none" sveltekit-adapter="adapter:cloudflare+cfTarget:pages" --no-download-check --install pnpm OmaleBrandProfile
-```
+## Getting Started 🏗️
 
-## Developing
+1. **Install Dependencies**:
+   ```bash
+   pnpm install
+   ```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+2. **Environment Setup**:
+   Create a `.env.local` file with your Convex and Firebase credentials.
 
-```sh
-npm run dev
+3. **Development**:
+   ```bash
+   pnpm dev
+   ```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+4. **Build**:
+   ```bash
+   pnpm build
+   ```
 
-## Building
+## Architecture 🏗️
 
-To create a production version of your app:
+The application follows a modular architecture:
+- `src/lib/components`: Reusable UI components (Hero, Ticker, etc.)
+- `src/lib/components/dashboard`: Dashboard-specific layouts and cards
+- `src/lib/stores`: Svelte stores for Auth and Global State
+- `convex/`: Backend schema and serverless functions
+- `src/routes/`: File-based routing for Landing, Dashboards, and Portals
 
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+---
+© 2026 Danjuma Omale-Ogale · E-WIN Project. Built for Impact. 🌍
