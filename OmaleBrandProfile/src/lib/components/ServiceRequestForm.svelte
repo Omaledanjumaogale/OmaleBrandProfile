@@ -15,6 +15,13 @@
 	let loading = $state(false);
 	let success = $state(false);
 	let error = $state('');
+	let isMaintenance = $state(false);
+
+	import { onMount } from 'svelte';
+	onMount(async () => {
+		const mm = await convex.query(api.functions.getSetting, { key: 'maintenance_mode' });
+		isMaintenance = mm;
+	});
 
 	const services = [
 		'App Development 📱',
@@ -53,6 +60,12 @@
 </script>
 
 <div class="w-full max-w-[600px] mx-auto relative overflow-hidden">
+	{#if isMaintenance}
+		<div class="p-4 bg-gold/10 border border-gold/30 rounded-xl text-gold text-[11px] mb-6 flex items-center gap-3">
+			<span>🛡️</span> Notice: System is in high-priority review mode. New requests will be queued for administrative review.
+		</div>
+	{/if}
+
 	{#if success}
 		<div class="p-6 bg-teal2/10 border border-teal2/30 rounded-xl text-teal2 text-center mb-6 animate-in fade-in slide-in-from-top-4">
 			<div class="text-3xl mb-2">✅</div>

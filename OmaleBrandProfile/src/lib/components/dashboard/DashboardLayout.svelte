@@ -12,9 +12,12 @@
 		isSidebarOpen = !isSidebarOpen;
 	};
 
-	const navItems = $derived([
+	const navItems = $derived(isAdmin ? [
 		{ label: 'Overview 📊', href: '/admin', icon: '📈' },
 		{ label: 'Settings ⚙️', href: '/admin/settings', icon: '⚙️' }
+	] : [
+		{ label: 'My Hub 🌍', href: '/dashboard', icon: '🏠' },
+		{ label: 'Profile 👤', href: '/dashboard/profile', icon: '👤' }
 	]);
 
 	const handleLogout = async () => {

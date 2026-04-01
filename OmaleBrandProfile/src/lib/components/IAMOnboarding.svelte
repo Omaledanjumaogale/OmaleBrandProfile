@@ -1,4 +1,13 @@
 <script lang="ts">
+	import { convex } from '$lib/convex';
+	import { api } from '../../../convex/_generated/api';
+	import { onMount } from 'svelte';
+
+	let registrationOpen = $state(true);
+
+	onMount(async () => {
+		registrationOpen = await convex.query(api.functions.getSetting, { key: 'registration_open' });
+	});
 </script>
 
 <section id="iam-onboarding" class="bg-surface border-y border-border px-6 lg:px-12 py-24 relative overflow-hidden">
@@ -36,13 +45,30 @@
 				</div>
 			</div>
 
-			<a 
-				href="/register/iam" 
-				class="inline-flex items-center gap-4 px-10 py-4 bg-gold text-bg text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-x-2 transition-all shadow-xl shadow-gold/20 group"
-			>
-				Submit Application 🚀
-				<span class="text-xl transition-transform group-hover:translate-x-1">→</span>
-			</a>
+			{#if registrationOpen}
+				<a 
+					href="/register/iam" 
+					class="inline-flex items-center gap-4 px-10 py-4 bg-gold text-bg text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-x-2 transition-all shadow-xl shadow-gold/20 group"
+				>
+					Submit Application 🚀
+					<span class="text-xl transition-transform group-hover:translate-x-1">→</span>
+				</a>
+			{:else}
+				<div class="p-6 border border-gold/30 bg-gold/5 rounded-2xl">
+					<div class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2 flex items-center gap-2">
+						<span>🛡️</span> Application Pool Paused
+					</div>
+					<p class="text-[13px] text-muted leading-relaxed">
+						We are currently processing the latest batch of Elite Ambassadors. You can still submit your application, but it will be placed in our **Strategic Queue** for high-priority review when registration re-opens.
+					</p>
+					<a 
+						href="/register/iam" 
+						class="mt-6 inline-flex items-center gap-4 px-10 py-4 border border-gold text-gold text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold hover:text-bg transition-all group"
+					>
+						Submit to Queue 📑
+					</a>
+				</div>
+			{/if}
 		</div>
 
 		<div class="relative reveal delay-200">

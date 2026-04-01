@@ -11,5 +11,13 @@ export const api = {
     updateApplicationStatus: "functions:updateApplicationStatus",
     updateServiceRequestStatus: "functions:updateServiceRequestStatus",
     orchestrateBackgroundTasks: "functions:orchestrateBackgroundTasks",
+    getSetting: "functions:getSetting",
+    updateSetting: "functions:updateSetting",
+    createTask: "functions:createTask",
+    getTasksForUser: "functions:getTasksForUser",
+    getTasksForAdmin: "functions:getTasksForAdmin",
+    updateTaskStatus: "functions:updateTaskStatus",
+    createBroadcast: "functions:createBroadcast",
+    getLatestBroadcasts: "functions:getLatestBroadcasts",
   }
 } as any;

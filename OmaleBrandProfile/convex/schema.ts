@@ -82,8 +82,24 @@ export default defineSchema({
     actionsCount: v.number(),
   }).index("by_sessionId", ["sessionId"]),
 
+  tasks: defineTable({
+    assigneeId: v.id("applications"), // The approved IAM applicant
+    title: v.string(),
+    description: v.string(),
+    deadline: v.number(),
+    status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("submitted"), v.literal("completed")),
+    report: v.optional(v.string()), // Report submitted by user
+    createdAt: v.number(),
+  }).index("by_assignee", ["assigneeId"]),
+
+  broadcasts: defineTable({
+    message: v.string(),
+    sender: v.string(),
+    timestamp: v.number(),
+  }),
+
   settings: defineTable({
-    key: v.string(),
+    key: v.string(), // "maintenance_mode", "registration_open", etc.
     value: v.any(),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),

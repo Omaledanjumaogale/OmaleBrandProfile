@@ -196,8 +196,89 @@ export const getActiveSessions = query({
 
 // --- ADMIN SETTINGS & MANAGEMENT ---
 
-export const updateAdminSettings = mutation({
-  args: {
+export const getSetting = query({
+  args: { key: v.string() },
+  handler: async (ctx, args) => {
+    const setting = await ctx.db
+      .query("settings")
+      .withIndex("by_key", (q) => q.eq("key", args.key))
+      .unique();
+    return setting?.value ?? true; // Default to true if not set
+  },
+});
+
+export const updateSetting = mutation({
+  args: { key: v.string(), value: v.any() },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("settings")
+      .withIndex("by_key", (q) => q.eq("key", args.key))
+      .unique();
+    if (existing) {
+      await ctx.db.patch(existing._id, { value: args.value, updatedAt: Date.now() });
+    } else {
+      await ctx.db.insert("settings", { key: args.key, value: args.value, updatedAt: Date.now() });
+    }
+  },
+});
+
+// --- TASKS MANAGEMENT ---
+
+export const createTask = mutation({
+  args: { assigneeId: v.id("applications"), title: v.string(), description: v.string(), deadline: v.number() },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("tasks", {
+      ...args,
+      status: "pending",
+      createdAt: Date.now(),
+    });
+  },
+});
+
+export const getTasksForUser = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("applications")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .unique();
+    if (!user) return [];
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", user._id))
+      .order("desc")
+      .collect();
+  },
+});
+
+export const getTasksForAdmin = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("tasks").order("desc").collect();
+  },
+});
+
+export const updateTaskStatus = mutation({
+  args: { taskId: v.id("tasks"), status: v.string(), report: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const { taskId, ...updates } = args;
+    await ctx.db.patch(taskId, updates);
+  },
+});
+
+// --- BROADCASTS ---
+
+export const createBroadcast = mutation({
+  args: { message: v.string(), sender: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("broadcasts", { ...args, timestamp: Date.now() });
+  },
+});
+
+export const getLatestBroadcasts = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("broadcasts").order("desc").take(10);
+  },
+});
     key: v.string(),
     value: v.any()
   },
