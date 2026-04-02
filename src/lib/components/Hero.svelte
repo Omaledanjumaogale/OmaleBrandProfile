@@ -19,7 +19,7 @@
 	<div class="absolute inset-0 bg-[linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] bg-[size:64px_64px] opacity-60 pointer-events-none"></div>
 	<div class="absolute top-[-20%] left-[-10%] w-[60%] h-[80%] bg-[radial-gradient(ellipse,rgba(201,168,76,0.06)_0%,transparent_70%)] pointer-events-none"></div>
 
-	<div class="flex flex-col justify-center px-6 lg:px-12 pt-[140px] pb-20 relative z-10">
+	<div class="flex flex-col justify-center px-6 lg:px-12 pt-12 lg:pt-[140px] pb-20 relative z-10">
 		<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-gold mb-7 flex items-center gap-3 reveal">
 			<span class="w-7 h-[1px] bg-gold"></span> AI-Augmented Developer & Founder 🤖
 		</div>
@@ -61,7 +61,7 @@
 		</div>
 	</div>
 
-	<div class="relative overflow-hidden hidden lg:block">
+	<div class="relative overflow-hidden block h-[450px] sm:h-[550px] lg:h-auto order-first lg:order-none">
 		<div class="absolute inset-0 bg-[#0a0a0e]">
 			<img
 				src="/danjuma-ogale.jpg"
