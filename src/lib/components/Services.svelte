@@ -51,10 +51,10 @@
 			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold mb-4">
 				Professional Services 🛠️
 			</div>
-			<h2 class="font-['Bebas_Neue'] text-[clamp(45px,6vw,84px)] tracking-[2px] leading-[0.9] mb-6">
+			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,6vw,84px)] tracking-[2px] leading-[0.9] mb-6">
 				Strategic Solutions.<br /><span class="text-gold">Expert Implementation.</span>
 			</h2>
-			<p class="text-[15px] leading-[1.8] text-muted2 max-w-[600px] mx-auto font-light">
+			<p class="text-sm md:text-[15px] leading-[1.8] text-muted2 max-w-[600px] mx-auto font-light">
 				Leveraging a decade of interdisciplinary expertise to deliver high-impact results across technology, business, and research sectors. 🌍
 			</p>
 		</div>
@@ -72,13 +72,13 @@
 						{service.title}
 					</h3>
 					
-					<p class="text-[13px] leading-[1.7] text-muted2 font-light mb-8 flex-grow">
+					<p class="text-sm md:text-[13px] leading-[1.7] text-muted2 font-light mb-8 flex-grow">
 						{service.desc}
 					</p>
 
 					<div class="flex flex-wrap gap-2 pt-6 border-t border-border mt-auto">
 						{#each service.tags as tag}
-							<span class="text-[9px] font-['Space_Mono'] tracking-[1px] uppercase text-muted border border-border2 px-2 py-0.5 rounded group-hover:border-gold-line/30 group-hover:text-gold/80 transition-colors">
+							<span class="text-sm md:text-[9px] font-['Space_Mono'] tracking-[1px] uppercase text-muted border border-border2 px-2 py-0.5 rounded group-hover:border-gold-line/30 group-hover:text-gold/80 transition-colors">
 								{tag}
 							</span>
 						{/each}
@@ -87,14 +87,14 @@
 			{/each}
 		</div>
 
-		<div class="mt-20 p-10 bg-surface border border-gold-line/20 rounded-[var(--radius)] text-center reveal">
+		<div class="mt-20 p-6 sm:p-10 bg-surface border border-gold-line/20 rounded-[var(--radius)] text-center reveal">
 			<h4 class="font-['Bebas_Neue'] text-3xl tracking-[2px] mb-4">Ready to start a project? 🤝</h4>
-			<p class="text-[14px] text-muted2 mb-8 max-w-[500px] mx-auto font-light">
+			<p class="text-sm md:text-[14px] text-muted2 mb-8 max-w-[500px] mx-auto font-light">
 				Whether you need a full-scale enterprise application or a comprehensive business plan, I am ready to bring your vision to life.
 			</p>
 			<button 
 				onclick={openServiceModal}
-				class="inline-block px-10 py-4 bg-gold text-bg text-[11px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-y-[-2px] transition-all shadow-lg shadow-gold/20"
+				class="w-full md:w-auto inline-block px-10 py-4 bg-gold text-bg text-sm md:text-[11px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-y-[-2px] transition-all shadow-lg shadow-gold/20 min-h-[44px] flex items-center justify-center"
 			>
 				Consult with Me 🚀
 			</button>

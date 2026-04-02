@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import BottomNav from '$lib/components/BottomNav.svelte';
 	import ServiceRequestModal from '$lib/components/ServiceRequestModal.svelte';
 	import { refreshStats } from '$lib/stores/convex';
 
@@ -79,6 +80,7 @@
 	{#if !isAdminRoute}
 		<Footer />
 	{/if}
+	<BottomNav />
 	<ServiceRequestModal />
 </div>
 

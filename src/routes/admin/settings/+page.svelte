@@ -55,13 +55,13 @@
 
 			<div class="p-8 space-y-10">
 				{#if loading}
-					<div class="py-10 text-center text-muted uppercase tracking-widest text-[10px]">Loading Settings...</div>
+					<div class="py-10 text-center text-muted uppercase tracking-widest text-sm md:text-[10px]">Loading Settings...</div>
 				{:else}
 					{#each defaultSettings as item}
-						<div class="flex items-center justify-between gap-8">
+						<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
 							<div class="flex-grow">
 								<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text mb-1">{item.label}</h4>
-								<p class="text-[12px] text-muted font-light">{item.description}</p>
+								<p class="text-sm md:text-[12px] text-muted font-light">{item.description}</p>
 							</div>
 							
 							{#if item.type === 'toggle'}
@@ -69,18 +69,18 @@
 									onclick={() => updateSetting(item.key, !getSettingValue(item.key))}
 									disabled={saving}
 									aria-label="Toggle {item.label}"
-									class="relative w-14 h-7 rounded-full transition-colors {getSettingValue(item.key) ? 'bg-gold' : 'bg-border'} {saving ? 'opacity-50' : ''}"
+									class="relative w-14 h-7 rounded-full transition-colors {getSettingValue(item.key) ? 'bg-gold' : 'bg-border'} {saving ? 'opacity-50' : ''} shrink-0"
 								>
 									<div class="absolute top-1 left-1 w-5 h-5 bg-bg rounded-full transition-transform {getSettingValue(item.key) ? 'translate-x-7' : ''}"></div>
 								</button>
 							{:else}
-								<div class="flex gap-2">
+								<div class="flex gap-2 w-full sm:w-auto">
 									<input 
 										type="text" 
 										value={getSettingValue(item.key)} 
 										onchange={(e) => updateSetting(item.key, e.target.value)}
 										disabled={saving}
-										class="bg-bg border border-border rounded-lg px-4 py-2 text-[12px] text-text focus:border-gold outline-none transition-all w-64"
+										class="bg-bg border border-border rounded-lg px-4 py-3 min-h-[44px] text-sm md:text-[12px] text-text focus:border-gold outline-none transition-all w-full sm:w-64"
 									/>
 								</div>
 							{/if}

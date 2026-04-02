@@ -16,13 +16,13 @@
 	
 	<div class="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
 		<div class="reveal">
-			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold mb-6 flex items-center gap-3">
+			<div class="font-['Space_Mono'] text-sm md:text-[10px] tracking-[4px] uppercase text-gold mb-6 flex items-center gap-3">
 				<span class="w-8 h-[1px] bg-gold"></span> Join the Elite Network 🌍
 			</div>
-			<h2 class="font-['Bebas_Neue'] text-[clamp(45px,6vw,84px)] tracking-[2px] leading-[0.9] mb-8">
+			<h2 class="font-['Bebas_Neue'] text-[clamp(36px,6vw,84px)] tracking-[2px] leading-[0.9] mb-8">
 				Become an <span class="text-gold">Impact Ambassador.</span>
 			</h2>
-			<p class="text-[16px] leading-[1.8] text-muted2 font-light mb-10 max-w-[600px]">
+			<p class="text-sm md:text-[16px] leading-[1.8] text-muted2 font-light mb-10 max-w-[600px]">
 				Onboard into the <strong>I-AM Network</strong> and unlock the potential to work across the entire E-WIN Project ecosystem. Access multiple income streams, collaborate on high-impact platforms, and become a leader in Africa's digital transformation. 🚀
 				<br /><br />
 				<strong class="text-gold">We are committed to onboarding at least 10,000,000 youths, unemployed graduates, skilled persons, persons with disabilities and students, empowering them and providing employment opportunities that enable them to earn ₦200,000+ monthly across our platforms and impacting others and their communities across Africa.</strong>
@@ -32,15 +32,15 @@
 				<div class="flex items-start gap-4 p-4 bg-bg border border-border rounded-xl">
 					<div class="text-2xl">💰</div>
 					<div>
-						<div class="text-[12px] font-bold text-text uppercase tracking-widest">Multiple Income Streams</div>
-						<div class="text-[10px] text-muted mt-1">Earn from diverse platforms within the ecosystem.</div>
+						<div class="text-sm md:text-[12px] font-bold text-text uppercase tracking-widest">Multiple Income Streams</div>
+						<div class="text-sm md:text-[10px] text-muted mt-1">Earn from diverse platforms within the ecosystem.</div>
 					</div>
 				</div>
 				<div class="flex items-start gap-4 p-4 bg-bg border border-border rounded-xl">
 					<div class="text-2xl">📈</div>
 					<div>
-						<div class="text-[12px] font-bold text-text uppercase tracking-widest">Skill Advancement</div>
-						<div class="text-[10px] text-muted mt-1">Exclusive access to AI-upskilling and mentor networks.</div>
+						<div class="text-sm md:text-[12px] font-bold text-text uppercase tracking-widest">Skill Advancement</div>
+						<div class="text-sm md:text-[10px] text-muted mt-1">Exclusive access to AI-upskilling and mentor networks.</div>
 					</div>
 				</div>
 			</div>
@@ -48,22 +48,22 @@
 			{#if registrationOpen}
 				<a 
 					href="/register/iam" 
-					class="inline-flex items-center gap-4 px-10 py-4 bg-gold text-bg text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-x-2 transition-all shadow-xl shadow-gold/20 group"
+					class="w-full sm:w-auto inline-flex items-center justify-center gap-4 px-10 py-4 bg-gold text-bg text-sm md:text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-x-2 transition-all shadow-xl shadow-gold/20 group min-h-[44px]"
 				>
 					Submit Application 🚀
 					<span class="text-xl transition-transform group-hover:translate-x-1">→</span>
 				</a>
 			{:else}
 				<div class="p-6 border border-gold/30 bg-gold/5 rounded-2xl">
-					<div class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2 flex items-center gap-2">
+					<div class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2 flex items-center gap-2">
 						<span>🛡️</span> Application Pool Paused
 					</div>
-					<p class="text-[13px] text-muted leading-relaxed">
+					<p class="text-sm md:text-[13px] text-muted leading-relaxed">
 						We are currently processing the latest batch of Elite Ambassadors. You can still submit your application, but it will be placed in our **Strategic Queue** for high-priority review when registration re-opens.
 					</p>
 					<a 
 						href="/register/iam" 
-						class="mt-6 inline-flex items-center gap-4 px-10 py-4 border border-gold text-gold text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold hover:text-bg transition-all group"
+						class="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-4 px-10 py-4 border border-gold text-gold text-sm md:text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold hover:text-bg transition-all group min-h-[44px]"
 					>
 						Submit to Queue 📑
 					</a>

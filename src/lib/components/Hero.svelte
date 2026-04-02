@@ -23,40 +23,40 @@
 		<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-gold mb-7 flex items-center gap-3 reveal">
 			<span class="w-7 h-[1px] bg-gold"></span> AI-Augmented Developer & Founder 🤖
 		</div>
-		<h1 class="font-['Bebas_Neue'] text-[clamp(60px,7vw,108px)] leading-[0.92] tracking-[2px] mb-9 reveal delay-100">
+		<h1 class="font-['Bebas_Neue'] text-[clamp(48px,10vw,108px)] leading-[0.92] tracking-[2px] mb-9 reveal delay-100">
 			<span class="[-webkit-text-stroke:1px_var(--muted)] text-transparent">DANJUMA</span><br />
 			<span class="text-gold">OMALE</span><br />
 			<span>OGALE</span>
 		</h1>
-		<p class="text-[15px] font-light leading-[1.8] text-muted2 max-w-[420px] mb-12 reveal delay-200">
+		<p class="text-sm md:text-[15px] font-light leading-[1.8] text-muted2 max-w-[420px] mb-12 reveal delay-200">
 			Sociologist. Strategist. Builder. I architect systems that upskill Africa's workforce, close economic divides, and create sustainable livelihoods through the E-WIN Project ecosystem. 🌍
 		</p>
 		<div class="flex items-center gap-5 flex-wrap reveal delay-300">
 			<a
 				href="#ecosystem"
-				class="px-8 py-3.5 bg-gold text-bg text-[11px] font-semibold tracking-[2px] uppercase rounded-[var(--radius)] hover:bg-gold2 hover:translate-y-[-2px] hover:shadow-[0_8px_32px_rgba(201,168,76,0.25)] transition-all duration-250"
+				class="px-8 py-3.5 bg-gold text-bg text-sm md:text-[11px] font-semibold tracking-[2px] uppercase rounded-[var(--radius)] hover:bg-gold2 hover:translate-y-[-2px] hover:shadow-[0_8px_32px_rgba(201,168,76,0.25)] transition-all duration-250 min-h-[44px] flex items-center justify-center"
 			>
 				Explore E-WIN 🌍
 			</a>
 			<a
 				href="#about"
-				class="px-8 py-3.5 border border-border2 text-muted2 text-[11px] font-medium tracking-[2px] uppercase rounded-[var(--radius)] hover:border-gold-line hover:text-gold transition-all duration-250"
+				class="px-8 py-3.5 border border-border2 text-muted2 text-sm md:text-[11px] font-medium tracking-[2px] uppercase rounded-[var(--radius)] hover:border-gold-line hover:text-gold transition-all duration-250 min-h-[44px] flex items-center justify-center"
 			>
 				My Story 📖
 			</a>
 		</div>
-		<div class="flex gap-9 mt-[60px] pt-10 border-t border-border reveal delay-400">
-			<div>
-				<span class="font-['Bebas_Neue'] text-[40px] text-gold tracking-widest block leading-none">25+</span>
-				<span class="text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Platforms Built 💻</span>
+		<div class="flex gap-6 sm:gap-9 mt-[60px] pt-10 border-t border-border flex-wrap sm:flex-nowrap reveal delay-400">
+			<div class="min-w-[120px]">
+				<span class="font-['Bebas_Neue'] text-[32px] sm:text-[40px] text-gold tracking-widest block leading-none">25+</span>
+				<span class="text-sm md:text-[9px] sm:text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Platforms Built 💻</span>
 			</div>
-			<div>
-				<span class="font-['Bebas_Neue'] text-[40px] text-gold tracking-widest block leading-none">13+</span>
-				<span class="text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Years Experience 💼</span>
+			<div class="min-w-[120px]">
+				<span class="font-['Bebas_Neue'] text-[32px] sm:text-[40px] text-gold tracking-widest block leading-none">13+</span>
+				<span class="text-sm md:text-[9px] sm:text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Years Experience 💼</span>
 			</div>
-			<div>
-				<span class="font-['Bebas_Neue'] text-[40px] text-gold tracking-widest block leading-none">8+</span>
-				<span class="text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Certifications 📜</span>
+			<div class="min-w-[120px]">
+				<span class="font-['Bebas_Neue'] text-[32px] sm:text-[40px] text-gold tracking-widest block leading-none">8+</span>
+				<span class="text-sm md:text-[9px] sm:text-[10px] tracking-[2px] uppercase text-muted mt-1 block">Certifications 📜</span>
 			</div>
 		</div>
 	</div>

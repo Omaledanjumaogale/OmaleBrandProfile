@@ -68,7 +68,7 @@
 
 	<!-- Hamburger Button (Always Visible) -->
 	<button
-		class="flex flex-col gap-[6px] cursor-pointer z-[1001] p-3 hover:opacity-70 transition-opacity bg-gold/10 rounded-lg border border-gold/20"
+		class="flex flex-col gap-[6px] cursor-pointer z-[1001] p-4 min-h-[44px] min-w-[44px] items-center justify-center hover:opacity-70 transition-opacity bg-gold/10 rounded-lg border border-gold/20"
 		onclick={toggleMenu}
 		aria-label="Toggle Menu"
 	>
@@ -100,7 +100,7 @@
 	aria-label="Close Menu Overlay"
 >
 	<div 
-		class="absolute right-0 top-0 h-full w-full max-w-[400px] bg-surface border-l border-border shadow-2xl p-12 pt-32 flex flex-col gap-8 transition-transform duration-500 {menuOpen ? 'translate-x-0' : 'translate-x-full'}"
+		class="absolute right-0 top-0 h-full w-full bg-surface border-l border-border shadow-2xl p-8 sm:p-12 pt-32 flex flex-col gap-8 transition-transform duration-500 {menuOpen ? 'translate-x-0' : 'translate-x-full'}"
 		onclick={(e) => e.stopPropagation()}
 		onkeydown={(e) => e.stopPropagation()}
 		role="menu"

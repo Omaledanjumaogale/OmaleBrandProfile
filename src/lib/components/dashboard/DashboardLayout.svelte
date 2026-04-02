@@ -34,7 +34,7 @@
 <div class="min-h-screen bg-bg flex text-text font-sans">
 	<!-- Sidebar -->
 	<aside
-		class="fixed inset-y-0 left-0 z-50 w-72 bg-surface border-r border-border transition-transform duration-300 transform lg:translate-x-0 {isSidebarOpen
+		class="fixed inset-y-0 left-0 z-50 w-full sm:w-72 bg-surface border-r border-border transition-transform duration-300 transform lg:translate-x-0 {isSidebarOpen
 			? 'translate-x-0'
 			: '-translate-x-full'}"
 	>
@@ -42,7 +42,7 @@
 			<a href="/" class="text-2xl font-['Bebas_Neue'] tracking-widest text-text">
 				<span class="text-gold italic">E</span>-WIN {isAdmin ? 'ADMIN' : 'DASH'}
 			</a>
-			<button class="lg:hidden text-muted" onclick={toggleSidebar}>✕</button>
+			<button class="lg:hidden text-muted p-4 min-h-[44px] min-w-[44px] flex items-center justify-center" onclick={toggleSidebar}>✕</button>
 		</div>
 
 		<nav class="p-6 space-y-2">
@@ -71,7 +71,7 @@
 	<div class="flex-grow lg:ml-72 flex flex-col min-w-0">
 		<!-- Top Bar -->
 		<header class="h-20 bg-surface/50 backdrop-blur-xl border-b border-border flex items-center justify-between px-6 lg:px-10 sticky top-0 z-40">
-			<button class="lg:hidden p-2 text-gold" onclick={toggleSidebar}>☰</button>
+			<button class="lg:hidden p-4 min-h-[44px] min-w-[44px] flex items-center justify-center text-gold" onclick={toggleSidebar}>☰</button>
 			<h1 class="font-['Bebas_Neue'] text-3xl tracking-widest uppercase">{title}</h1>
 
 			<div class="flex items-center gap-6">

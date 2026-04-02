@@ -14,11 +14,11 @@
 <section id="certifications" class="bg-surface border-t border-border px-6 lg:px-12 py-20">
 	<div class="reveal mb-12">
 		<div
-			class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-gold mb-[14px] flex items-center gap-[10px]"
+			class="font-['Space_Mono'] text-sm md:text-[10px] tracking-[3px] uppercase text-gold mb-[14px] flex items-center gap-[10px]"
 		>
 			<span class="w-6 h-[1px] bg-gold"></span> Credentials 📜
 		</div>
-		<h2 class="font-['Bebas_Neue'] text-[clamp(40px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
+		<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
 			Built on<br />verified mastery.
 		</h2>
 	</div>
@@ -26,13 +26,13 @@
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-12">
 		{#each certs as cert, i}
 			<div class="bg-bg border border-border p-5 rounded-[var(--radius)] transition-all duration-300 hover:border-gold-line hover:bg-surface2 group reveal delay-{i * 50}">
-				<div class="font-['Space_Mono'] text-[9px] text-gold tracking-[2px] mb-2">
+				<div class="font-['Space_Mono'] text-sm md:text-[9px] text-gold tracking-[2px] mb-2">
 					{cert.year} 📅
 				</div>
-				<div class="text-[13px] text-text font-medium leading-[1.4] mb-1 group-hover:text-gold transition-colors">
+				<div class="text-sm md:text-[13px] text-text font-medium leading-[1.4] mb-1 group-hover:text-gold transition-colors">
 					{cert.name}
 				</div>
-				<div class="text-[11px] text-muted font-light mt-1">
+				<div class="text-sm md:text-[11px] text-muted font-light mt-1">
 					{cert.issuer}
 				</div>
 			</div>

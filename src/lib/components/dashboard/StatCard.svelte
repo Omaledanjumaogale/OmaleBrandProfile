@@ -15,12 +15,12 @@
 		<div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl {colorClasses[color as keyof typeof colorClasses]} border transition-transform group-hover:scale-110">
 			{icon}
 		</div>
-		<div class="text-[10px] font-['Space_Mono'] tracking-widest px-2 py-1 rounded bg-bg border border-border text-muted uppercase">
+		<div class="text-sm md:text-[10px] font-['Space_Mono'] tracking-widest px-2 py-1 rounded bg-bg border border-border text-muted uppercase">
 			{trend}
 		</div>
 	</div>
 
-	<div class="text-[11px] font-['Space_Mono'] tracking-[2px] uppercase text-muted mb-1">
+	<div class="text-sm md:text-[11px] font-['Space_Mono'] tracking-[2px] uppercase text-muted mb-1">
 		{label}
 	</div>
 	<div class="font-['Bebas_Neue'] text-3xl tracking-widest text-text">

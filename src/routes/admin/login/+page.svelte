@@ -63,51 +63,51 @@
 	
 	<div class="w-full max-w-[450px] relative z-10">
 		<div class="text-center mb-10">
-			<a href="/" class="text-4xl font-['Bebas_Neue'] tracking-[4px] text-text mb-4 inline-block">
+			<a href="/" class="text-3xl sm:text-4xl font-['Bebas_Neue'] tracking-[4px] text-text mb-4 inline-block">
 				<span class="text-gold italic font-normal">O</span>MALE OGALE
 			</a>
-			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold">Admin Portal Access 🛡️</div>
+			<div class="font-['Space_Mono'] text-sm md:text-[10px] tracking-[4px] uppercase text-gold">Admin Portal Access 🛡️</div>
 		</div>
 
-		<div class="bg-surface border border-border p-10 rounded-3xl shadow-2xl backdrop-blur-xl">
+		<div class="bg-surface border border-border p-6 sm:p-10 rounded-3xl shadow-2xl backdrop-blur-xl">
 			{#if error}
-				<div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 text-[11px] mb-6 flex items-center gap-3">
+				<div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 text-sm md:text-[11px] mb-6 flex items-center gap-3">
 					<span>⚠️</span> {error}
 				</div>
 			{/if}
 
 			{#if resetSuccess}
-				<div class="p-4 bg-teal2/10 border border-teal2/30 rounded-xl text-teal2 text-[11px] mb-6 flex items-center gap-3">
+				<div class="p-4 bg-teal2/10 border border-teal2/30 rounded-xl text-teal2 text-sm md:text-[11px] mb-6 flex items-center gap-3">
 					<span>📧</span> Reset link sent to your email.
 				</div>
 			{/if}
 
 			<form onsubmit={(e) => { e.preventDefault(); showReset ? handleReset() : handleLogin(); }} class="space-y-6">
 				<div class="space-y-2">
-					<label for="email" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Administrative Email</label>
+					<label for="email" class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Administrative Email</label>
 					<input
 						type="email"
 						id="email"
 						bind:value={email}
 						required
 						placeholder="admin@ewinproject.com"
-						class="w-full bg-bg border border-border rounded-xl px-5 py-4 text-[13px] focus:border-gold outline-none transition-all"
+						class="w-full bg-bg border border-border rounded-xl px-5 py-4 min-h-[44px] text-sm md:text-[13px] focus:border-gold outline-none transition-all"
 					/>
 				</div>
 
 				{#if !showReset}
 					<div class="space-y-2">
 						<div class="flex justify-between items-center">
-							<label for="password" class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Password</label>
-							<button type="button" onclick={() => showReset = true} class="text-[9px] text-gold hover:underline uppercase tracking-widest">Forgot?</button>
+							<label for="password" class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Security Key</label>
+							<button type="button" onclick={() => showReset = true} class="text-sm md:text-[9px] uppercase tracking-widest text-gold hover:text-gold2 font-bold min-h-[44px] flex items-center">Forgot? 🔑</button>
 						</div>
 						<input
 							type="password"
 							id="password"
 							bind:value={password}
 							required
-							placeholder="••••••••"
-							class="w-full bg-bg border border-border rounded-xl px-5 py-4 text-[13px] focus:border-gold outline-none transition-all"
+							placeholder="••••••••••••"
+							class="w-full bg-bg border border-border rounded-xl px-5 py-4 min-h-[44px] text-sm md:text-[13px] focus:border-gold outline-none transition-all"
 						/>
 					</div>
 				{/if}
@@ -115,20 +115,16 @@
 				<button
 					type="submit"
 					disabled={loading}
-					class="w-full py-5 bg-gold text-bg text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+					class="w-full py-4 min-h-[44px] bg-gold text-bg text-sm md:text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 transition-all shadow-xl shadow-gold/30 flex items-center justify-center gap-3"
 				>
-					{#if loading}
-						<span class="w-4 h-4 border-2 border-bg/30 border-t-bg rounded-full animate-spin"></span>
-						Authenticating...
-					{:else}
-						{showReset ? 'Send Reset Link 📧' : 'Enter Portal 🛡️'}
+					{loading ? (showReset ? 'Sending Reset...' : 'Authenticating...') : (showReset ? 'Send Reset Link 📧' : 'Access Portal 🛡️')}
+					{#if !loading}
+						<span class="text-xl">→</span>
 					{/if}
 				</button>
 
 				{#if showReset}
-					<button type="button" onclick={() => showReset = false} class="w-full text-center text-[10px] text-muted hover:text-text uppercase tracking-widest">
-						Back to Login
-					</button>
+					<button type="button" onclick={() => showReset = false} class="w-full text-sm md:text-[10px] uppercase tracking-[2px] text-muted hover:text-text font-bold py-2 min-h-[44px]">Back to Login 🔙</button>
 				{/if}
 			</form>
 		</div>

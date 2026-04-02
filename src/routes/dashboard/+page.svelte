@@ -78,15 +78,15 @@
 			</div>
 			<div class="p-6 space-y-4">
 				{#if broadcasts.length === 0}
-					<p class="text-center py-10 text-muted text-[12px]">No broadcasts yet.</p>
+					<p class="text-center py-10 text-muted text-sm md:text-[12px]">No broadcasts yet.</p>
 				{:else}
 					{#each broadcasts as b}
 						<div class="p-4 bg-bg border border-border rounded-xl hover:border-gold-line transition-all">
 							<div class="flex justify-between mb-1">
-								<span class="text-[10px] font-['Space_Mono'] tracking-widest text-gold uppercase">{b.sender}</span>
-								<span class="text-[9px] text-muted">{new Date(b.timestamp).toLocaleDateString()}</span>
+								<span class="text-sm md:text-[10px] font-['Space_Mono'] tracking-widest text-gold uppercase">{b.sender}</span>
+								<span class="text-sm md:text-[9px] text-muted">{new Date(b.timestamp).toLocaleDateString()}</span>
 							</div>
-							<p class="text-[12px] text-text font-light">{b.message}</p>
+							<p class="text-sm md:text-[12px] text-text font-light">{b.message}</p>
 						</div>
 					{/each}
 				{/if}
@@ -158,9 +158,9 @@
 
 	<!-- Report Submission Modal -->
 	{#if showReportModal && selectedTask}
-		<div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
-			<button class="absolute inset-0 bg-bg/90 backdrop-blur-xl border-none" onclick={() => showReportModal = false}></button>
-			<div class="bg-surface border border-border w-full max-w-lg rounded-3xl p-10 relative z-10 shadow-2xl">
+		<div class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
+			<button class="absolute inset-0 bg-bg/90 backdrop-blur-xl border-none" onclick={() => showReportModal = false} aria-label="Close modal overlay"></button>
+			<div class="bg-surface border-t sm:border border-border w-full max-w-lg rounded-t-[32px] sm:rounded-3xl p-8 sm:p-10 relative z-10 shadow-2xl">
 				<div class="mb-8">
 					<div class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2">Submit Task Report 📋</div>
 					<h2 class="font-['Bebas_Neue'] text-3xl tracking-widest">{selectedTask.title}</h2>
@@ -169,19 +169,19 @@
 				<textarea 
 					bind:value={reportText}
 					placeholder="Describe the work completed, findings, or outcomes..."
-					class="w-full bg-bg border border-border rounded-2xl p-5 text-[13px] h-48 outline-none focus:border-gold resize-none mb-6"
+					class="w-full bg-bg border border-border rounded-2xl p-5 text-[13px] h-48 outline-none focus:border-gold resize-none mb-6 min-h-[120px]"
 				></textarea>
 
-				<div class="flex gap-4">
+				<div class="flex flex-col sm:flex-row gap-4 pb-8 sm:pb-0">
 					<button 
 						onclick={() => showReportModal = false}
-						class="flex-grow py-4 border border-border text-muted text-[11px] font-bold uppercase tracking-widest rounded-xl"
+						class="flex-grow py-4 border border-border text-muted text-[11px] font-bold uppercase tracking-widest rounded-xl min-h-[44px]"
 					>
 						Cancel
 					</button>
 					<button 
 						onclick={submitReport}
-						class="flex-grow py-4 bg-gold text-bg text-[11px] font-bold uppercase tracking-widest rounded-xl"
+						class="flex-grow py-4 bg-gold text-bg text-[11px] font-bold uppercase tracking-widest rounded-xl min-h-[44px]"
 					>
 						Submit Report 🚀
 					</button>

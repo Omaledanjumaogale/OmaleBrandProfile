@@ -126,40 +126,40 @@
 
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
 		<!-- Maintenance Control -->
-		<div class="lg:col-span-3 bg-surface border border-border rounded-[var(--radius)] p-6 shadow-2xl reveal visible flex items-center justify-between gap-6">
-			<div class="flex items-center gap-10">
-				<div class="flex items-center gap-3">
+		<div class="lg:col-span-3 bg-surface border border-border rounded-[var(--radius)] p-6 shadow-2xl reveal visible flex flex-col md:flex-row items-center justify-between gap-8">
+			<div class="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 w-full md:w-auto">
+				<div class="flex items-center justify-between w-full sm:w-auto gap-4 sm:gap-3 px-4 sm:px-0">
 					<span class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Maintenance Mode 🛡️</span>
 					<button 
 						onclick={() => toggleSetting('maintenance_mode', maintenanceMode)}
-						class="w-12 h-6 rounded-full transition-all relative {maintenanceMode ? 'bg-red-500' : 'bg-muted/30'}"
+						class="w-14 h-7 rounded-full transition-all relative {maintenanceMode ? 'bg-red-500' : 'bg-muted/30'}"
 						aria-label={maintenanceMode ? 'Disable Maintenance Mode' : 'Enable Maintenance Mode'}
 					>
-						<span class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all {maintenanceMode ? 'translate-x-6' : 'translate-x-0'}"></span>
+						<span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-all {maintenanceMode ? 'translate-x-7' : 'translate-x-0'}"></span>
 					</button>
 				</div>
-				<div class="flex items-center gap-3">
+				<div class="flex items-center justify-between w-full sm:w-auto gap-4 sm:gap-3 px-4 sm:px-0">
 					<span class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">IAM Registration 🌍</span>
 					<button 
 						onclick={() => toggleSetting('registration_open', registrationOpen)}
-						class="w-12 h-6 rounded-full transition-all relative {registrationOpen ? 'bg-teal2' : 'bg-muted/30'}"
+						class="w-14 h-7 rounded-full transition-all relative {registrationOpen ? 'bg-teal2' : 'bg-muted/30'}"
 						aria-label={registrationOpen ? 'Close Registration' : 'Open Registration'}
 					>
-						<span class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all {registrationOpen ? 'translate-x-6' : 'translate-x-0'}"></span>
+						<span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-all {registrationOpen ? 'translate-x-7' : 'translate-x-0'}"></span>
 					</button>
 				</div>
 			</div>
 			
-			<div class="flex-grow max-w-md flex items-center gap-3">
+			<div class="w-full md:flex-grow md:max-w-md flex items-center gap-3">
 				<input 
 					type="text" 
 					bind:value={broadcastMsg}
 					placeholder="Broadcast to all users... 📢" 
-					class="flex-grow bg-bg border border-border rounded-xl px-4 py-2 text-[12px] outline-none focus:border-gold"
+					class="flex-grow bg-bg border border-border rounded-xl px-4 py-3 min-h-[44px] text-[12px] outline-none focus:border-gold"
 				/>
 				<button 
 					onclick={handleBroadcast}
-					class="px-4 py-2 bg-gold text-bg text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-gold2"
+					class="px-6 py-3 min-h-[44px] bg-gold text-bg text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-gold2"
 				>
 					Send 🚀
 				</button>
@@ -187,41 +187,41 @@
 
 		<!-- Management Tabs -->
 		<div class="lg:col-span-2 bg-surface border border-border rounded-[var(--radius)] overflow-hidden shadow-2xl reveal visible delay-200">
-			<div class="p-6 border-b border-border bg-surface2/50 flex items-center justify-between">
-				<div class="flex gap-6 overflow-x-auto pb-2 scrollbar-hide">
+			<div class="p-6 border-b border-border bg-surface2/50">
+				<div class="flex items-center gap-10 overflow-x-auto pb-2 scrollbar-hide">
 					<button 
 						onclick={() => activeTab = 'requests'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'requests' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'requests' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						Requests 🛠️
 					</button>
 					<button 
 						onclick={() => activeTab = 'applications'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'applications' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'applications' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						IAM Apps 🌍
 					</button>
 					<button 
 						onclick={() => activeTab = 'history'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'history' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'history' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						History 📦
 					</button>
 					<button 
 						onclick={() => activeTab = 'tasks'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'tasks' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'tasks' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						Tasks 🎯
 					</button>
 					<button 
 						onclick={() => activeTab = 'logs'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'logs' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'logs' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						Audit Logs 📋
 					</button>
 					<button 
 						onclick={() => activeTab = 'sessions'}
-						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'sessions' ? 'text-gold' : 'text-muted hover:text-text'}"
+						class="font-['Bebas_Neue'] text-2xl tracking-widest transition-colors whitespace-nowrap {activeTab === 'sessions' ? 'text-gold' : 'text-muted hover:text-text'} min-h-[44px]"
 					>
 						Sessions 👥
 					</button>
@@ -232,35 +232,35 @@
 				{#if loading}
 					<div class="flex flex-col items-center justify-center py-20 gap-4">
 						<div class="w-8 h-8 border-4 border-gold/30 border-t-gold rounded-full animate-spin"></div>
-						<p class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Synchronizing Data...</p>
+						<p class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Synchronizing Data...</p>
 					</div>
 				{:else}
 					{#if activeTab === 'requests'}
 						<div class="space-y-4">
 							{#if serviceRequests.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No service requests yet.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No service requests yet.</p>
 							{:else}
 								{#each serviceRequests as request}
 									<div class="p-6 bg-bg border border-border rounded-2xl group hover:border-gold-line transition-all">
-										<div class="flex justify-between items-start mb-4">
+										<div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
 											<div>
 												<div class="flex items-center gap-3 mb-1">
 													<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text">{request.fullName}</h4>
-													<span class="px-2 py-0.5 bg-gold/10 text-gold text-[9px] font-bold uppercase tracking-widest rounded">{request.serviceType}</span>
+													<span class="px-2 py-0.5 bg-gold/10 text-gold text-sm md:text-[9px] font-bold uppercase tracking-widest rounded">{request.serviceType}</span>
 												</div>
-												<p class="text-[11px] text-muted">{request.email} {request.company ? `· ${request.company}` : ''}</p>
+												<p class="text-sm md:text-[11px] text-muted">{request.email} {request.company ? `· ${request.company}` : ''}</p>
 											</div>
-											<div class="flex gap-2">
+											<div class="flex gap-2 w-full sm:w-auto">
 												<button 
 													onclick={() => { selectedItem = request; showModal = true; }}
-													class="px-3 py-1 bg-gold/10 text-gold text-[9px] font-bold uppercase tracking-widest rounded border border-gold/20 hover:bg-gold/20"
+													class="flex-1 sm:flex-none px-3 py-1 bg-gold/10 text-gold text-sm md:text-[9px] font-bold uppercase tracking-widest rounded border border-gold/20 hover:bg-gold/20 min-h-[44px]"
 												>
 													View Details 📑
 												</button>
 												<select 
 													value={request.status} 
 													onchange={(e) => updateRequestStatus(request._id, e.target.value)}
-													class="bg-surface border border-border text-[10px] font-bold uppercase tracking-widest rounded px-2 py-1 outline-none focus:border-gold"
+													class="flex-1 sm:flex-none bg-surface border border-border text-sm md:text-[10px] font-bold uppercase tracking-widest rounded px-2 py-1 outline-none focus:border-gold min-h-[44px]"
 												>
 													<option value="pending">Pending</option>
 													<option value="contacted">Contacted</option>
@@ -269,7 +269,7 @@
 												</select>
 											</div>
 										</div>
-										<p class="text-[12px] text-text font-light mb-4 bg-surface/50 p-3 rounded-lg border border-border/50 line-clamp-2">{request.description}</p>
+										<p class="text-sm md:text-[12px] text-text font-light mb-4 bg-surface/50 p-3 rounded-lg border border-border/50 line-clamp-2">{request.description}</p>
 									</div>
 								{/each}
 							{/if}
@@ -277,26 +277,26 @@
 					{:else if activeTab === 'applications'}
 						<div class="space-y-4">
 							{#if applications.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No IAM applications yet.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No IAM applications yet.</p>
 							{:else}
 								{#each applications as app}
 									<div class="p-6 bg-bg border border-border rounded-2xl group hover:border-gold-line transition-all">
-										<div class="flex justify-between items-start mb-4">
+										<div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
 											<div>
 												<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text mb-1">{app.fullName}</h4>
-												<p class="text-[11px] text-muted">{app.email} · {app.mobileNumber}</p>
+												<p class="text-sm md:text-[11px] text-muted">{app.email} · {app.mobileNumber}</p>
 											</div>
-											<div class="flex gap-2">
+											<div class="flex gap-2 w-full sm:w-auto">
 												<button 
 													onclick={() => { selectedItem = app; showModal = true; }}
-													class="px-3 py-1 bg-gold/10 text-gold text-[9px] font-bold uppercase tracking-widest rounded border border-gold/20 hover:bg-gold/20"
+													class="flex-1 sm:flex-none px-3 py-1 bg-gold/10 text-gold text-sm md:text-[9px] font-bold uppercase tracking-widest rounded border border-gold/20 hover:bg-gold/20 min-h-[44px]"
 												>
 													View Form 📄
 												</button>
 												<select 
 													value={app.status} 
 													onchange={(e) => updateAppStatus(app._id, e.target.value)}
-													class="bg-surface border border-border text-[10px] font-bold uppercase tracking-widest rounded px-2 py-1 outline-none focus:border-gold"
+													class="flex-1 sm:flex-none bg-surface border border-border text-sm md:text-[10px] font-bold uppercase tracking-widest rounded px-2 py-1 outline-none focus:border-gold min-h-[44px]"
 												>
 													<option value="pending">Pending</option>
 													<option value="approved">Approved</option>
@@ -304,7 +304,7 @@
 												</select>
 											</div>
 										</div>
-										<p class="text-[11px] text-muted italic line-clamp-1">"{app.motivationalStatement}"</p>
+										<p class="text-sm md:text-[11px] text-muted italic line-clamp-1">"{app.motivationalStatement}"</p>
 									</div>
 								{/each}
 							{/if}
@@ -312,28 +312,28 @@
 					{:else if activeTab === 'history'}
 						<div class="space-y-4">
 							{#if history.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No archived history yet.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No archived history yet.</p>
 							{:else}
 								{#each history as item}
-									<div class="p-4 bg-bg border border-border rounded-xl flex justify-between items-center group hover:border-gold/30 transition-all opacity-70 hover:opacity-100">
+									<div class="p-4 bg-bg border border-border rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center group hover:border-gold/30 transition-all opacity-70 hover:opacity-100 gap-4">
 										<div class="flex items-center gap-4">
-											<div class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-[12px]">
+											<div class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-sm md:text-[12px]">
 												{item.serviceType ? '🛠️' : '🌍'}
 											</div>
 											<div>
-												<h4 class="text-[13px] font-bold text-text">{item.fullName}</h4>
-												<p class="text-[10px] text-muted uppercase tracking-tighter">
+												<h4 class="text-sm md:text-[13px] font-bold text-text">{item.fullName}</h4>
+												<p class="text-sm md:text-[10px] text-muted uppercase tracking-tighter">
 													{item.serviceType || 'IAM Application'} · {new Date(item.createdAt).toLocaleDateString()}
 												</p>
 											</div>
 										</div>
-										<div class="flex items-center gap-3">
-											<span class="px-2 py-0.5 bg-surface text-muted text-[8px] font-bold uppercase tracking-widest rounded border border-border">
+										<div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+											<span class="px-2 py-0.5 bg-surface text-muted text-sm md:text-[8px] font-bold uppercase tracking-widest rounded border border-border">
 												{item.status}
 											</span>
 											<button 
 												onclick={() => { selectedItem = item; showModal = true; }}
-												class="p-2 hover:text-gold transition-colors"
+												class="p-4 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-gold transition-colors"
 											>
 												📑
 											</button>
@@ -345,24 +345,24 @@
 					{:else if activeTab === 'tasks'}
 						<div class="space-y-4">
 							{#if tasks.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No tasks assigned yet.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No tasks assigned yet.</p>
 							{:else}
 								{#each tasks as task}
 									<div class="p-6 bg-bg border border-border rounded-2xl group hover:border-gold-line transition-all">
-										<div class="flex justify-between items-start mb-4">
+										<div class="flex justify-between items-start mb-4 gap-4">
 											<div>
 												<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text mb-1">{task.title}</h4>
-												<p class="text-[11px] text-muted">Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
+												<p class="text-sm md:text-[11px] text-muted">Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
 											</div>
-											<span class="px-3 py-1 bg-teal2/10 text-teal2 text-[9px] font-bold uppercase tracking-widest rounded border border-teal2/20">
+											<span class="px-3 py-1 bg-teal2/10 text-teal2 text-sm md:text-[9px] font-bold uppercase tracking-widest rounded border border-teal2/20">
 												{task.status}
 											</span>
 										</div>
-										<p class="text-[12px] text-text font-light mb-4 line-clamp-2">{task.description}</p>
+										<p class="text-sm md:text-[12px] text-text font-light mb-4 line-clamp-2">{task.description}</p>
 										{#if task.report}
 											<div class="p-4 bg-surface rounded-xl border border-border mt-4">
-												<div class="text-[9px] text-gold uppercase tracking-widest mb-2 font-bold">Report Submitted 📋</div>
-												<p class="text-[11px] italic font-light">"{task.report}"</p>
+												<div class="text-sm md:text-[9px] text-gold uppercase tracking-widest mb-2 font-bold">Report Submitted 📋</div>
+												<p class="text-sm md:text-[11px] italic font-light">"{task.report}"</p>
 											</div>
 										{/if}
 									</div>
@@ -372,13 +372,13 @@
 					{:else if activeTab === 'logs'}
 						<div class="space-y-4">
 							{#if auditLogs.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No logs recorded.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No logs recorded.</p>
 							{:else}
 								{#each auditLogs as log}
-									<div class="p-4 bg-bg border border-border rounded-xl flex justify-between items-center text-[11px]">
+									<div class="p-4 bg-bg border border-border rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm md:text-[11px] gap-2">
 										<div>
 											<span class="text-gold font-bold uppercase tracking-widest">{log.action}</span>
-											<span class="text-muted ml-3">{log.payload?.email || 'System'}</span>
+											<span class="text-muted ml-0 sm:ml-3 block sm:inline">{log.payload?.email || 'System'}</span>
 										</div>
 										<span class="text-muted font-['Space_Mono']">{new Date(log.timestamp).toLocaleTimeString()}</span>
 									</div>
@@ -388,13 +388,13 @@
 					{:else if activeTab === 'sessions'}
 						<div class="space-y-4">
 							{#if activeSessions.length === 0}
-								<p class="text-center py-10 text-muted text-[12px]">No active sessions.</p>
+								<p class="text-center py-10 text-muted text-sm md:text-[12px]">No active sessions.</p>
 							{:else}
 								{#each activeSessions as session}
-									<div class="p-4 bg-bg border border-border rounded-xl flex justify-between items-center text-[11px]">
+									<div class="p-4 bg-bg border border-border rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm md:text-[11px] gap-2">
 										<div>
 											<span class="text-gold font-bold uppercase tracking-widest">SESSION ID: {session.sessionId.slice(0, 8)}...</span>
-											<span class="text-muted ml-3">{session.email || 'Anonymous'}</span>
+											<span class="text-muted ml-0 sm:ml-3 block sm:inline">{session.email || 'Anonymous'}</span>
 										</div>
 										<div class="text-right">
 											<div class="text-muted font-['Space_Mono']">{session.actionsCount} actions</div>
@@ -412,125 +412,148 @@
 
 	<!-- Details Modal -->
 	{#if showModal && selectedItem}
-		<div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+		<div class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
 			<button 
 				class="absolute inset-0 bg-bg/90 backdrop-blur-xl border-none" 
 				onclick={() => showModal = false}
 				aria-label="Close modal overlay"
 			></button>
-			<div class="bg-surface border border-border w-full max-w-2xl rounded-3xl p-10 relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-				<div class="flex justify-between items-start mb-10">
+			<div class="bg-surface border-t sm:border border-border w-full max-w-2xl rounded-t-[32px] sm:rounded-3xl p-6 sm:p-10 relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+				<div class="flex justify-between items-start mb-8 sm:mb-10">
 					<div>
-						<div class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2">Detailed Documentation 📑</div>
-						<h2 class="font-['Bebas_Neue'] text-4xl tracking-widest">{selectedItem.fullName}</h2>
-						<p class="text-muted text-[13px]">{selectedItem.email}</p>
+						<div class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold mb-2">Detailed Documentation 📑</div>
+						<h2 class="font-['Bebas_Neue'] text-3xl sm:text-4xl tracking-widest">{selectedItem.fullName}</h2>
+						<p class="text-muted text-sm sm:text-[13px]">{selectedItem.email}</p>
 					</div>
-					<button class="text-2xl text-muted hover:text-text" onclick={() => showModal = false} aria-label="Close modal">✕</button>
+					<button class="w-11 h-11 flex items-center justify-center text-2xl text-muted hover:text-text bg-surface2 rounded-full border border-border" onclick={() => showModal = false} aria-label="Close modal">✕</button>
 				</div>
 
 				<div class="space-y-8">
 					{#if selectedItem.serviceType}
 						<!-- Service Request Details -->
-						<div class="grid grid-cols-2 gap-6">
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">WhatsApp / Mobile</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.whatsappNumber} / {selectedItem.mobileNumber}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">WhatsApp / Mobile</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] min-h-[44px] flex items-center">{selectedItem.whatsappNumber} / {selectedItem.mobileNumber}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Preferred Medium</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-gold font-bold">{selectedItem.preferredCommunication}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Preferred Medium</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] text-gold font-bold min-h-[44px] flex items-center">{selectedItem.preferredCommunication}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Best Time to Reach</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.bestTimeToReach}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Best Time to Reach</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] min-h-[44px] flex items-center">{selectedItem.bestTimeToReach}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Urgency</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-teal2 font-bold">{selectedItem.urgency}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Urgency</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] text-teal2 font-bold min-h-[44px] flex items-center">{selectedItem.urgency}</div>
 							</div>
 						</div>
 
 						<div class="space-y-2">
-							<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Location & Address</span>
-							<div class="p-4 bg-bg border border-border rounded-xl text-[12px] leading-relaxed">
+							<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Location & Address</span>
+							<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] leading-relaxed">
 								{selectedItem.address}<br/>
 								<span class="text-gold">{selectedItem.lgaOfResidence}, {selectedItem.stateOfResidence}</span>
 							</div>
 						</div>
 
-						<div class="grid grid-cols-2 gap-8">
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Service Category & Need</span>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Service Category & Need</span>
 								<div class="p-4 bg-bg border border-border rounded-xl text-gold font-bold">
 									{selectedItem.serviceType}<br/>
-									<span class="text-[10px] text-muted font-normal uppercase tracking-tighter">Type: {selectedItem.needType}</span>
+									<span class="text-sm md:text-[10px] text-muted font-normal uppercase tracking-tighter">Type: {selectedItem.needType}</span>
 								</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Budget Estimate</span>
-								<div class="p-4 bg-bg border border-border rounded-xl font-bold">{selectedItem.budget || 'N/A'}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Budget Estimate</span>
+								<div class="p-4 bg-bg border border-border rounded-xl font-bold min-h-[44px] flex items-center">{selectedItem.budget || 'N/A'}</div>
 							</div>
 						</div>
 						<div class="space-y-2">
-							<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Project Description</span>
-							<div class="p-6 bg-bg border border-border rounded-2xl text-[14px] leading-relaxed font-light">{selectedItem.description}</div>
+							<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Project Description</span>
+							<div class="p-6 bg-bg border border-border rounded-2xl text-sm md:text-[14px] leading-relaxed font-light">{selectedItem.description}</div>
 						</div>
-						<div class="flex gap-4 pt-4">
-							<a href="mailto:{selectedItem.email}" class="flex-grow py-4 bg-gold text-bg text-[11px] font-bold uppercase tracking-widest rounded-xl text-center">Send Quotation 📩</a>
+						<div class="flex flex-col sm:flex-row gap-4 pt-4 pb-10 sm:pb-0">
+							<a href="mailto:{selectedItem.email}" class="flex-grow py-4 bg-gold text-bg text-sm md:text-[11px] font-bold uppercase tracking-widest rounded-xl text-center min-h-[44px] flex items-center justify-center">Send Quotation 📩</a>
 							<button 
 								onclick={async () => {
 									await updateRequestStatus(selectedItem._id, 'archived');
 									showModal = false;
 								}}
-								class="flex-grow py-4 border border-border text-text text-[11px] font-bold uppercase tracking-widest rounded-xl hover:bg-surface"
+								class="flex-grow py-4 border border-border text-text text-sm md:text-[11px] font-bold uppercase tracking-widest rounded-xl hover:bg-surface min-h-[44px]"
 							>
 								Archive Request 📦
 							</button>
 						</div>
 					{:else}
 						<!-- IAM Application Details -->
-						<div class="grid grid-cols-2 gap-6">
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Mobile / WhatsApp</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.mobileNumber} / {selectedItem.whatsappNumber}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Mobile / WhatsApp</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] min-h-[44px] flex items-center">{selectedItem.mobileNumber} / {selectedItem.whatsappNumber}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">NIN Verification</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] font-['Space_Mono']">{selectedItem.nin}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">NIN Verification</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] font-['Space_Mono'] min-h-[44px] flex items-center">{selectedItem.nin}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Location</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.stateOfResidence}, {selectedItem.lgaOfResidence}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Location</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] min-h-[44px] flex items-center">{selectedItem.stateOfResidence}, {selectedItem.lgaOfResidence}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Earnings Target</span>
-								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-gold font-bold">{selectedItem.monthlyEarningsTarget}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Earnings Target</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[12px] text-gold font-bold min-h-[44px] flex items-center">{selectedItem.monthlyEarningsTarget}</div>
 							</div>
 						</div>
 
 						<div class="space-y-6">
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Professional Background</span>
-								<div class="p-4 bg-bg border border-border rounded-xl text-[13px]">{selectedItem.academicBackground}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Professional Background</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[13px]">{selectedItem.academicBackground}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Skills & Expertise</span>
-								<div class="p-4 bg-bg border border-border rounded-xl text-[13px] text-teal2">{selectedItem.skills}</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Skills & Expertise</span>
+								<div class="p-4 bg-bg border border-border rounded-xl text-sm md:text-[13px] text-teal2">{selectedItem.skills}</div>
 							</div>
 							<div class="space-y-2">
-								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Motivational Statement</span>
-								<div class="p-6 bg-bg border border-border rounded-2xl text-[13px] leading-relaxed italic">"{selectedItem.motivationalStatement}"</div>
+								<span class="text-sm md:text-[10px] uppercase tracking-widest text-muted font-bold block">Motivational Statement</span>
+								<div class="p-6 bg-bg border border-border rounded-2xl text-sm md:text-[13px] leading-relaxed italic">"{selectedItem.motivationalStatement}"</div>
 							</div>
+
+							{#if selectedItem.status === 'pending'}
+								<div class="flex flex-col sm:flex-row gap-4 pt-4 pb-10 sm:pb-0">
+									<button 
+										onclick={async () => {
+											await updateAppStatus(selectedItem._id, 'approved');
+											showModal = false;
+										}}
+										class="flex-grow py-4 bg-teal2 text-white text-sm md:text-[11px] font-bold uppercase tracking-widest rounded-xl min-h-[44px]"
+									>
+										Approve Member ✅
+									</button>
+									<button 
+										onclick={async () => {
+											await updateAppStatus(selectedItem._id, 'declined');
+											showModal = false;
+										}}
+										class="flex-grow py-4 border border-red-500/30 text-red-500 text-sm md:text-[11px] font-bold uppercase tracking-widest rounded-xl min-h-[44px]"
+									>
+										Decline Application ❌
+									</button>
+								</div>
+							{/if}
 						</div>
 
 						{#if selectedItem.status === 'approved'}
-							<div class="mt-10 p-8 border border-gold/30 bg-gold/5 rounded-3xl space-y-6">
-								<div class="text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold text-center">Assign Strategic Task 🎯</div>
-								<input type="text" bind:value={taskTitle} placeholder="Task Title (e.g., Market Research)" class="w-full bg-bg border border-border rounded-xl px-5 py-3 text-[13px] outline-none focus:border-gold" />
-								<textarea bind:value={taskDesc} placeholder="Task Description & Deliverables..." class="w-full bg-bg border border-border rounded-xl px-5 py-3 text-[13px] h-32 outline-none focus:border-gold"></textarea>
-								<div class="flex gap-4">
-									<input type="date" bind:value={taskDeadline} class="flex-grow bg-bg border border-border rounded-xl px-5 py-3 text-[13px] outline-none" />
-									<button onclick={() => assignTask(selectedItem._id)} class="px-8 py-3 bg-gold text-bg text-[11px] font-bold uppercase tracking-widest rounded-xl">Assign Task 🚀</button>
+							<div class="mt-10 p-6 sm:p-8 border border-gold/30 bg-gold/5 rounded-3xl space-y-6 pb-12 sm:pb-8">
+								<div class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-gold text-center font-bold">Assign Strategic Task 🎯</div>
+								<input type="text" bind:value={taskTitle} placeholder="Task Title (e.g., Market Research)" class="w-full bg-bg border border-border rounded-xl px-5 py-3 min-h-[44px] text-sm md:text-[13px] outline-none focus:border-gold" />
+								<textarea bind:value={taskDesc} placeholder="Task Description & Deliverables..." class="w-full bg-bg border border-border rounded-xl px-5 py-3 text-sm md:text-[13px] h-32 outline-none focus:border-gold resize-none"></textarea>
+								<div class="flex flex-col sm:flex-row gap-4">
+									<input type="date" bind:value={taskDeadline} class="flex-grow bg-bg border border-border rounded-xl px-5 py-3 min-h-[44px] text-sm md:text-[13px] outline-none" />
+									<button onclick={() => assignTask(selectedItem._id)} class="w-full sm:w-auto px-8 py-3 min-h-[44px] bg-gold text-bg text-sm md:text-[11px] font-bold uppercase tracking-widest rounded-xl">Assign Task 🚀</button>
 								</div>
 							</div>
 						{/if}
