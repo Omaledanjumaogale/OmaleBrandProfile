@@ -1,1 +1,0 @@
-import{U as y,K as _,V as u,W as o,X as t,Y as g,Z as i,_ as l,a0 as d,a1 as p,a2 as m}from"./Dmw75Rqs.js";function C(n,r){let a=null,E=t;var s;if(t){a=p;for(var e=m(document.head);e!==null&&(e.nodeType!==g||e.data!==n);)e=i(e);if(e===null)l(!1);else{var f=i(e);e.remove(),d(f)}}t||(s=document.head.appendChild(y()));try{_(()=>r(s),u|o)}finally{E&&(l(!0),d(a))}}export{C as h};
