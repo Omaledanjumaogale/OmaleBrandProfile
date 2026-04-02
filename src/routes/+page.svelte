@@ -14,8 +14,30 @@
 </script>
 
 <svelte:head>
-	<title>Danjuma Umar Omale Ogale · E-WIN Project Founder</title>
-	<meta name="description" content="Danjuma Umar Omale Ogale — AI-Augmented Developer, Sociologist, Business Strategist & Founder of the E-WIN Project." />
+	<title>Danjuma Umar Omale Ogale · E-WIN Project Founder & Strategist</title>
+	<meta name="description" content="Official profile of Danjuma Umar Omale Ogale — AI-Augmented Developer, Sociologist, and Founder of the E-WIN Project. Building Africa's future through tech innovation and the I-AM Network." />
+	
+	<!-- JSON-LD Schema Markup -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "E-WIN Hub 🌍",
+		"url": "https://omalebrandprofile.pages.dev",
+		"description": "The central command platform for the Elite Workforce Impact Nigeria ecosystem — housing the mission, activator programmes, I-AM Network portal, and strategic intelligence.",
+		"applicationCategory": "BusinessApplication",
+		"operatingSystem": "All",
+		"author": {
+			"@type": "Person",
+			"name": "Danjuma Umar Omale Ogale"
+		},
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "USD"
+		}
+	}
+	</script>
 </svelte:head>
 
 <Hero />

@@ -256,27 +256,19 @@ export const getLatestBroadcasts = query({
     return await ctx.db.query("broadcasts").order("desc").take(10);
   },
 });
-    key: v.string(),
-    value: v.any()
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("settings")
-      .filter(q => q.eq(q.field("key"), args.key))
-      .unique();
-    
-    if (existing) {
-      await ctx.db.patch(existing._id, { value: args.value, updatedAt: Date.now() });
-    } else {
-      await ctx.db.insert("settings", { key: args.key, value: args.value, updatedAt: Date.now() });
-    }
-  }
-});
 
-export const getSettings = query({
+export const getHistory = query({
   handler: async (ctx) => {
-    return await ctx.db.query("settings").collect();
-  }
+    const requests = await ctx.db
+      .query("serviceRequests")
+      .filter((q) => q.or(q.eq(q.field("status"), "archived"), q.eq(q.field("status"), "completed")))
+      .collect();
+    const apps = await ctx.db
+      .query("applications")
+      .filter((q) => q.or(q.eq(q.field("status"), "approved"), q.eq(q.field("status"), "declined")))
+      .collect();
+    return [...requests, ...apps].sort((a, b) => b.createdAt - a.createdAt);
+  },
 });
 
 // --- BACKWARD COMPATIBILITY & PATCHING ---

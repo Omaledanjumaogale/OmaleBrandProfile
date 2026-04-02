@@ -38,9 +38,9 @@
 				convex.query(api.functions.getActiveSessions),
 				convex.query(api.functions.getSetting, { key: 'maintenance_mode' }),
 				convex.query(api.functions.getSetting, { key: 'registration_open' }),
-				convex.query(api.functions.getTasksForAdmin || api.functions.getApplications),
+				convex.query(api.functions.getTasksForAdmin),
 				convex.query(api.functions.getLatestBroadcasts),
-				convex.query(api.functions.getHistory || api.functions.getServiceRequests) // Placeholder until backend function is ready
+				convex.query(api.functions.getHistory)
 			]);
 			applications = apps?.filter(a => a.status !== 'archived' && a.status !== 'declined') || [];
 			serviceRequests = requests?.filter(r => r.status === 'pending' || r.status === 'contacted') || [];
@@ -133,6 +133,7 @@
 					<button 
 						onclick={() => toggleSetting('maintenance_mode', maintenanceMode)}
 						class="w-12 h-6 rounded-full transition-all relative {maintenanceMode ? 'bg-red-500' : 'bg-muted/30'}"
+						aria-label={maintenanceMode ? 'Disable Maintenance Mode' : 'Enable Maintenance Mode'}
 					>
 						<span class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all {maintenanceMode ? 'translate-x-6' : 'translate-x-0'}"></span>
 					</button>
@@ -142,6 +143,7 @@
 					<button 
 						onclick={() => toggleSetting('registration_open', registrationOpen)}
 						class="w-12 h-6 rounded-full transition-all relative {registrationOpen ? 'bg-teal2' : 'bg-muted/30'}"
+						aria-label={registrationOpen ? 'Close Registration' : 'Open Registration'}
 					>
 						<span class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all {registrationOpen ? 'translate-x-6' : 'translate-x-0'}"></span>
 					</button>
@@ -411,7 +413,11 @@
 	<!-- Details Modal -->
 	{#if showModal && selectedItem}
 		<div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
-			<button class="absolute inset-0 bg-bg/90 backdrop-blur-xl border-none" onclick={() => showModal = false}></button>
+			<button 
+				class="absolute inset-0 bg-bg/90 backdrop-blur-xl border-none" 
+				onclick={() => showModal = false}
+				aria-label="Close modal overlay"
+			></button>
 			<div class="bg-surface border border-border w-full max-w-2xl rounded-3xl p-10 relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
 				<div class="flex justify-between items-start mb-10">
 					<div>
@@ -419,7 +425,7 @@
 						<h2 class="font-['Bebas_Neue'] text-4xl tracking-widest">{selectedItem.fullName}</h2>
 						<p class="text-muted text-[13px]">{selectedItem.email}</p>
 					</div>
-					<button class="text-2xl text-muted hover:text-text" onclick={() => showModal = false}>✕</button>
+					<button class="text-2xl text-muted hover:text-text" onclick={() => showModal = false} aria-label="Close modal">✕</button>
 				</div>
 
 				<div class="space-y-8">
@@ -427,25 +433,25 @@
 						<!-- Service Request Details -->
 						<div class="grid grid-cols-2 gap-6">
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">WhatsApp / Mobile</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">WhatsApp / Mobile</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.whatsappNumber} / {selectedItem.mobileNumber}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Preferred Medium</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Preferred Medium</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-gold font-bold">{selectedItem.preferredCommunication}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Best Time to Reach</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Best Time to Reach</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.bestTimeToReach}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Urgency</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Urgency</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-teal2 font-bold">{selectedItem.urgency}</div>
 							</div>
 						</div>
 
 						<div class="space-y-2">
-							<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Location & Address</label>
+							<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Location & Address</span>
 							<div class="p-4 bg-bg border border-border rounded-xl text-[12px] leading-relaxed">
 								{selectedItem.address}<br/>
 								<span class="text-gold">{selectedItem.lgaOfResidence}, {selectedItem.stateOfResidence}</span>
@@ -454,19 +460,19 @@
 
 						<div class="grid grid-cols-2 gap-8">
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Service Category & Need</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Service Category & Need</span>
 								<div class="p-4 bg-bg border border-border rounded-xl text-gold font-bold">
 									{selectedItem.serviceType}<br/>
 									<span class="text-[10px] text-muted font-normal uppercase tracking-tighter">Type: {selectedItem.needType}</span>
 								</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Budget Estimate</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Budget Estimate</span>
 								<div class="p-4 bg-bg border border-border rounded-xl font-bold">{selectedItem.budget || 'N/A'}</div>
 							</div>
 						</div>
 						<div class="space-y-2">
-							<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Project Description</label>
+							<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Project Description</span>
 							<div class="p-6 bg-bg border border-border rounded-2xl text-[14px] leading-relaxed font-light">{selectedItem.description}</div>
 						</div>
 						<div class="flex gap-4 pt-4">
@@ -485,34 +491,34 @@
 						<!-- IAM Application Details -->
 						<div class="grid grid-cols-2 gap-6">
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Mobile / WhatsApp</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Mobile / WhatsApp</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.mobileNumber} / {selectedItem.whatsappNumber}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">NIN Verification</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">NIN Verification</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] font-['Space_Mono']">{selectedItem.nin}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Location</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Location</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px]">{selectedItem.stateOfResidence}, {selectedItem.lgaOfResidence}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Earnings Target</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Earnings Target</span>
 								<div class="p-3 bg-bg border border-border rounded-xl text-[12px] text-gold font-bold">{selectedItem.monthlyEarningsTarget}</div>
 							</div>
 						</div>
 
 						<div class="space-y-6">
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Professional Background</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Professional Background</span>
 								<div class="p-4 bg-bg border border-border rounded-xl text-[13px]">{selectedItem.academicBackground}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Skills & Expertise</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Skills & Expertise</span>
 								<div class="p-4 bg-bg border border-border rounded-xl text-[13px] text-teal2">{selectedItem.skills}</div>
 							</div>
 							<div class="space-y-2">
-								<label class="text-[10px] uppercase tracking-widest text-muted font-bold">Motivational Statement</label>
+								<span class="text-[10px] uppercase tracking-widest text-muted font-bold block">Motivational Statement</span>
 								<div class="p-6 bg-bg border border-border rounded-2xl text-[13px] leading-relaxed italic">"{selectedItem.motivationalStatement}"</div>
 							</div>
 						</div>

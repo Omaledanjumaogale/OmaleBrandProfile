@@ -19,5 +19,6 @@ export const api = {
     updateTaskStatus: "functions:updateTaskStatus",
     createBroadcast: "functions:createBroadcast",
     getLatestBroadcasts: "functions:getLatestBroadcasts",
+    getHistory: "functions:getHistory",
   }
 } as any;
