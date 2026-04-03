@@ -60,7 +60,7 @@
 			overview: 'AI-powered lesson structures and interactive educational content for the E-WIN ecosystem.',
 			link: 'Open Draft →',
 			domain: 'AkademyX · E-WIN',
-			href: '/platforms/AkademyxDraft.html',
+			href: '/platforms/AkademyxDraft',
 			icon: '🎓'
 		},
 		{
@@ -69,7 +69,7 @@
 			overview: 'Data-driven sports predictions and analytical modeling for informed decision making.',
 			link: 'Open Platform →',
 			domain: 'BetxPredicts · E-WIN',
-			href: '/platforms/BetxPredicts.html',
+			href: '/platforms/BetxPredicts',
 			icon: '📈'
 		},
 		{
@@ -78,7 +78,7 @@
 			overview: 'Strategic business planning and operational modeling for emerging market enterprises.',
 			link: 'Open Draft →',
 			domain: 'Biznex · E-WIN',
-			href: '/platforms/BiznexDraft.html',
+			href: '/platforms/BiznexDraft',
 			icon: '👔'
 		},
 		{
@@ -87,7 +87,7 @@
 			overview: 'Advanced computer-based testing infrastructure for higher education institutions.',
 			link: 'Open Platform →',
 			domain: 'CollegeCBT · E-WIN',
-			href: '/platforms/CollegeCBT.html',
+			href: '/platforms/CollegeCBT',
 			icon: '🏛️'
 		},
 		{
@@ -96,7 +96,7 @@
 			overview: 'Automated financial auditing and verification systems for transparent economic activity.',
 			link: 'Open Platform →',
 			domain: 'Auditor · E-WIN',
-			href: '/platforms/FinancialAuditor.html',
+			href: '/platforms/FinancialAuditor',
 			icon: '🏦'
 		},
 		{
@@ -105,17 +105,17 @@
 			overview: 'Pharmaceutical supply chain tracking and medical inventory management solutions.',
 			link: 'Open Platform →',
 			domain: 'MedPharm · E-WIN',
-			href: '/platforms/MedPharmRx.html',
+			href: '/platforms/MedPharmRx',
 			icon: '🩺'
 		},
 		{
-			badge: 'Mentorship 💡',
+			badge: 'Mentorship 🤝',
 			name: 'MentorMe 🤝',
 			overview: 'Peer-to-peer professional mentorship network connecting experienced leaders with emerging talent.',
 			link: 'Open Network →',
 			domain: 'MentorMe · E-WIN',
-			href: '/platforms/MentorMe.html',
-			icon: '💡'
+			href: '/platforms/MentorMe',
+			icon: '🤝'
 		},
 		{
 			badge: 'K-12 Ed 📖',
@@ -123,7 +123,7 @@
 			overview: 'Computer-based testing and digital assessment platform for primary and secondary schools.',
 			link: 'Open Platform →',
 			domain: 'SchoolCBT · E-WIN',
-			href: '/platforms/SchoolCBT.html',
+			href: '/platforms/SchoolCBT',
 			icon: '📖'
 		},
 		{
@@ -132,7 +132,7 @@
 			overview: 'Real-time market news, economic analysis, and financial reporting for the African trade sector.',
 			link: 'Read News →',
 			domain: 'TradexNews · E-WIN',
-			href: '/platforms/TradexNews.html',
+			href: '/platforms/TradexNews',
 			icon: '📻'
 		},
 		{
@@ -141,7 +141,7 @@
 			overview: 'Decentralized marketplace for physical and digital goods, powered by the E-WIN infrastructure.',
 			link: 'Shop Market →',
 			domain: 'Tradez · E-WIN',
-			href: '/platforms/TradezMarket.html',
+			href: '/platforms/TradezMarket',
 			icon: '📦'
 		},
 		{
@@ -150,7 +150,7 @@
 			overview: 'High-level strategic insights and data visualization for ecosystem-wide performance monitoring.',
 			link: 'View Insights →',
 			domain: 'Vantage · E-WIN',
-			href: '/platforms/VantagePoint.html',
+			href: '/platforms/VantagePoint',
 			icon: '🎯'
 		}
 	];

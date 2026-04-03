@@ -47,11 +47,13 @@
 	const needTypes = ['Personal Need 👤', 'Business Need 💼', 'Official Need 🏛️'];
 
 	async function handleSubmit() {
+		if (loading) return;
 		loading = true;
 		error = '';
 		try {
 			await convex.mutation(api.functions.submitServiceRequest, formData);
 			success = true;
+			// Reset form data except for status flags
 			formData = {
 				fullName: '',
 				email: '',
