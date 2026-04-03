@@ -180,6 +180,8 @@
 			<a
 				href={platform.href}
 				target={platform.href.startsWith('http') ? '_blank' : ''}
+				rel={platform.href.startsWith('http') ? 'noopener noreferrer' : ''}
+				data-sveltekit-reload={(!platform.href.startsWith('http') && platform.href !== '#') ? '' : undefined}
 				class="bg-surface border border-border p-6 sm:p-8 rounded-[var(--radius)] relative overflow-hidden transition-all duration-350 hover:border-gold-line hover:translate-y-[-4px] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group reveal delay-{(i % 6) * 100}"
 			>
 				<div

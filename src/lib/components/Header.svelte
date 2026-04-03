@@ -63,7 +63,7 @@
 		: ''}"
 >
 	<a href="/#hero" class="text-2xl font-['Bebas_Neue'] tracking-widest text-text flex items-center gap-1">
-		<span class="text-gold italic font-normal">O</span>MALE OGALE ProfileX
+		ProfileX
 	</a>
 
 	<!-- Hamburger Button (Always Visible) -->
