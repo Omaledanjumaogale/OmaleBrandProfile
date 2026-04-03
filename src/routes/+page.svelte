@@ -23,7 +23,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "E-WIN Hub 🌍",
-		"url": "https://omaledanjumaogale.ewinproject.org",
+		"url": "https://danjumaomaleogale.ewinproject.org",
 		"description": "The central command platform for the Elite Workforce Impact Nigeria ecosystem — housing the mission, activator programmes, I-AM Network portal, and strategic intelligence.",
 		"applicationCategory": "BusinessApplication",
 		"operatingSystem": "All",
@@ -52,3 +52,4 @@
 <ThoughtLeadership />
 <Certifications />
 <Contact />
+

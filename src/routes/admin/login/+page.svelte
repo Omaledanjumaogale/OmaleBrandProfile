@@ -67,7 +67,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "E-WIN Admin Portal",
-		"url": "https://omaledanjumaogale.ewinproject.org/admin/login",
+		"url": "https://danjumaomaleogale.ewinproject.org/admin/login",
 		"description": "Secure administrative access for the E-WIN Project ecosystem management.",
 		"applicationCategory": "BusinessApplication",
 		"operatingSystem": "All",
@@ -160,3 +160,4 @@
 		</div>
 	</div>
 </div>
+

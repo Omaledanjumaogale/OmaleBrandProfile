@@ -43,7 +43,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "E-WIN User Login",
-		"url": "https://omaledanjumaogale.ewinproject.org/login",
+		"url": "https://danjumaomaleogale.ewinproject.org/login",
 		"description": "Secure user login for the E-WIN Project I-AM Network members.",
 		"applicationCategory": "BusinessApplication",
 		"operatingSystem": "All",
@@ -144,3 +144,4 @@
 		</p>
 	</div>
 </div>
+

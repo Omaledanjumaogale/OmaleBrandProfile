@@ -50,7 +50,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "I-AM Network 🌍",
-		"url": "https://omaledanjumaogale.ewinproject.org/register/iam",
+		"url": "https://danjumaomaleogale.ewinproject.org/register/iam",
 		"description": "The Impact Ambassador Network — a decentralised workforce of vetted, trained professionals performing distributed work across the E-WIN ecosystem.",
 		"applicationCategory": "BusinessApplication",
 		"operatingSystem": "All",
