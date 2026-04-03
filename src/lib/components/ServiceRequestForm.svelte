@@ -24,6 +24,7 @@
 	let success = $state(false);
 	let error = $state('');
 	let isMaintenance = $state(false);
+	let honeypot = $state(''); // Honeypot field for bot protection
 
 	import { onMount } from 'svelte';
 	onMount(async () => {
@@ -46,12 +47,26 @@
 	const commMediums = ['WhatsApp 📱', 'Email 📧', 'Phone Call 📞', 'Text Message 💬'];
 	const needTypes = ['Personal Need 👤', 'Business Need 💼', 'Official Need 🏛️'];
 
+	// Client-side sanitization
+	const sanitize = (str: string) => str.replace(/<[^>]*>?/gm, '').trim();
+
 	async function handleSubmit() {
 		if (loading) return;
+		if (honeypot) {
+			console.warn('Bot detected via honeypot');
+			return;
+		}
+
 		loading = true;
 		error = '';
+		
 		try {
-			await convex.mutation(api.functions.submitServiceRequest, formData);
+			// Pre-submit sanitization
+			const sanitizedData = Object.fromEntries(
+				Object.entries(formData).map(([k, v]) => [k, typeof v === 'string' ? sanitize(v) : v])
+			);
+
+			await convex.mutation(api.functions.submitServiceRequest, sanitizedData as any);
 			success = true;
 			// Reset form data except for status flags
 			formData = {
@@ -110,6 +125,11 @@
 		}} 
 		class="space-y-5"
 	>
+		<!-- Honeypot Field (Hidden from users) -->
+		<div class="hidden" aria-hidden="true">
+			<input type="text" name="website_url" bind:value={honeypot} tabindex="-1" autocomplete="off" />
+		</div>
+
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 			<div class="space-y-2">
 				<label for="fullName" class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted font-bold">Full Name *</label>

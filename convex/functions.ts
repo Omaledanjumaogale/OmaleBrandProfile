@@ -2,9 +2,27 @@ import { mutation, query, internalMutation, action } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 
-// --- VALIDATION HELPERS ---
+// --- VALIDATION & SANITIZATION HELPERS ---
 const validateEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+const sanitizeInput = (str: string) => {
+  if (!str) return "";
+  // Basic XSS prevention: remove HTML tags and trim whitespace
+  return str.replace(/<[^>]*>?/gm, '').trim();
+};
+
+const sanitizeObject = (obj: any) => {
+  const sanitized: any = {};
+  for (const key in obj) {
+    if (typeof obj[key] === 'string') {
+      sanitized[key] = sanitizeInput(obj[key]);
+    } else {
+      sanitized[key] = obj[key];
+    }
+  }
+  return sanitized;
 };
 
 // --- ORCHESTRATION WORKFLOWS ---
@@ -28,8 +46,15 @@ export const submitServiceRequest = mutation({
     needType: v.string(),
   },
   handler: async (ctx, args) => {
+    // Enterprise-Grade Sanitization
+    const sanitizedArgs = sanitizeObject(args);
+    
+    // Validation
+    if (!validateEmail(sanitizedArgs.email)) throw new Error("Invalid email format.");
+    if (sanitizedArgs.fullName.length < 2) throw new Error("Name is too short.");
+
     return await ctx.db.insert("serviceRequests", {
-      ...args,
+      ...sanitizedArgs,
       status: "pending",
       createdAt: Date.now(),
     });
@@ -58,12 +83,15 @@ export const submitApplicationWorkflow = mutation({
     sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Enterprise-Grade Sanitization
+    const sanitizedArgs = sanitizeObject(args);
+
     // Validation
-    if (!validateEmail(args.email)) throw new Error("Invalid email.");
-    if (args.nin.length < 10) throw new Error("Invalid NIN.");
+    if (!validateEmail(sanitizedArgs.email)) throw new Error("Invalid email.");
+    if (sanitizedArgs.nin.length < 10) throw new Error("Invalid NIN format.");
 
     const applicationId = await ctx.db.insert("applications", {
-      ...args,
+      ...sanitizedArgs,
       status: "pending",
       createdAt: Date.now(),
     });

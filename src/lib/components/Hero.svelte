@@ -66,6 +66,9 @@
 			<img
 				src="/danjuma-ogale.jpg"
 				alt="Danjuma Umar Omale Ogale"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
 				class="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.9] saturate-[0.95]"
 			/>
 			<div class="absolute inset-0 bg-[linear-gradient(to_right,var(--bg)_0%,rgba(6,6,8,0.3)_40%,transparent_70%),linear-gradient(to_top,var(--bg)_0%,transparent_30%)]"></div>
