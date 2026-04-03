@@ -41,8 +41,8 @@
 </script>
 
 <svelte:head>
-	<title>Join the I-AM Network · Elite Workforce Impact Nigeria 🌍</title>
-	<meta name="description" content="Register for the I-AM Network — a decentralised workforce of vetted professionals performing distributed work across the E-WIN ecosystem. Join our mission today." />
+	<title>I-AM Network - Free Distributed Work & Earnings Platform | Omale Ogale ProfileX</title>
+	<meta name="description" content="Join the I-AM Network to access free distributed work opportunities across Nigeria. Scale your earnings with our decentralized workforce model—signup now to start." />
 	
 	<!-- JSON-LD Schema Markup -->
 	<script type="application/ld+json">
@@ -50,7 +50,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
 		"name": "I-AM Network 🌍",
-		"url": "https://omalebrandprofile.pages.dev/register/iam",
+		"url": "https://omaledanjumaogale.ewinproject.org/register/iam",
 		"description": "The Impact Ambassador Network — a decentralised workforce of vetted, trained professionals performing distributed work across the E-WIN ecosystem.",
 		"applicationCategory": "BusinessApplication",
 		"operatingSystem": "All",

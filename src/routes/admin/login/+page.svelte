@@ -57,6 +57,29 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Admin Portal - Secure E-WIN Project Management | Omale Ogale ProfileX</title>
+	<meta name="description" content="Access the E-WIN Project administrative portal to manage ecosystem operations, verify participants, and oversee workforce distribution. Secure login for authorized staff." />
+	
+	<!-- JSON-LD Schema Markup -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "E-WIN Admin Portal",
+		"url": "https://omaledanjumaogale.ewinproject.org/admin/login",
+		"description": "Secure administrative access for the E-WIN Project ecosystem management.",
+		"applicationCategory": "BusinessApplication",
+		"operatingSystem": "All",
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "USD"
+		}
+	}
+	</script>
+</svelte:head>
+
 <div class="min-h-screen flex items-center justify-center bg-bg px-6 py-12 relative overflow-hidden">
 	<!-- Background grid -->
 	<div class="absolute inset-0 bg-[linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] bg-[size:64px_64px] opacity-20 pointer-events-none"></div>

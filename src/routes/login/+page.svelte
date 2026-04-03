@@ -33,6 +33,29 @@
 	};
 </script>
 
+<svelte:head>
+	<title>User Login - E-WIN Project Secure Access Portal | Omale Ogale ProfileX</title>
+	<meta name="description" content="Log in to your E-WIN Project account to access the I-AM Network dashboard, track your earnings, and manage your workforce profile securely." />
+	
+	<!-- JSON-LD Schema Markup -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"name": "E-WIN User Login",
+		"url": "https://omaledanjumaogale.ewinproject.org/login",
+		"description": "Secure user login for the E-WIN Project I-AM Network members.",
+		"applicationCategory": "BusinessApplication",
+		"operatingSystem": "All",
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "USD"
+		}
+	}
+	</script>
+</svelte:head>
+
 <div class="min-h-screen bg-bg flex items-center justify-center px-6 py-20 relative overflow-hidden">
 	<!-- Background Effects -->
 	<div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,168,76,0.05)_0%,transparent_70%)] pointer-events-none"></div>
