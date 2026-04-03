@@ -13,7 +13,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// 2. Domain Standardization (SEO Best Practice)
 	// Redirect www to non-www and enforce correct production domain
 	const targetDomain = 'danjumaomaleogale.ewinproject.org';
-	if (event.url.hostname.startsWith('www.') || (event.url.hostname !== targetDomain && !event.url.hostname.includes('localhost') && !event.url.hostname.includes('convex.site'))) {
+	if (event.url.hostname.startsWith('www.') || (event.url.hostname !== targetDomain && !event.url.hostname.includes('localhost') && !event.url.hostname.includes('convex.site') && !event.url.hostname.includes('pages.dev'))) {
 		const newUrl = new URL(event.url.href);
 		newUrl.hostname = targetDomain;
 		throw redirect(301, newUrl.toString());
