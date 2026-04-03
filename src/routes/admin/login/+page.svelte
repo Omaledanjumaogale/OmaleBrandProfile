@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { user } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
-	import { PUBLIC_SUPER_ADMIN_EMAIL, PUBLIC_SUPER_ADMIN_PASSWORD } from '$env/static/public';
+	import { env } from '$env/dynamic/public';
 
 	let email = $state('');
 	let password = $state('');
@@ -13,9 +13,9 @@
 	let showReset = $state(false);
 	let resetSuccess = $state(false);
 
-	// Super Admin Hardlocked Credentials from Env
-	const SUPER_ADMIN_EMAIL = PUBLIC_SUPER_ADMIN_EMAIL;
-	const SUPER_ADMIN_PASSWORD = PUBLIC_SUPER_ADMIN_PASSWORD;
+	// Super Admin Hardlocked Credentials from Dynamic Env to prevent build failure
+	const SUPER_ADMIN_EMAIL = env.PUBLIC_SUPER_ADMIN_EMAIL;
+	const SUPER_ADMIN_PASSWORD = env.PUBLIC_SUPER_ADMIN_PASSWORD;
 
 	async function handleLogin() {
 		loading = true;
