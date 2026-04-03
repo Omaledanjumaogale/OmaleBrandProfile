@@ -3,29 +3,19 @@ import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 export const handle: Handle = async ({ event, resolve }) => {
 	const pathname = event.url.pathname;
 
-	// 1. URL Normalization & Redirect Loop Fix
-	// Fix 404s for static platform HTML files
-	// Only redirect if it's EXACTLY /platforms/something (no extension)
-	if (pathname.startsWith('/platforms/') && !pathname.includes('.')) {
-		const cleanPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-		throw redirect(301, `${cleanPath}.html`);
-	}
-
+	// 1. URL Normalization
 	// Redirect singular /platform/ to plural /platforms/ (Fix for old links)
-	// Ensure we don't match /platforms/ to avoid redirect loops
 	if (pathname.startsWith('/platform/') && !pathname.startsWith('/platforms/')) {
-		let newPathname = pathname.replace('/platform/', '/platforms/');
-		if (!newPathname.includes('.')) {
-			newPathname = newPathname.endsWith('/') ? newPathname.slice(0, -1) : newPathname;
-			newPathname = `${newPathname}.html`;
-		}
-		throw redirect(301, newPathname);
+		const newPathname = pathname.replace('/platform/', '/platforms/');
+		throw redirect(301, newPathname.endsWith('/') ? newPathname.slice(0, -1) : newPathname);
 	}
 
 	// 2. Domain Standardization (SEO Best Practice)
-	if (event.url.hostname.startsWith('www.')) {
+	// Redirect www to non-www and enforce correct production domain
+	const targetDomain = 'danjumaomaleogale.ewinproject.org';
+	if (event.url.hostname.startsWith('www.') || (event.url.hostname !== targetDomain && !event.url.hostname.includes('localhost') && !event.url.hostname.includes('convex.site'))) {
 		const newUrl = new URL(event.url.href);
-		newUrl.hostname = event.url.hostname.replace('www.', '');
+		newUrl.hostname = targetDomain;
 		throw redirect(301, newUrl.toString());
 	}
 

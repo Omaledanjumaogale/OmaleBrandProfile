@@ -1,72 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/register/iam</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/register/iam</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/login</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/login</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.5</priority>
   </url>
+  <!-- Platform Pages -->
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/AkademyxDraft.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/AkademyxDraft.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/BetxPredicts.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/BetxPredicts.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/BiznexDraft.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/BiznexDraft.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/CollegeCBT.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/CollegeCBT.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/FinancialAuditor.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/FinancialAuditor.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/MedPharmRx.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/MedPharmRx.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/MentorMe.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/MentorMe.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/SchoolCBT.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/SchoolCBT.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/TradexNews.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/TradexNews.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/TradezMarket.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/TradezMarket.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://omaledanjumaogale.ewinproject.org/platforms/VantagePoint.html</loc>
+    <loc>https://danjumaomaleogale.ewinproject.org/platforms/VantagePoint.html</loc>
     <lastmod>2026-04-03</lastmod>
     <priority>0.7</priority>
   </url>
