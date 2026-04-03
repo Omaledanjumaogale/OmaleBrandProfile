@@ -34,7 +34,7 @@
 		{ name: 'About', href: '/#about', icon: '👤' },
 		{ name: 'Services', href: '/#services', icon: '🛠️' },
 		{ name: 'Expertise', href: '/#expertise', icon: '🧠' },
-		{ name: 'Career', href: '/#career', icon: '💼' },
+		{ name: 'Career', href: '/#iam-onboarding', icon: '💼' },
 		{ name: 'E-WIN', href: '/#ecosystem', icon: '🌍' },
 		{ name: 'Insights', href: '/#thought', icon: '💡' }
 	];
@@ -88,10 +88,10 @@
 	</button>
 </nav>
 
-<!-- Right Sidebar Navigation Menu -->
+<!-- Drop-down Navigation Menu -->
 <div
-	class="fixed inset-0 bg-[#060608eb] backdrop-blur-xl z-[999] transition-all duration-500 {menuOpen
-		? 'opacity-100 pointer-events-auto'
+	class="fixed inset-0 z-[999] transition-all duration-500 {menuOpen
+		? 'bg-black/40 backdrop-blur-sm opacity-100 pointer-events-auto'
 		: 'opacity-0 pointer-events-none'}"
 	onclick={closeMenu}
 	onkeydown={(e) => e.key === 'Escape' && closeMenu()}
@@ -100,68 +100,68 @@
 	aria-label="Close Menu Overlay"
 >
 	<div 
-		class="absolute right-0 top-0 h-full w-full bg-surface border-l border-border shadow-2xl p-8 sm:p-12 pt-32 flex flex-col gap-8 transition-transform duration-500 {menuOpen ? 'translate-x-0' : 'translate-x-full'}"
+		class="absolute right-6 top-24 w-[300px] sm:w-[350px] h-fit max-h-[75vh] bg-surface border border-border shadow-2xl rounded-2xl p-6 pt-10 flex flex-col gap-6 transition-all duration-500 overflow-y-auto scroll-container {menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}"
 		onclick={(e) => e.stopPropagation()}
 		onkeydown={(e) => e.stopPropagation()}
 		role="menu"
 		tabindex="-1"
 	>
-		<div class="flex flex-col gap-6 w-full">
-			<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-muted mb-4">Navigation 🧭</div>
+		<div class="flex flex-col gap-4 w-full">
+			<div class="font-['Space_Mono'] text-[9px] tracking-[3px] uppercase text-muted mb-2 px-2">Navigation 🧭</div>
 			
 			{#each navLinks as link}
 				<a
 					href={link.href}
 					onclick={closeMenu}
-					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-4 group"
+					class="font-['Bebas_Neue'] text-2xl tracking-[2px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-3 group px-2 py-1 rounded-lg hover:bg-gold/5 min-h-[44px]"
 				>
-					<span class="text-2xl group-hover:scale-110 transition-transform">{link.icon}</span>
+					<span class="text-xl group-hover:scale-110 transition-transform">{link.icon}</span>
 					{link.name}
 				</a>
 			{/each}
 
-			<div class="h-[1px] w-full bg-border my-4"></div>
-			<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-muted mb-4">Portal & Contact 🛡️</div>
+			<div class="h-[1px] w-full bg-border my-2"></div>
+			<div class="font-['Space_Mono'] text-[9px] tracking-[3px] uppercase text-muted mb-2 px-2">Portal & Contact 🛡️</div>
 
 			{#if $user}
 				{#each authLinks as link}
 					<a
 						href={link.href}
 					onclick={closeMenu}
-					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-gold hover:text-gold2 transition-colors duration-200 flex items-center gap-4 group"
+					class="font-['Bebas_Neue'] text-2xl tracking-[2px] text-gold hover:text-gold2 transition-colors duration-200 flex items-center gap-3 group px-2 py-1 rounded-lg hover:bg-gold/5 min-h-[44px]"
 				>
-						<span class="text-2xl group-hover:scale-110 transition-transform">{link.icon}</span>
+						<span class="text-xl group-hover:scale-110 transition-transform">{link.icon}</span>
 						{link.name}
 					</a>
 				{/each}
 				<button
 					onclick={handleLogout}
-					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-red-400 hover:text-red-500 transition-colors duration-200 flex items-center gap-4 group text-left"
+					class="font-['Bebas_Neue'] text-2xl tracking-[2px] text-red-400 hover:text-red-500 transition-colors duration-200 flex items-center gap-3 group text-left px-2 py-1 rounded-lg hover:bg-red-400/5 min-h-[44px]"
 				>
-					<span class="text-2xl group-hover:scale-110 transition-transform">🚪</span>
+					<span class="text-xl group-hover:scale-110 transition-transform">🚪</span>
 					Logout
 				</button>
 			{:else}
 				<a
 					href="/admin/login"
 					onclick={closeMenu}
-					class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-4 group"
+					class="font-['Bebas_Neue'] text-2xl tracking-[2px] text-text hover:text-gold transition-colors duration-200 flex items-center gap-3 group px-2 py-1 rounded-lg hover:bg-gold/5 min-h-[44px]"
 				>
-					<span class="text-2xl group-hover:scale-110 transition-transform">🗝️</span>
+					<span class="text-xl group-hover:scale-110 transition-transform">🗝️</span>
 					Admin Login
 				</a>
 			{/if}
 
 			<button
 				onclick={() => { closeMenu(); openServiceModal(); }}
-				class="mt-6 w-full py-4 bg-gold text-bg text-[11px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 hover:translate-y-[-2px] transition-all shadow-lg shadow-gold/20 flex items-center justify-center gap-3"
+				class="mt-4 w-full py-3 bg-gold text-bg text-[10px] font-bold tracking-[2px] uppercase rounded-xl hover:bg-gold2 hover:translate-y-[-2px] transition-all shadow-lg shadow-gold/20 flex items-center justify-center gap-2 min-h-[44px]"
 			>
 				<span>🤝</span> Connect Now
 			</button>
 		</div>
 
-		<div class="mt-auto pt-10 border-t border-border">
-			<p class="text-[11px] text-muted leading-relaxed">
+		<div class="mt-4 pt-6 border-t border-border px-2 pb-2">
+			<p class="text-[10px] text-muted leading-relaxed">
 				© 2026 Danjuma Omale-Ogale<br />
 				E-WIN Project · Build for Impact 🌍
 			</p>
@@ -173,5 +173,23 @@
 <style>
 	#nav {
 		transition: all 0.4s ease;
+	}
+
+	.scroll-container::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.scroll-container::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: 10px;
+	}
+
+	.scroll-container::-webkit-scrollbar-thumb {
+		background: rgba(201, 168, 76, 0.3);
+		border-radius: 10px;
+	}
+
+	.scroll-container::-webkit-scrollbar-thumb:hover {
+		background: rgba(201, 168, 76, 0.5);
 	}
 </style>
