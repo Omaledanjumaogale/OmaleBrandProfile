@@ -1,18 +1,17 @@
-// See https://svelte.dev/docs/kit/types#app.d.ts
-// for information about these interfaces
+// See https://kit.svelte.dev/docs/types#app
+import type { SessionPayload } from '$lib/server/session';
+
 declare global {
 	namespace App {
-		interface Platform {
-			env: Env;
-			ctx: ExecutionContext;
-			caches: CacheStorage;
-			cf?: IncomingRequestCfProperties
+		interface Locals {
+			user: SessionPayload | null;
 		}
-
-		// interface Error {}
-		// interface Locals {}
+		interface Error {
+			message: string;
+			errorId?: string;
+		}
 		// interface PageData {}
-		// interface PageState {}
+		// interface Platform {}
 	}
 }
 

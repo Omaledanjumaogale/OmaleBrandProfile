@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
-Sitemap: https://danjumaomaleogale.ewinproject.org/sitemap.xml
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /api
+Disallow: /api/*
+
+Sitemap: https://omaledanjumaogale.dev/sitemap.xml

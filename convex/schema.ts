@@ -10,13 +10,15 @@ export default defineSchema({
     tokenIdentifier: v.string(),
     trustScore: v.number(),
     lastLogin: v.number(),
-  }).index("by_token", ["tokenIdentifier"]),
+    isLocked: v.optional(v.boolean()),
+    status: v.optional(v.union(v.literal("active"), v.literal("suspended"), v.literal("pending"))),
+  }).index("by_token", ["tokenIdentifier"]).index("by_email", ["email"]),
 
   transactions: defineTable({
     userId: v.id("users"),
     amount: v.string(),
-    type: v.string(), // e.g., "E-Deals", "AkademyX", "DealxHire"
-    status: v.string(), // e.g., "Completed", "Pending", "Failed"
+    type: v.string(),
+    status: v.string(),
     date: v.number(),
     description: v.string(),
   }).index("by_user", ["userId"]),
@@ -25,7 +27,7 @@ export default defineSchema({
     userId: v.id("users"),
     totalEarnings: v.string(),
     activeProjects: v.number(),
-    courseProgress: v.number(), // 0 to 100
+    courseProgress: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
 
@@ -55,7 +57,12 @@ export default defineSchema({
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("declined")),
     assignedTasks: v.optional(v.array(v.string())),
     createdAt: v.number(),
-  }).index("by_status", ["status"]).index("by_email", ["email"]),
+    updatedAt: v.optional(v.number()),
+    reviewedBy: v.optional(v.string()),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"])
+    .index("by_createdAt", ["createdAt"]),
 
   serviceRequests: defineTable({
     fullName: v.string(),
@@ -70,18 +77,27 @@ export default defineSchema({
     description: v.string(),
     company: v.optional(v.string()),
     bestTimeToReach: v.string(),
-    urgency: v.string(), // Immediately, 1 day, etc.
-    preferredCommunication: v.string(), // email, whatsapp, etc.
-    needType: v.string(), // official, personal, business
-    status: v.union(v.literal("pending"), v.literal("contacted"), v.literal("completed"), v.literal("archived")),
+    urgency: v.string(),
+    preferredCommunication: v.string(),
+    needType: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("contacted"),
+      v.literal("completed"),
+      v.literal("archived")
+    ),
     createdAt: v.number(),
-  }).index("by_status", ["status"]).index("by_email", ["email"]),
-
+    updatedAt: v.optional(v.number()),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"])
+    .index("by_createdAt", ["createdAt"]),
 
   auditLogs: defineTable({
     action: v.string(),
     payload: v.any(),
     timestamp: v.number(),
+    adminEmail: v.optional(v.string()),
   }),
 
   sessions: defineTable({
@@ -93,14 +109,19 @@ export default defineSchema({
   }).index("by_sessionId", ["sessionId"]),
 
   tasks: defineTable({
-    assigneeId: v.id("applications"), // The approved IAM applicant
+    assigneeId: v.id("applications"),
     title: v.string(),
     description: v.string(),
     deadline: v.number(),
-    status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("submitted"), v.literal("completed")),
-    report: v.optional(v.string()), // Report submitted by user
+    status: v.union(
+      v.literal("pending"),
+      v.literal("in_progress"),
+      v.literal("submitted"),
+      v.literal("completed")
+    ),
+    report: v.optional(v.string()),
     createdAt: v.number(),
-  }).index("by_assignee", ["assigneeId"]),
+  }).index("by_assignee", ["assigneeId"]).index("by_status", ["status"]),
 
   broadcasts: defineTable({
     message: v.string(),
@@ -109,8 +130,15 @@ export default defineSchema({
   }),
 
   settings: defineTable({
-    key: v.string(), // "maintenance_mode", "registration_open", etc.
+    key: v.string(),
     value: v.any(),
     updatedAt: v.number(),
+  }).index("by_key", ["key"]),
+
+  // Rate limiting: track recent submissions per email
+  rateLimits: defineTable({
+    key: v.string(),       // e.g. "submit_service:email@example.com"
+    count: v.number(),
+    windowStart: v.number(),
   }).index("by_key", ["key"]),
 });

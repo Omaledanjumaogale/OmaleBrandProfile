@@ -10,6 +10,7 @@
 	let error = $state('');
 
 	const handleGoogleLogin = async () => {
+		if (!auth) { error = 'Authentication service unavailable.'; return; }
 		try {
 			const provider = new GoogleAuthProvider();
 			await signInWithPopup(auth, provider);
@@ -20,6 +21,7 @@
 	};
 
 	const handleEmailAuth = async () => {
+		if (!auth) { error = 'Authentication service unavailable.'; return; }
 		try {
 			if (isRegistering) {
 				await createUserWithEmailAndPassword(auth, email, password);

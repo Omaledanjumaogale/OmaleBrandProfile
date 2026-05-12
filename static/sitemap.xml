@@ -1,74 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/</loc>
-    <lastmod>2026-04-03</lastmod>
+    <loc>https://omaledanjumaogale.dev/</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/register/iam</loc>
-    <lastmod>2026-04-03</lastmod>
+    <loc>https://omaledanjumaogale.dev/register/iam</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/login</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.5</priority>
-  </url>
-  <!-- Platform Pages -->
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/AkademyxDraft.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/BetxPredicts.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/BiznexDraft.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/CollegeCBT.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/FinancialAuditor.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/MedPharmRx.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/MentorMe.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/SchoolCBT.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/TradexNews.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/TradezMarket.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://danjumaomaleogale.ewinproject.org/platforms/VantagePoint.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <priority>0.7</priority>
   </url>
 </urlset>

@@ -61,10 +61,10 @@
 
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each services as service, i}
-				<div class="bg-surface border border-border p-8 rounded-[var(--radius)] group hover:border-gold-line transition-all duration-400 relative overflow-hidden flex flex-col h-full reveal delay-{i * 100}">
-					<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold to-teal2 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+				<div class="bg-surface border border-border p-8 rounded-[var(--radius)] group hover:border-gold-line transition-all duration-300 relative overflow-hidden flex flex-col h-full reveal delay-{i * 100}">
+					<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold to-teal2 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" aria-hidden="true"></div>
 					
-					<div class="w-14 h-14 bg-bg border border-border rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:border-gold-line transition-all duration-300">
+					<div class="w-14 h-14 bg-bg border border-border rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:border-gold-line transition-all duration-300" aria-hidden="true">
 						{service.icon}
 					</div>
 
@@ -72,17 +72,25 @@
 						{service.title}
 					</h3>
 					
-					<p class="text-sm md:text-[13px] leading-[1.7] text-muted2 font-light mb-8 flex-grow">
+					<p class="text-sm md:text-[13px] leading-[1.7] text-muted2 font-light mb-6 flex-grow">
 						{service.desc}
 					</p>
 
-					<div class="flex flex-wrap gap-2 pt-6 border-t border-border mt-auto">
+					<div class="flex flex-wrap gap-2 mb-6">
 						{#each service.tags as tag}
 							<span class="text-sm md:text-[9px] font-['Space_Mono'] tracking-[1px] uppercase text-muted border border-border2 px-2 py-0.5 rounded group-hover:border-gold-line/30 group-hover:text-gold/80 transition-colors">
 								{tag}
 							</span>
 						{/each}
 					</div>
+
+					<button 
+						onclick={openServiceModal}
+						class="mt-auto w-full py-2.5 border border-gold/30 text-gold text-[10px] font-bold tracking-[2px] uppercase rounded-xl hover:bg-gold hover:text-bg transition-all duration-300 min-h-[44px]"
+						aria-label="Request {service.title} service"
+					>
+						Connect Now →
+					</button>
 				</div>
 			{/each}
 		</div>

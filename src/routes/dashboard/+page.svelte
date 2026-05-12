@@ -5,12 +5,13 @@
 	import { api } from '../../../convex/_generated/api';
 	import { user } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
+	import type { TaskData, BroadcastData } from '$lib/constants';
 
-	let tasks = $state([]);
-	let broadcasts = $state([]);
+	let tasks = $state<TaskData[]>([]);
+	let broadcasts = $state<BroadcastData[]>([]);
 	let loading = $state(true);
 	let reportText = $state('');
-	let selectedTask = $state(null);
+	let selectedTask = $state<TaskData | null>(null);
 	let showReportModal = $state(false);
 
 	async function fetchData() {
@@ -18,10 +19,10 @@
 		try {
 			const [tks, bcasts] = await Promise.all([
 				convex.query(api.functions.getTasksForUser, { email: $user.email }),
-				convex.query(api.functions.getLatestBroadcasts)
+				convex.query(api.functions.getLatestBroadcasts, {})
 			]);
-			tasks = tks || [];
-			broadcasts = bcasts || [];
+			tasks = (tks as TaskData[]) || [];
+			broadcasts = (bcasts as BroadcastData[]) || [];
 		} catch (e) {
 			console.error('Error fetching dashboard data:', e);
 		} finally {
@@ -45,7 +46,8 @@
 		fetchData();
 	}
 
-	async function updateStatus(taskId, status) {
+	async function updateStatus(taskId: string | undefined, status: string) {
+		if (!taskId) return;
 		await convex.mutation(api.functions.updateTaskStatus, { taskId, status });
 		fetchData();
 	}

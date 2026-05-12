@@ -4,99 +4,126 @@
 	import { api } from '../../../../convex/_generated/api';
 	import { onMount } from 'svelte';
 
-	let settings = $state([]);
-	let loading = $state(true);
+	let maintenanceMode = $state(false);
+	let registrationOpen = $state(true);
+	let broadcastMsg = $state('');
+	let broadcastSender = $state('Admin');
 	let saving = $state(false);
+	let saved = $state('');
 
-	async function fetchSettings() {
-		try {
-			const data = await convex.query(api.functions.getSettings);
-			settings = data || [];
-		} catch (e) {
-			console.error('Error fetching settings:', e);
-		} finally {
-			loading = false;
-		}
+	async function loadSettings() {
+		[maintenanceMode, registrationOpen] = await Promise.all([
+			convex.query(api.functions.getSetting, { key: 'maintenance_mode' }),
+			convex.query(api.functions.getSetting, { key: 'registration_open' })
+		]);
 	}
 
-	async function updateSetting(key: string, value: any) {
+	onMount(loadSettings);
+
+	async function saveSetting(key: string, value: boolean) {
 		saving = true;
 		try {
-			await convex.mutation(api.functions.updateAdminSettings, { key, value });
-			await fetchSettings();
-		} catch (e) {
-			console.error('Error updating setting:', e);
+			await convex.mutation(api.functions.updateSetting, { key, value });
+			saved = key;
+			setTimeout(() => { saved = ''; }, 2000);
+		} catch (e: any) {
+			alert(e.message);
 		} finally {
 			saving = false;
 		}
 	}
 
-	onMount(fetchSettings);
-
-	const defaultSettings = [
-		{ key: 'maintenance_mode', label: 'Maintenance Mode 🛠️', type: 'toggle', description: 'Enable to restrict public access.' },
-		{ key: 'registration_open', label: 'IAM Registration 🌍', type: 'toggle', description: 'Allow new Impact Ambassador applications.' },
-		{ key: 'notifications_email', label: 'Admin Notifications 📧', type: 'text', description: 'Email for system alerts.' }
-	];
-
-	function getSettingValue(key: string) {
-		const s = settings.find(s => s.key === key);
-		return s ? s.value : (key === 'notifications_email' ? '' : false);
+	async function sendBroadcast() {
+		if (!broadcastMsg.trim()) return;
+		saving = true;
+		try {
+			await convex.mutation(api.functions.createBroadcast, {
+				message: broadcastMsg.trim(),
+				sender: broadcastSender.trim() || 'Admin'
+			});
+			broadcastMsg = '';
+			saved = 'broadcast';
+			setTimeout(() => { saved = ''; }, 2000);
+		} finally {
+			saving = false;
+		}
 	}
 </script>
 
-<DashboardLayout title="System Settings ⚙️" isAdmin={true}>
-	<div class="max-w-3xl space-y-8">
-		<div class="bg-surface border border-border rounded-[var(--radius)] overflow-hidden shadow-2xl">
-			<div class="p-8 border-b border-border bg-surface2/50">
-				<h3 class="font-['Bebas_Neue'] text-2xl tracking-widest text-text">Global Infrastructure 🏗️</h3>
-				<p class="text-[11px] text-muted uppercase tracking-widest mt-1">Configure platform-wide behaviors.</p>
-			</div>
+<svelte:head>
+	<title>Settings · Admin · E-WIN Project</title>
+</svelte:head>
 
-			<div class="p-8 space-y-10">
-				{#if loading}
-					<div class="py-10 text-center text-muted uppercase tracking-widest text-sm md:text-[10px]">Loading Settings...</div>
-				{:else}
-					{#each defaultSettings as item}
-						<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
-							<div class="flex-grow">
-								<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text mb-1">{item.label}</h4>
-								<p class="text-sm md:text-[12px] text-muted font-light">{item.description}</p>
-							</div>
-							
-							{#if item.type === 'toggle'}
-								<button 
-									onclick={() => updateSetting(item.key, !getSettingValue(item.key))}
-									disabled={saving}
-									aria-label="Toggle {item.label}"
-									class="relative w-14 h-7 rounded-full transition-colors {getSettingValue(item.key) ? 'bg-gold' : 'bg-border'} {saving ? 'opacity-50' : ''} shrink-0"
-								>
-									<div class="absolute top-1 left-1 w-5 h-5 bg-bg rounded-full transition-transform {getSettingValue(item.key) ? 'translate-x-7' : ''}"></div>
-								</button>
-							{:else}
-								<div class="flex gap-2 w-full sm:w-auto">
-									<input 
-										type="text" 
-										value={getSettingValue(item.key)} 
-										onchange={(e) => updateSetting(item.key, e.target.value)}
-										disabled={saving}
-										class="bg-bg border border-border rounded-lg px-4 py-3 min-h-[44px] text-sm md:text-[12px] text-text focus:border-gold outline-none transition-all w-full sm:w-64"
-									/>
-								</div>
-							{/if}
-						</div>
-					{/each}
-				{/if}
-			</div>
+<DashboardLayout title="Settings" isAdmin>
+	<div class="space-y-8 max-w-2xl">
+		<!-- Platform Controls -->
+		<div class="card p-6 space-y-6">
+			<h2 class="font-['Bebas_Neue'] text-2xl tracking-widest text-(--text)">Platform Controls</h2>
+
+			{#each [
+				{ key: 'maintenance_mode', label: 'Maintenance Mode', desc: 'Queues all new service requests for admin review.', value: maintenanceMode },
+				{ key: 'registration_open', label: 'I-AM Registration', desc: 'Allow new Impact Ambassador applications.', value: registrationOpen }
+			] as { key, label, desc, value }}
+				<div class="flex items-center justify-between gap-4 py-4 border-b border-(--border) last:border-0">
+					<div>
+						<div class="text-[13px] font-bold text-(--text) uppercase tracking-widest">{label}</div>
+						<div class="text-[11px] text-(--muted) mt-1">{desc}</div>
+					</div>
+					<button
+						onclick={() => {
+							const newVal = !value;
+							if (key === 'maintenance_mode') maintenanceMode = newVal;
+							else registrationOpen = newVal;
+							saveSetting(key, newVal);
+						}}
+						disabled={saving}
+						class="relative min-w-[56px] h-7 rounded-full transition-all duration-300 {value ? 'bg-(--gold)' : 'bg-(--surface3)'}"
+						aria-label="Toggle {label}"
+						role="switch"
+						aria-checked={value}
+					>
+						<span class="absolute top-1 transition-all duration-300 w-5 h-5 rounded-full bg-white shadow {value ? 'left-8' : 'left-1'}"></span>
+					</button>
+					{#if saved === key}
+						<span class="text-[10px] text-(--teal2) font-['Space_Mono'] uppercase">Saved ✓</span>
+					{/if}
+				</div>
+			{/each}
 		</div>
 
-		<div class="p-6 bg-gold/5 border border-gold/20 rounded-2xl flex items-start gap-4">
-			<span class="text-2xl">🛡️</span>
-			<div>
-				<h4 class="font-bold text-gold text-xs uppercase tracking-widest mb-1">Security Protocol</h4>
-				<p class="text-[11px] text-muted leading-relaxed">
-					All changes to system settings are logged in the audit trail. Critical modifications may require multi-factor authentication in future updates.
-				</p>
+		<!-- Broadcast -->
+		<div class="card p-6 space-y-4">
+			<h2 class="font-['Bebas_Neue'] text-2xl tracking-widest text-(--text)">Send Broadcast</h2>
+			<p class="text-[12px] text-(--muted)">Send a message to all dashboard members.</p>
+
+			<div class="space-y-3">
+				<input
+					type="text"
+					bind:value={broadcastSender}
+					placeholder="Sender name (default: Admin)"
+					class="input-base"
+				/>
+				<textarea
+					bind:value={broadcastMsg}
+					rows="3"
+					placeholder="Type your broadcast message here..."
+					class="input-base resize-none h-24"
+				></textarea>
+				<button
+					onclick={sendBroadcast}
+					disabled={saving || !broadcastMsg.trim()}
+					class="px-8 py-3 bg-(--gold) text-(--bg) text-[11px] font-bold tracking-[2px] uppercase rounded-xl hover:bg-(--gold2) transition-all disabled:opacity-50 min-h-[44px] flex items-center gap-2"
+				>
+					{#if saving}
+						<span class="w-3.5 h-3.5 border-2 border-(--bg)/30 border-t-(--bg) rounded-full animate-spin" aria-hidden="true"></span>
+					{:else}
+						<span aria-hidden="true">📡</span>
+					{/if}
+					Send Broadcast
+				</button>
+				{#if saved === 'broadcast'}
+					<div class="text-[11px] text-(--teal2) font-['Space_Mono'] uppercase">Broadcast sent ✓</div>
+				{/if}
 			</div>
 		</div>
 	</div>
