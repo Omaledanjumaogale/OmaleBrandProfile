@@ -8,10 +8,10 @@ export const convex = new ConvexClient(CONVEX_URL);
 // Helper to get or create a session ID for tracking
 export function getSessionId(): string {
     if (typeof window === 'undefined') return '';
-    let sessionId = localStorage.getItem('ewin_session_id');
+    let sessionId = localStorage.getItem('omale_session_id');
     if (!sessionId) {
         sessionId = crypto.randomUUID();
-        localStorage.setItem('ewin_session_id', sessionId);
+        localStorage.setItem('omale_session_id', sessionId);
     }
     return sessionId;
 }

@@ -50,13 +50,13 @@
 		</div>
 
 		<div class="reveal delay-200">
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				I am <strong>Danjuma Umar Omale Ogale</strong> — a sociologist turned AI developer, business strategist, and serial founder operating from Abuja, Nigeria. My academic foundation at Ahmadu Bello University Zaria in Sociology and Law Enforcement gave me a deep lens through which I read systems, power, and human behaviour. 🇳🇬
 			</p>
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				That lens became the blueprint for the <strong>E-WIN Project</strong> — Elite Workforce Impact Nigeria — a decentralised ecosystem designed to upskill unemployed youth, create sustainable earning pathways, and disrupt the traditional service sector through technology, AI, and collaborative networking. 🚀
 			</p>
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				From aviation management to radio administration, from community liaison to prompt engineering, I have operated at the intersection of institutions and innovation — always with one guiding north star: <strong>empower people from within the system, not from outside it.</strong> 🏗️
 			</p>
 			<div class="flex flex-col gap-3 mt-8">

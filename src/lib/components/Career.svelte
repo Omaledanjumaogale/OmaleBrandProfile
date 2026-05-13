@@ -43,7 +43,7 @@
 		<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
 			Twelve years.<br />Multiple sectors.
 		</h2>
-		<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-light max-w-[540px]">
+		<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-normal max-w-[540px]">
 			From legislative chambers to aviation operations to radio broadcasting — a career defined by range, resilience, and relentless forward motion. 🚀
 		</p>
 	</div>
@@ -60,10 +60,10 @@
 				<div class="font-['Bebas_Neue'] text-xl sm:text-2xl tracking-[1px] text-text mb-1">
 					{item.role}
 				</div>
-				<div class="text-sm md:text-[13px] text-muted2 font-light italic">
+				<div class="text-sm md:text-[13px] text-muted2 font-normal italic">
 					{item.org}
 				</div>
-				<div class="text-sm md:text-[12px] text-muted leading-[1.7] mt-2 font-light max-w-2xl">
+				<div class="text-sm md:text-[12px] text-muted leading-[1.7] mt-2 font-normal max-w-2xl">
 					{item.desc}
 				</div>
 			</div>

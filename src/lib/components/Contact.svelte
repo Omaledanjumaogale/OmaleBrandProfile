@@ -11,7 +11,7 @@
 			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,6vw,84px)] tracking-[2px] leading-[0.9] mb-6 reveal delay-100">
 				Ready to<br /><span class="text-gold italic">collaborate?</span>
 			</h2>
-			<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-light mb-12 reveal delay-200 max-w-[500px]">
+			<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-normal mb-12 reveal delay-200 max-w-[500px]">
 				Whether you are an investor, a partner, a talented builder, or someone who believes in the E-WIN mission — I want to hear from you. Great things are built in rooms where the right people have the courage to connect. 🚀
 			</p>
 			

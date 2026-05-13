@@ -45,7 +45,7 @@
 				Five layers<br />of leverage.
 			</h2>
 		</div>
-		<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-light max-w-[540px] reveal delay-100">
+		<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-normal max-w-[540px] reveal delay-100">
 			Each domain reinforces the other — creating a compounding advantage that no single-skill practitioner can replicate. 🚀
 		</p>
 	</div>
@@ -62,7 +62,7 @@
 				<h3 class="font-['Bebas_Neue'] text-xl tracking-[1px] mb-[10px]">
 					{item.title}
 				</h3>
-				<p class="text-sm md:text-[12px] leading-[1.7] text-muted2 font-light">
+				<p class="text-sm md:text-[12px] leading-[1.7] text-muted2 font-normal">
 					{item.desc}
 				</p>
 			</div>

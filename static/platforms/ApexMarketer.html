@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ApexMarketer — E-WIN Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fire:#E8192C;--orange:#FF6B2B;--gold:#F5A623;--gold2:#FFD166;
+  --green:#00E5A0;--cyan:#00D4FF;--purple:#9B59F5;
+  --bg:#06060F;--bg2:#0C0C1A;--card:#111120;--card2:#161628;
+  --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.12);
+  --txt:#EEEEF5;--muted:#8080A0;--muted2:#50506A;
+  --fire-grad:linear-gradient(135deg,#E8192C 0%,#FF6B2B 50%,#F5A623 100%);
+  --cyber-grad:linear-gradient(135deg,#00D4FF,#9B59F5);
+  --money-grad:linear-gradient(135deg,#00E5A0,#00D4FF);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ── NOISE TEXTURE ── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5;}
+
+/* ── HEADER ── */
+.header{position:fixed;top:0;left:0;right:0;z-index:999;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,15,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--bdr);}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:var(--fire-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(232,25,44,.5);flex-shrink:0;}
+.logo-icon svg{width:20px;height:20px;}
+.logo-text{font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:.02em;background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);display:block;line-height:1;}
+.hamburger{width:40px;height:40px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .2s;}
+.hamburger:hover{background:rgba(255,255,255,.1);border-color:var(--bdr2);}
+.ham-line{width:18px;height:2px;border-radius:2px;background:var(--txt);transition:all .3s;}
+.hamburger.open .ham-line:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open .ham-line:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open .ham-line:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── NAV DRAWER ── */
+.nav-drawer{position:fixed;top:64px;right:-300px;width:280px;bottom:0;background:rgba(6,6,15,.98);backdrop-filter:blur(32px);border-left:1px solid var(--bdr);z-index:998;transition:right .35s cubic-bezier(.16,1,.3,1);padding:24px 20px;display:flex;flex-direction:column;gap:4px;}
+.nav-drawer.open{right:0;}
+.nav-link{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .2s;cursor:pointer;}
+.nav-link:hover{background:rgba(232,25,44,.1);color:var(--txt);}
+.nav-link .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--fire);flex-shrink:0;}
+.nav-divider{height:1px;background:var(--bdr);margin:12px 0;}
+.nav-cta{margin-top:auto;padding:14px;border-radius:12px;background:var(--fire-grad);text-align:center;font-weight:700;font-size:14px;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(232,25,44,.4);}
+
+/* ── SECTION BASE ── */
+section{position:relative;z-index:1;}
+.container{max-width:1100px;margin:0 auto;padding:0 24px;}
+.section-pad{padding:100px 0;}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,25,44,.18) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 40% at 90% 80%,rgba(0,212,255,.1) 0%,transparent 50%),
+             radial-gradient(ellipse 40% 30% at 10% 70%,rgba(155,89,245,.1) 0%,transparent 50%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at center,black 20%,transparent 75%);}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:rgba(232,25,44,.1);border:1px solid rgba(232,25,44,.3);font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--fire);margin-bottom:28px;position:relative;z-index:2;}
+@keyframes ping{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0;}}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--fire);position:relative;}
+.hero-badge-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:var(--fire);opacity:.3;animation:ping 2s infinite;}
+.hero-title{font-family:var(--serif);font-size:clamp(38px,8vw,88px);line-height:1;letter-spacing:-.01em;font-weight:900;position:relative;z-index:2;margin-bottom:20px;}
+.hero-title .fire-word{display:block;background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-title .white-word{display:block;color:#fff;}
+.hero-sub{font-family:var(--serif);font-size:clamp(16px,2.5vw,22px);color:var(--muted);font-style:italic;margin-bottom:32px;position:relative;z-index:2;max-width:640px;}
+.hero-desc{font-size:clamp(14px,1.8vw,17px);color:var(--muted);line-height:1.8;max-width:580px;position:relative;z-index:2;margin-bottom:48px;font-weight:300;}
+
+/* ── LIVE STATS ROW ── */
+.stats-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;margin-bottom:48px;}
+.stat-chip{padding:10px 20px;border-radius:100px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-size:13px;}
+.stat-chip-val{font-family:var(--mono);font-weight:700;font-size:15px;}
+.stat-chip-lbl{color:var(--muted);font-size:12px;}
+
+/* ── HERO CTA ── */
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;}
+.btn-primary{padding:14px 32px;border-radius:12px;background:var(--fire-grad);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(232,25,44,.4);font-family:var(--sans);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(232,25,44,.6);}
+.btn-ghost{padding:14px 32px;border-radius:12px;background:rgba(255,255,255,.06);color:var(--txt);font-size:15px;font-weight:600;border:1px solid var(--bdr2);cursor:pointer;transition:all .2s;font-family:var(--sans);}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(232,25,44,.4);}
+
+/* ── SCROLL INDICATOR ── */
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;}
+@keyframes scrollBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+.scroll-mouse{width:22px;height:34px;border:2px solid var(--bdr2);border-radius:12px;display:flex;justify-content:center;padding-top:6px;}
+.scroll-wheel{width:3px;height:6px;border-radius:2px;background:var(--fire);animation:scrollBounce 1.5s infinite;}
+
+/* ── SECTION LABELS ── */
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:12px;}
+.sec-label::after{content:'';flex:1;height:1px;background:currentColor;opacity:.2;max-width:120px;}
+.sec-title{font-family:var(--serif);font-size:clamp(32px,5vw,60px);line-height:1;letter-spacing:-.01em;font-weight:900;margin-bottom:16px;}
+.sec-lead{font-size:clamp(15px,1.8vw,18px);color:var(--muted);line-height:1.8;max-width:640px;font-weight:300;}
+
+/* ── PAIN SECTION ── */
+.pain-section{background:var(--bg2);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:48px;}
+.pain-card{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:28px;position:relative;overflow:hidden;transition:all .3s;cursor:default;}
+.pain-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,25,44,.06),transparent 70%);opacity:0;transition:opacity .3s;}
+.pain-card:hover{border-color:rgba(232,25,44,.3);transform:translateY(-3px);box-shadow:0 12px 40px rgba(232,25,44,.12);}
+.pain-card:hover::before{opacity:1;}
+.pain-icon-wrap{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;}
+.pain-icon-wrap svg{width:26px;height:26px;}
+.pain-card h3{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:10px;}
+.pain-card p{font-size:14px;color:var(--muted);line-height:1.75;}
+.pain-persona{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--bdr);}
+.persona-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.persona-name{font-size:12px;font-weight:600;}
+.persona-role{font-size:11px;color:var(--muted2);}
+
+/* ── AVATAR SVG ── */
+.avatar-svg{display:inline-block;border-radius:50%;overflow:hidden;}
+
+/* ── TURNING POINT ── */
+.turning-section{overflow:hidden;}
+.turning-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:60px;}
+.turning-visual{position:relative;height:380px;}
+.brain-svg-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+
+/* ── AGENT PIPELINE ── */
+.agent-pipeline{margin-top:48px;display:flex;flex-direction:column;gap:14px;}
+.agent-row{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--card);border:1px solid var(--bdr);border-radius:14px;transition:all .3s;cursor:default;}
+.agent-row:hover{border-color:var(--bdr2);transform:translateX(6px);}
+.agent-row.active-agent{border-color:rgba(0,229,160,.4);background:rgba(0,229,160,.04);}
+.agent-num{font-family:var(--mono);font-size:11px;font-weight:700;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.agent-icon{font-size:22px;flex-shrink:0;}
+.agent-info{flex:1;}
+.agent-name{font-weight:700;font-size:14px;margin-bottom:2px;}
+.agent-desc{font-size:12px;color:var(--muted2);}
+.agent-bar{flex:1;height:4px;background:var(--bdr);border-radius:2px;overflow:hidden;max-width:120px;}
+.agent-fill{height:100%;border-radius:2px;width:0%;transition:width 1.5s ease;}
+.agent-status{font-family:var(--mono);font-size:10px;color:var(--muted2);flex-shrink:0;}
+
+/* ── SIMULATOR ── */
+.simulator-wrap{background:var(--card2);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;margin-top:48px;}
+.sim-topbar{display:flex;align-items:center;gap:8px;padding:14px 18px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--bdr);}
+.sim-dot{width:10px;height:10px;border-radius:50%;}
+.sim-label{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:.1em;margin-left:8px;}
+.sim-body{padding:24px;}
+.sim-input-wrap{display:flex;gap:10px;margin-bottom:20px;}
+.sim-input{flex:1;padding:12px 16px;background:rgba(255,255,255,.05);border:1px solid var(--bdr2);border-radius:10px;color:var(--txt);font-size:13px;font-family:var(--sans);outline:none;}
+.sim-input::placeholder{color:var(--muted2);}
+.sim-btn{padding:12px 20px;border-radius:10px;background:var(--fire-grad);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:var(--sans);white-space:nowrap;transition:all .2s;}
+.sim-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(232,25,44,.4);}
+.sim-progress{display:none;}
+.sim-progress.visible{display:block;}
+.sim-agent-list{display:flex;flex-direction:column;gap:8px;}
+.sim-agent{display:flex;align-items:center;gap:12px;font-size:13px;}
+.sim-agent-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.sim-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.sim-bar-fill{height:100%;border-radius:2px;background:var(--fire-grad);width:0%;transition:width .6s ease;}
+.sim-agent-stat{font-family:var(--mono);font-size:10px;color:var(--muted2);width:32px;text-align:right;}
+.sim-output{margin-top:20px;display:none;}
+.sim-output.visible{display:block;}
+.sim-result-card{background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:12px;padding:16px;margin-bottom:10px;}
+.sim-result-title{font-weight:700;font-size:13px;color:var(--green);margin-bottom:6px;}
+.sim-result-text{font-size:12px;color:var(--muted);line-height:1.7;}
+
+/* ── HOW IT WORKS ── */
+.hiw-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:48px;}
+.hiw-step{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:28px;position:relative;overflow:hidden;transition:all .3s;}
+.hiw-step:hover{transform:translateY(-4px);border-color:var(--bdr2);box-shadow:0 16px 48px rgba(0,0,0,.4);}
+.hiw-step::after{content:attr(data-num);position:absolute;bottom:-10px;right:16px;font-family:var(--serif);font-size:80px;font-weight:900;opacity:.04;line-height:1;}
+.hiw-step-num{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:14px;margin-bottom:16px;}
+.hiw-icon{font-size:28px;margin-bottom:12px;display:block;}
+.hiw-step h3{font-family:var(--serif);font-size:19px;font-weight:700;margin-bottom:8px;}
+.hiw-step p{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ── CHARTS ── */
+.chart-section{background:var(--bg2);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px;}
+.chart-card{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:24px;overflow:hidden;}
+.chart-card h4{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:4px;}
+.chart-card .chart-sub{font-size:12px;color:var(--muted2);margin-bottom:20px;}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:140px;}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.bar-fill{width:100%;border-radius:6px 6px 0 0;transition:height 1.5s cubic-bezier(.34,1.56,.64,1);}
+.bar-lbl{font-size:9px;font-family:var(--mono);color:var(--muted2);text-align:center;}
+.bar-val{font-size:10px;font-family:var(--mono);font-weight:700;}
+.line-chart-wrap{position:relative;height:140px;}
+.donut-wrap{display:flex;align-items:center;gap:24px;}
+.donut-svg-c{position:relative;flex-shrink:0;}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-val{font-family:var(--serif);font-size:22px;font-weight:900;line-height:1;}
+.donut-lbl{font-size:10px;color:var(--muted2);font-family:var(--mono);}
+.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1;}
+.dl-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.dl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dl-name{flex:1;color:var(--muted);}
+.dl-pct{font-family:var(--mono);font-size:11px;font-weight:700;}
+
+/* ── SVG LINE CHART ── */
+.svg-chart{overflow:visible;}
+
+/* ── ROAS STAT CARDS ── */
+.roas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:48px;}
+.roas-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:20px;text-align:center;transition:all .3s;position:relative;overflow:hidden;}
+.roas-card:hover{transform:translateY(-3px);}
+.roas-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+.roas-card-val{font-family:var(--serif);font-size:36px;font-weight:900;line-height:1;margin-bottom:4px;}
+.roas-card-lbl{font-size:11px;color:var(--muted2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;}
+.roas-card-trend{font-size:12px;margin-top:8px;font-weight:600;}
+
+/* ── BENEFITS ── */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:48px;}
+.benefit-card{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:28px;transition:all .3s;position:relative;overflow:hidden;}
+.benefit-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+.benefit-card:hover::before{opacity:1;}
+.benefit-card:hover{transform:translateY(-4px);}
+.benefit-card-icon{font-size:32px;margin-bottom:16px;display:block;}
+.benefit-card h3{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:10px;}
+.benefit-card p{font-size:14px;color:var(--muted);line-height:1.75;}
+.benefit-highlight{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-top:14px;font-family:var(--mono);}
+
+/* ── QUOTE SECTION ── */
+.quotes-section{background:var(--bg2);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.quotes-track{display:flex;flex-direction:column;gap:32px;margin-top:48px;}
+.quote-block{position:relative;padding:32px 36px;border-radius:20px;overflow:hidden;}
+.quote-block::before{content:'\201C';position:absolute;top:-10px;left:24px;font-family:var(--serif);font-size:120px;line-height:1;opacity:.08;color:currentColor;}
+.quote-text{font-family:var(--serif);font-size:clamp(18px,2.5vw,26px);font-style:italic;font-weight:600;line-height:1.5;position:relative;z-index:1;margin-bottom:16px;}
+.quote-attr{font-size:13px;font-weight:600;position:relative;z-index:1;}
+.quote-attr span{font-weight:400;color:var(--muted);}
+
+/* ── COMPETITIVE EDGE ── */
+.edge-table{width:100%;border-collapse:collapse;margin-top:32px;}
+.edge-table th{text-align:left;padding:12px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);border-bottom:1px solid var(--bdr);}
+.edge-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;vertical-align:middle;}
+.edge-table tr:hover td{background:rgba(255,255,255,.02);}
+.edge-check{color:var(--green);font-size:16px;}
+.edge-cross{color:var(--muted2);font-size:16px;}
+.edge-apex-col{font-weight:700;}
+.apex-badge{display:inline-flex;padding:3px 10px;border-radius:6px;background:rgba(232,25,44,.12);color:var(--fire);font-family:var(--mono);font-size:10px;font-weight:700;border:1px solid rgba(232,25,44,.25);}
+
+/* ── PLATFORM JOURNEY ── */
+.journey-wrap{margin-top:48px;position:relative;}
+.journey-line{position:absolute;left:24px;top:28px;bottom:28px;width:2px;background:linear-gradient(to bottom,var(--fire),var(--orange),var(--gold),var(--green));border-radius:2px;}
+.journey-steps{display:flex;flex-direction:column;gap:0;}
+.journey-step{display:flex;align-items:flex-start;gap:24px;padding:24px 0;position:relative;}
+.journey-dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;position:relative;z-index:1;}
+.journey-content{flex:1;padding-top:8px;}
+.journey-content h4{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:6px;}
+.journey-content p{font-size:13px;color:var(--muted);line-height:1.7;}
+.journey-tag{display:inline-flex;padding:3px 10px;border-radius:6px;font-family:var(--mono);font-size:10px;font-weight:700;margin-top:8px;}
+
+/* ── ECOSYSTEM MAP ── */
+.ecosystem-svg-wrap{margin:48px auto 0;max-width:640px;position:relative;}
+@keyframes orbit{from{transform:rotate(0deg) translateX(160px) rotate(0deg);}to{transform:rotate(360deg) translateX(160px) rotate(-360deg);}}
+@keyframes orbit2{from{transform:rotate(90deg) translateX(120px) rotate(-90deg);}to{transform:rotate(450deg) translateX(120px) rotate(-450deg);}}
+
+/* ── CLOSING / CTA ── */
+.cta-section{padding:120px 24px;text-align:center;position:relative;overflow:hidden;}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% 50%,rgba(232,25,44,.12) 0%,transparent 65%);}
+.cta-title{font-family:var(--serif);font-size:clamp(36px,7vw,80px);line-height:.95;font-weight:900;margin-bottom:24px;position:relative;z-index:2;}
+.cta-sub{font-size:clamp(14px,1.8vw,18px);color:var(--muted);line-height:1.8;max-width:560px;margin:0 auto 40px;position:relative;z-index:2;font-weight:300;}
+.cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;}
+.cta-domain{font-family:var(--mono);font-size:13px;color:var(--muted2);margin-top:24px;position:relative;z-index:2;}
+.cta-domain a{color:var(--cyan);text-decoration:none;}
+.cta-domain a:hover{text-decoration:underline;}
+.cta-whatsapp{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:#25D366;color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:var(--sans);text-decoration:none;}
+.cta-whatsapp:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.4);}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:48px 24px;border-top:1px solid var(--bdr);color:var(--muted2);font-size:13px;}
+footer .footer-logo{font-family:var(--serif);font-size:22px;font-weight:700;background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+footer .footer-eco{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;}
+
+/* ── GLOW EFFECTS ── */
+.glow-red{box-shadow:0 0 40px rgba(232,25,44,.2);}
+.glow-green{box-shadow:0 0 40px rgba(0,229,160,.15);}
+.glow-cyan{box-shadow:0 0 40px rgba(0,212,255,.15);}
+.hover-glow{transition:box-shadow .3s,transform .3s;}
+.hover-glow:hover{box-shadow:0 0 40px rgba(232,25,44,.25);transform:translateY(-3px);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes countUp{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes drawLine{from{stroke-dashoffset:800;}to{stroke-dashoffset:0;}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(232,25,44,.3);}50%{box-shadow:0 0 40px rgba(232,25,44,.6);}}
+
+.animate-fade-up{animation:fadeUp .7s ease both;}
+.animate-in{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.animate-in.visible{opacity:1;transform:translateY(0);}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  .pain-grid{grid-template-columns:1fr;}
+  .turning-header{grid-template-columns:1fr;}
+  .turning-visual{height:260px;}
+  .charts-grid{grid-template-columns:1fr;}
+  .section-pad{padding:72px 0;}
+  .hiw-steps{grid-template-columns:1fr;}
+  .benefits-grid{grid-template-columns:1fr;}
+  .donut-wrap{flex-direction:column;}
+  .edge-table th:nth-child(3),.edge-table td:nth-child(3){display:none;}
+}
+@media(max-width:640px){
+  .hero{padding:100px 20px 60px;}
+  .hero-title{font-size:38px;}
+  .stats-row{gap:8px;}
+  .stat-chip{padding:7px 14px;font-size:11px;}
+  .roas-grid{grid-template-columns:1fr 1fr;}
+  .nav-drawer{width:260px;}
+  .container{padding:0 16px;}
+  .section-pad{padding:60px 0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="header">
+  <a href="#" class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 17l10 5 10-5" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 12l10 5 10-5" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">ApexMarketer</div>
+      <span class="logo-sub">E-WIN Project Ecosystem</span>
+    </div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <div class="ham-line"></div>
+    <div class="ham-line"></div>
+    <div class="ham-line"></div>
+  </div>
+</header>
+
+<!-- ══════ NAV DRAWER ══════ -->
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-link" onclick="scrollTo('#hero')"><span class="nav-dot"></span>Overview</div>
+  <div class="nav-link" onclick="scrollTo('#problem')"><span class="nav-dot"></span>The Problem</div>
+  <div class="nav-link" onclick="scrollTo('#solution')"><span class="nav-dot"></span>The Solution</div>
+  <div class="nav-link" onclick="scrollTo('#how')"><span class="nav-dot"></span>How It Works</div>
+  <div class="nav-link" onclick="scrollTo('#impact')"><span class="nav-dot"></span>Impact & Benefits</div>
+  <div class="nav-link" onclick="scrollTo('#edge')"><span class="nav-dot"></span>Competitive Edge</div>
+  <div class="nav-link" onclick="scrollTo('#quotes')"><span class="nav-dot"></span>Inspiration</div>
+  <div class="nav-divider"></div>
+  <div class="nav-link" onclick="scrollTo('#cta')"><span class="nav-dot"></span>Get Started</div>
+  <div class="nav-divider"></div>
+  <a href="https://wa.me/2349025152818" target="_blank" class="nav-cta" style="text-decoration:none;display:block;">&#128172; WhatsApp Us</a>
+</div>
+
+<!-- ══════ HERO ══════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+
+  <!-- Animated favicon/badge -->
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    AI-Powered &bull; 7 Intelligent Agents &bull; Live Now
+  </div>
+
+  <h1 class="hero-title animate-fade-up">
+    <span class="fire-word">Stop Wasting</span>
+    <span class="white-word">Your Marketing</span>
+    <span class="fire-word">Budget.</span>
+  </h1>
+
+  <p class="hero-sub animate-fade-up" style="animation-delay:.15s;">
+    "What if one platform could replace your entire marketing team — and outperform them, every time?"
+  </p>
+
+  <p class="hero-desc animate-fade-up" style="animation-delay:.25s;">
+    ApexMarketer is Nigeria's first AI-powered omni-channel marketing engine. It deploys 7 specialist AI agents simultaneously to generate complete, conversion-optimised campaigns across 8+ platforms — in 60 seconds.
+  </p>
+
+  <!-- LIVE STATS -->
+  <div class="stats-row animate-fade-up" style="animation-delay:.35s;">
+    <div class="stat-chip">
+      <span class="stat-chip-val" style="color:#00E5A0;" id="statCampaigns">0</span>
+      <span class="stat-chip-lbl">Campaigns Launched</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-chip-val" style="background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="statRoas">0×</span>
+      <span class="stat-chip-lbl">Avg ROAS</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-chip-val" style="color:#00D4FF;" id="statTime">0s</span>
+      <span class="stat-chip-lbl">Campaign Generation</span>
+    </div>
+    <div class="stat-chip">
+      <span class="stat-chip-val" style="color:#F5A623;" id="statPlatforms">0</span>
+      <span class="stat-chip-lbl">Platforms</span>
+    </div>
+  </div>
+
+  <div class="hero-ctas animate-fade-up" style="animation-delay:.45s;">
+    <button class="btn-primary" onclick="document.getElementById('simulator').scrollIntoView({behavior:'smooth'})">&#9889; Try Live Demo</button>
+    <button class="btn-ghost" onclick="scrollTo('#how')">&#128218; How It Works</button>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span style="font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.1em;">SCROLL</span>
+  </div>
+</section>
+
+
+<!-- ══════ PROBLEM SECTION ══════ -->
+<section class="pain-section section-pad" id="problem">
+  <div class="container">
+    <div class="sec-label" style="color:var(--fire);">01 — The Problem</div>
+    <h2 class="sec-title animate-in">Nigerian Businesses Are <em style="font-style:italic;">Bleeding</em> Money On Marketing That Doesn't Work.</h2>
+    <p class="sec-lead animate-in">From Lagos to Abuja, entrepreneurs, SMEs, and youth-led businesses are pouring millions into ads, agencies, and tools — and getting almost nothing back. The marketing system is broken.</p>
+
+    <div class="pain-grid" style="margin-top:48px;">
+
+      <!-- Pain 1 -->
+      <div class="pain-card animate-in hover-glow">
+        <div class="pain-icon-wrap" style="background:rgba(232,25,44,.12);border:1px solid rgba(232,25,44,.25);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8192C" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <h3>Costly Agencies, Zero ROI</h3>
+        <p>Nigerian SMEs spend an average of ₦150,000–₦500,000 per month on marketing agencies that deliver generic content with no performance accountability. You pay whether the campaign works or not.</p>
+        <div class="pain-persona">
+          <!-- Avatar SVG: Business Owner -->
+          <svg class="avatar-svg" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="background:rgba(232,25,44,.15);border:2px solid rgba(232,25,44,.3);">
+            <circle cx="18" cy="13" r="7" fill="#FF6B2B" opacity=".8"/>
+            <ellipse cx="18" cy="30" rx="11" ry="7" fill="#E8192C" opacity=".7"/>
+            <circle cx="18" cy="13" r="5" fill="#FFB86C"/>
+            <path d="M15 11 Q18 9 21 11" stroke="#333" stroke-width="1" fill="none"/>
+            <circle cx="15.5" cy="13" r="1" fill="#333"/>
+            <circle cx="20.5" cy="13" r="1" fill="#333"/>
+            <path d="M16 15.5 Q18 17 20 15.5" stroke="#333" stroke-width="1" fill="none"/>
+          </svg>
+          <div>
+            <div class="persona-name">Adaeze Okoye</div>
+            <div class="persona-role">Fashion Business Owner, Lagos</div>
+          </div>
+          <div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--fire);background:rgba(232,25,44,.1);padding:3px 8px;border-radius:5px;">Lost ₦2.4M</div>
+        </div>
+      </div>
+
+      <!-- Pain 2 -->
+      <div class="pain-card animate-in hover-glow">
+        <div class="pain-icon-wrap" style="background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.25);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h3>No Strategy, Just Guesswork</h3>
+        <p>Most business owners post content randomly — no targeting, no optimal timing, no A/B testing. They boost posts hoping for the best. Their competitors with data-driven strategies consistently outperform them.</p>
+        <div class="pain-persona">
+          <!-- Avatar SVG: Youth Entrepreneur -->
+          <svg class="avatar-svg" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="background:rgba(245,166,35,.15);border:2px solid rgba(245,166,35,.3);">
+            <circle cx="18" cy="13" r="7" fill="#9B59F5" opacity=".8"/>
+            <ellipse cx="18" cy="30" rx="11" ry="7" fill="#6B3DC8" opacity=".7"/>
+            <circle cx="18" cy="13" r="5" fill="#C9A87A"/>
+            <path d="M14 10 Q18 7 22 10" fill="#333"/>
+            <circle cx="15.5" cy="13" r="1" fill="#333"/>
+            <circle cx="20.5" cy="13" r="1" fill="#333"/>
+            <path d="M16 16 Q18 18 20 16" stroke="#333" stroke-width="1" fill="none"/>
+          </svg>
+          <div>
+            <div class="persona-name">Emeka Nwosu</div>
+            <div class="persona-role">Tech Startup Founder, Abuja</div>
+          </div>
+          <div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--gold);background:rgba(245,166,35,.1);padding:3px 8px;border-radius:5px;">0.3× ROAS</div>
+        </div>
+      </div>
+
+      <!-- Pain 3 -->
+      <div class="pain-card animate-in hover-glow">
+        <div class="pain-icon-wrap" style="background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>Time Kills Momentum</h3>
+        <p>Creating content for even 3 platforms takes 8–12 hours per campaign. By the time it's ready, the trend has passed. Youth and small business owners simply don't have the bandwidth to keep up with the algorithm.</p>
+        <div class="pain-persona">
+          <!-- Avatar SVG: Youth Creator -->
+          <svg class="avatar-svg" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="background:rgba(0,212,255,.15);border:2px solid rgba(0,212,255,.3);">
+            <circle cx="18" cy="13" r="7" fill="#00D4FF" opacity=".7"/>
+            <ellipse cx="18" cy="30" rx="11" ry="7" fill="#0099CC" opacity=".7"/>
+            <circle cx="18" cy="13" r="5" fill="#E8C89A"/>
+            <path d="M15 10 Q18 8.5 21 10" fill="#4A3728"/>
+            <circle cx="15.5" cy="13" r="1" fill="#333"/>
+            <circle cx="20.5" cy="13" r="1" fill="#333"/>
+            <path d="M16 15.5 Q18 17 20 15.5" stroke="#333" stroke-width="1" fill="none"/>
+          </svg>
+          <div>
+            <div class="persona-name">Fatima Bello</div>
+            <div class="persona-role">Content Creator, Kano</div>
+          </div>
+          <div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--cyan);background:rgba(0,212,255,.1);padding:3px 8px;border-radius:5px;">8h/campaign</div>
+        </div>
+      </div>
+
+      <!-- Pain 4 -->
+      <div class="pain-card animate-in hover-glow">
+        <div class="pain-icon-wrap" style="background:rgba(155,89,245,.12);border:1px solid rgba(155,89,245,.25);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9B59F5" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Platform Complexity Paralysis</h3>
+        <p>Each platform — Instagram, TikTok, LinkedIn, X, Facebook — demands unique content formats, character limits, image sizes, posting times, and hashtag strategies. Managing all of them without a system is impossible.</p>
+        <div class="pain-persona">
+          <svg class="avatar-svg" width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="background:rgba(155,89,245,.15);border:2px solid rgba(155,89,245,.3);">
+            <circle cx="18" cy="13" r="7" fill="#9B59F5" opacity=".8"/>
+            <ellipse cx="18" cy="30" rx="11" ry="7" fill="#7B39D5" opacity=".7"/>
+            <circle cx="18" cy="13" r="5" fill="#B8956A"/>
+            <path d="M14 10 Q18 8 22 10" fill="#2C1A0E"/>
+            <circle cx="15.5" cy="13" r="1.2" fill="#333"/>
+            <circle cx="20.5" cy="13" r="1.2" fill="#333"/>
+            <path d="M16 15.5 Q18 17.5 20 15.5" stroke="#333" stroke-width="1.2" fill="none"/>
+          </svg>
+          <div>
+            <div class="persona-name">Chukwuemeka Eze</div>
+            <div class="persona-role">Retail Entrepreneur, PH</div>
+          </div>
+          <div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--purple);background:rgba(155,89,245,.1);padding:3px 8px;border-radius:5px;">8 platforms</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ANNOTATED SVG: PROBLEM VISUAL -->
+    <div class="animate-in" style="margin-top:48px;background:var(--card);border:1px solid var(--bdr);border-radius:20px;padding:32px;overflow:hidden;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:20px;">&#128202; Traditional Marketing ROI Reality (Nigerian SME Average)</div>
+      <svg viewBox="0 0 700 200" width="100%" style="overflow:visible;" id="problemSvg">
+        <!-- Background grid -->
+        <defs>
+          <linearGradient id="barGrad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8192C" stop-opacity=".7"/><stop offset="100%" stop-color="#E8192C" stop-opacity=".2"/></linearGradient>
+          <linearGradient id="barGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF6B2B" stop-opacity=".7"/><stop offset="100%" stop-color="#FF6B2B" stop-opacity=".2"/></linearGradient>
+          <linearGradient id="barGradGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00E5A0" stop-opacity=".9"/><stop offset="100%" stop-color="#00E5A0" stop-opacity=".3"/></linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="60" y1="20" x2="680" y2="20" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <line x1="60" y1="60" x2="680" y2="60" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <line x1="60" y1="100" x2="680" y2="100" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <line x1="60" y1="140" x2="680" y2="140" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <line x1="60" y1="180" x2="680" y2="180" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <!-- Y axis labels -->
+        <text x="50" y="24" font-family="JetBrains Mono" font-size="10" fill="rgba(128,128,160,.7)" text-anchor="end">100%</text>
+        <text x="50" y="104" font-family="JetBrains Mono" font-size="10" fill="rgba(128,128,160,.7)" text-anchor="end">50%</text>
+        <text x="50" y="184" font-family="JetBrains Mono" font-size="10" fill="rgba(128,128,160,.7)" text-anchor="end">0%</text>
+        <!-- Bars: money spent vs return -->
+        <!-- Agency Cost bar -->
+        <rect class="prob-bar" x="80" y="20" width="60" height="160" rx="6" fill="url(#barGrad1)" data-target="160"/>
+        <text x="110" y="14" font-family="JetBrains Mono" font-size="9" fill="#E8192C" text-anchor="middle">₦500K</text>
+        <text x="110" y="196" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.8)" text-anchor="middle">Agency Fees</text>
+        <!-- Content Creation -->
+        <rect class="prob-bar" x="180" y="60" width="60" height="120" rx="6" fill="url(#barGrad2)" data-target="120"/>
+        <text x="210" y="54" font-family="JetBrains Mono" font-size="9" fill="#FF6B2B" text-anchor="middle">₦180K</text>
+        <text x="210" y="196" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.8)" text-anchor="middle">Content Costs</text>
+        <!-- Ad Spend -->
+        <rect class="prob-bar" x="280" y="40" width="60" height="140" rx="6" fill="url(#barGrad1)" data-target="140"/>
+        <text x="310" y="34" font-family="JetBrains Mono" font-size="9" fill="#E8192C" text-anchor="middle">₦350K</text>
+        <text x="310" y="196" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.8)" text-anchor="middle">Ad Spend</text>
+        <!-- Tools -->
+        <rect class="prob-bar" x="380" y="100" width="60" height="80" rx="6" fill="url(#barGrad2)" data-target="80"/>
+        <text x="410" y="94" font-family="JetBrains Mono" font-size="9" fill="#FF6B2B" text-anchor="middle">₦80K</text>
+        <text x="410" y="196" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.8)" text-anchor="middle">Tools/SaaS</text>
+        <!-- Actual Revenue Return (tiny, painful) -->
+        <rect class="prob-bar" x="480" y="155" width="60" height="25" rx="6" fill="url(#barGradGreen)" data-target="25"/>
+        <text x="510" y="148" font-family="JetBrains Mono" font-size="9" fill="#00E5A0" text-anchor="middle">0.3×</text>
+        <text x="510" y="196" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.8)" text-anchor="middle">Avg Return</text>
+        <!-- Annotation arrows -->
+        <path d="M510 148 L510 135 L590 100" stroke="rgba(0,229,160,.5)" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+        <text x="595" y="96" font-family="DM Sans" font-size="11" fill="#00E5A0">ApexMarketer: 4.2×</text>
+        <circle cx="510" cy="148" r="3" fill="#00E5A0"/>
+        <!-- Pain annotation -->
+        <path d="M310 34 L310 20 L370 12" stroke="rgba(232,25,44,.5)" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+        <text x="374" y="12" font-family="DM Sans" font-size="11" fill="#E8192C">₦1.1M+ wasted annually</text>
+        <rect x="60" y="176" width="620" height="4" rx="2" fill="rgba(255,255,255,.05)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ SOLUTION / TURNING POINT ══════ -->
+<section class="section-pad" id="solution">
+  <div class="container">
+    <div class="sec-label" style="color:var(--green);">02 — The Turning Point</div>
+    <h2 class="sec-title animate-in">7 AI Marketing Specialists. <em style="font-style:italic;color:#E8192C;">One Platform.</em> 60 Seconds.</h2>
+    <p class="sec-lead animate-in">ApexMarketer doesn't just give you tools — it gives you an entire AI-powered marketing department that never sleeps, never misses a deadline, and consistently delivers results.</p>
+
+    <!-- 7 AGENT PIPELINE VISUAL -->
+    <div class="agent-pipeline animate-in" id="agentPipeline">
+      <div class="agent-row" data-idx="0">
+        <div class="agent-num" style="background:rgba(232,25,44,.15);color:var(--fire);">01</div>
+        <div class="agent-icon">&#128300;</div>
+        <div class="agent-info">
+          <div class="agent-name">Product Analyst</div>
+          <div class="agent-desc">Scrapes your URL or analyzes your image/description. Extracts USP, price point, audience DNA, and winning angle in milliseconds.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:var(--fire-grad);" id="ab0"></div></div>
+        <div class="agent-status" id="as0">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="1">
+        <div class="agent-num" style="background:rgba(255,107,43,.15);color:var(--orange);">02</div>
+        <div class="agent-icon">&#9999;</div>
+        <div class="agent-info">
+          <div class="agent-name">Neuro-Copywriter</div>
+          <div class="agent-desc">Writes psychologically-engineered AIDA and PAS framework copy for every platform — 3 variants each, optimised for conversion.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:linear-gradient(90deg,#FF6B2B,#F5A623);" id="ab1"></div></div>
+        <div class="agent-status" id="as1">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="2">
+        <div class="agent-num" style="background:rgba(155,89,245,.15);color:var(--purple);">03</div>
+        <div class="agent-icon">&#127912;</div>
+        <div class="agent-info">
+          <div class="agent-name">Visual Director</div>
+          <div class="agent-desc">Generates 12 platform-optimised images via DALL-E 3 + NanoBanana API at exact dimensions for each social network.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:var(--cyber-grad);" id="ab2"></div></div>
+        <div class="agent-status" id="as2">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="3">
+        <div class="agent-num" style="background:rgba(0,212,255,.15);color:var(--cyan);">04</div>
+        <div class="agent-icon">&#127919;</div>
+        <div class="agent-info">
+          <div class="agent-name">Media Buyer</div>
+          <div class="agent-desc">Builds hyper-targeting blueprints with hidden audience segments, geo-fencing, and ROAS projections. Maps your ₦ budget for maximum return.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:var(--money-grad);" id="ab3"></div></div>
+        <div class="agent-status" id="as3">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="4">
+        <div class="agent-num" style="background:rgba(245,166,35,.15);color:var(--gold);">05</div>
+        <div class="agent-icon">&#128506;</div>
+        <div class="agent-info">
+          <div class="agent-name">Campaign Strategist</div>
+          <div class="agent-desc">Architects the full-funnel journey: TOFU → MOFU → BOFU. Maps content sequence, platform order, and budget allocation across the campaign lifecycle.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:linear-gradient(90deg,#F5A623,#FFD166);" id="ab4"></div></div>
+        <div class="agent-status" id="as4">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="5">
+        <div class="agent-num" style="background:rgba(0,229,160,.15);color:var(--green);">06</div>
+        <div class="agent-icon">&#128197;</div>
+        <div class="agent-info">
+          <div class="agent-name">Smart Scheduler</div>
+          <div class="agent-desc">Analyses your audience's engagement patterns and computes optimal posting windows per platform. Posts at the exact moment your audience is most likely to convert.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:var(--money-grad);" id="ab5"></div></div>
+        <div class="agent-status" id="as5">Idle</div>
+      </div>
+      <div class="agent-row" data-idx="6">
+        <div class="agent-num" style="background:rgba(232,25,44,.15);color:var(--fire);">07</div>
+        <div class="agent-icon">&#128202;</div>
+        <div class="agent-info">
+          <div class="agent-name">Analytics Oracle</div>
+          <div class="agent-desc">Monitors live performance across all platforms, generates AI-driven optimisation recommendations, and identifies the exact levers to increase ROAS.</div>
+        </div>
+        <div class="agent-bar"><div class="agent-fill" style="background:var(--fire-grad);" id="ab6"></div></div>
+        <div class="agent-status" id="as6">Idle</div>
+      </div>
+    </div>
+
+    <!-- LIVE SIMULATOR -->
+    <div class="simulator-wrap animate-in" id="simulator" style="margin-top:40px;">
+      <div class="sim-topbar">
+        <div class="sim-dot" style="background:#FF5F57;"></div>
+        <div class="sim-dot" style="background:#FFBD2E;"></div>
+        <div class="sim-dot" style="background:#28CA42;"></div>
+        <span class="sim-label">&#9889; ApexMarketer Campaign Generator — Live Simulation</span>
+      </div>
+      <div class="sim-body">
+        <div class="sim-input-wrap">
+          <input class="sim-input" id="simInput" placeholder="Paste your product URL or describe your product/service here..." value="Premium leather handbags for Nigerian executive women. ₦85,000. Genuine leather, 3-year warranty, custom monogramming. Lagos &amp; Abuja.">
+          <button class="sim-btn" onclick="runSimulator()">&#9889; Generate Campaign</button>
+        </div>
+        <div class="sim-progress" id="simProgress">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--green);margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <span style="animation:pulse 1s infinite;display:inline-block;">&#9679;</span>
+            <span id="simStatusText">Initializing agents...</span>
+          </div>
+          <div class="sim-agent-list" id="simAgentList">
+            <div class="sim-agent"><span class="sim-agent-icon">&#128300;</span><span style="flex:1;font-size:12px;">Product Analyst</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb0"></div></div><span class="sim-agent-stat" id="ss0">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#9999;</span><span style="flex:1;font-size:12px;">Neuro-Copywriter</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb1"></div></div><span class="sim-agent-stat" id="ss1">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#127912;</span><span style="flex:1;font-size:12px;">Visual Director</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb2"></div></div><span class="sim-agent-stat" id="ss2">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#127919;</span><span style="flex:1;font-size:12px;">Media Buyer</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb3"></div></div><span class="sim-agent-stat" id="ss3">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#128506;</span><span style="flex:1;font-size:12px;">Campaign Strategist</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb4"></div></div><span class="sim-agent-stat" id="ss4">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#128197;</span><span style="flex:1;font-size:12px;">Smart Scheduler</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb5"></div></div><span class="sim-agent-stat" id="ss5">0%</span></div>
+            <div class="sim-agent"><span class="sim-agent-icon">&#128202;</span><span style="flex:1;font-size:12px;">Analytics Oracle</span><div class="sim-bar-wrap"><div class="sim-bar-fill" id="sb6"></div></div><span class="sim-agent-stat" id="ss6">0%</span></div>
+          </div>
+        </div>
+        <div class="sim-output" id="simOutput">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px;">&#127881; Campaign Generated Successfully &bull; 58 seconds</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="sim-result-card">
+              <div class="sim-result-title">&#128247; 12 AI Images Generated</div>
+              <div class="sim-result-text">Platform-optimised at exact dimensions: 1200×628 (FB), 1080×1080 (IG), 1080×1920 (TikTok), 1200×627 (LinkedIn)</div>
+            </div>
+            <div class="sim-result-card">
+              <div class="sim-result-title">&#9999; 24 Copy Variants Ready</div>
+              <div class="sim-result-text">AIDA + PAS frameworks. 3 variants (Short/Story/Authority) per platform. Auto-truncated for X's 280-char limit.</div>
+            </div>
+            <div class="sim-result-card">
+              <div class="sim-result-title">&#127919; Targeting Blueprint</div>
+              <div class="sim-result-text">Hidden buyers: [Luxury] AND [Working Women] XCL [Budget Shoppers]. Geo: Lekki, VI, Maitama. Est. ROAS: 3.8–5.2×</div>
+            </div>
+            <div class="sim-result-card">
+              <div class="sim-result-title">&#128197; 8 Posts Scheduled</div>
+              <div class="sim-result-text">AI optimal times: Facebook 9AM, Instagram 12:30PM, TikTok 9PM NGT. Auto-publishes via connected accounts.</div>
+            </div>
+          </div>
+          <button class="sim-btn" style="width:100%;margin-top:14px;padding:14px;font-size:14px;" onclick="resetSimulator()">&#8635; Run Another Campaign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ HOW IT WORKS ══════ -->
+<section class="section-pad" id="how" style="background:var(--bg2);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);">
+  <div class="container">
+    <div class="sec-label" style="color:var(--cyan);">03 — How It Works</div>
+    <h2 class="sec-title animate-in">From Product Link to Live Campaign <em style="font-style:italic;color:#00D4FF;">in 4 Steps.</em></h2>
+    <p class="sec-lead animate-in">No marketing degree required. No agency relationship. No technical skills. Just your product and 60 seconds of your time.</p>
+
+    <div class="hiw-steps">
+      <div class="hiw-step animate-in hover-glow" data-num="01" style="border-color:rgba(232,25,44,.2);">
+        <div class="hiw-step-num" style="background:rgba(232,25,44,.15);color:var(--fire);">01</div>
+        <span class="hiw-icon">&#128279;</span>
+        <h3>Input Your Product</h3>
+        <p>Paste your website URL, drop a product image, or type a description. ApexMarketer's Product Analyst AI instantly extracts your USP, pricing, target audience, competitive angle, and winning hook.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(232,25,44,.1);color:var(--fire);font-family:var(--mono);font-size:9px;border:1px solid rgba(232,25,44,.2);">URL Analysis</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(232,25,44,.1);color:var(--fire);font-family:var(--mono);font-size:9px;border:1px solid rgba(232,25,44,.2);">Vision AI</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(232,25,44,.1);color:var(--fire);font-family:var(--mono);font-size:9px;border:1px solid rgba(232,25,44,.2);">Text Input</span>
+        </div>
+      </div>
+      <div class="hiw-step animate-in hover-glow" data-num="02" style="border-color:rgba(245,166,35,.2);">
+        <div class="hiw-step-num" style="background:rgba(245,166,35,.15);color:var(--gold);">02</div>
+        <span class="hiw-icon">&#9881;</span>
+        <h3>Configure Your Campaign</h3>
+        <p>Choose your objective (Sales, Awareness, Lead Gen), select platforms, set your budget, target region (Lagos, Abuja, nationwide or diaspora), copy tone, and duration. Turn AI options on or off.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(245,166,35,.1);color:var(--gold);font-family:var(--mono);font-size:9px;border:1px solid rgba(245,166,35,.2);">8 Platforms</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(245,166,35,.1);color:var(--gold);font-family:var(--mono);font-size:9px;border:1px solid rgba(245,166,35,.2);">Budget Tools</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(245,166,35,.1);color:var(--gold);font-family:var(--mono);font-size:9px;border:1px solid rgba(245,166,35,.2);">Geo-Targeting</span>
+        </div>
+      </div>
+      <div class="hiw-step animate-in hover-glow" data-num="03" style="border-color:rgba(155,89,245,.2);">
+        <div class="hiw-step-num" style="background:rgba(155,89,245,.15);color:var(--purple);">03</div>
+        <span class="hiw-icon">&#129302;</span>
+        <h3>AI Agents Generate Everything</h3>
+        <p>All 7 AI agents activate simultaneously. In under 60 seconds: 12 images, 24 copy variants, video scripts, targeting blueprints, full-funnel strategy, and a smart schedule are ready for your review.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(155,89,245,.1);color:var(--purple);font-family:var(--mono);font-size:9px;border:1px solid rgba(155,89,245,.2);">12 AI Images</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(155,89,245,.1);color:var(--purple);font-family:var(--mono);font-size:9px;border:1px solid rgba(155,89,245,.2);">24 Copies</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(155,89,245,.1);color:var(--purple);font-family:var(--mono);font-size:9px;border:1px solid rgba(155,89,245,.2);">Video Scripts</span>
+        </div>
+      </div>
+      <div class="hiw-step animate-in hover-glow" data-num="04" style="border-color:rgba(0,229,160,.2);">
+        <div class="hiw-step-num" style="background:rgba(0,229,160,.15);color:var(--green);">04</div>
+        <span class="hiw-icon">&#128640;</span>
+        <h3>Review, Approve & Publish</h3>
+        <p>Review every AI-generated piece. Edit captions, switch between A/B/C variants, regenerate images you don't love. Then publish instantly, schedule via Smart Scheduler, or put the entire campaign on Auto-Pilot.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;">
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(0,229,160,.1);color:var(--green);font-family:var(--mono);font-size:9px;border:1px solid rgba(0,229,160,.2);">Quick Share</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(0,229,160,.1);color:var(--green);font-family:var(--mono);font-size:9px;border:1px solid rgba(0,229,160,.2);">Direct Publish</span>
+          <span style="padding:3px 9px;border-radius:5px;background:rgba(0,229,160,.1);color:var(--green);font-family:var(--mono);font-size:9px;border:1px solid rgba(0,229,160,.2);">Auto-Pilot</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLATFORM ICONS ROW -->
+    <div class="animate-in" style="margin-top:48px;background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:16px;text-align:center;">Platforms Covered by ApexMarketer</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(24,119,242,.1);border:1px solid rgba(24,119,242,.25);border-radius:100px;font-size:13px;font-weight:600;"><span style="background:#1877F2;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">f</span>Facebook</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(220,39,67,.1);border:1px solid rgba(220,39,67,.25);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#128247;</span>Instagram</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#9835;</span>TikTok</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.25);border-radius:100px;font-size:13px;font-weight:600;"><span style="background:#0A66C2;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;">in</span>LinkedIn</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#120143;</span>X/Twitter</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.25);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#128172;</span>WhatsApp</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#129525;</span>Threads</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.25);border-radius:100px;font-size:13px;font-weight:600;"><span style="font-size:16px;">&#9654;</span>YouTube</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ LIVE CHARTS & STATS ══════ -->
+<section class="chart-section section-pad" id="impact">
+  <div class="container">
+    <div class="sec-label" style="color:var(--gold);">04 — Real Impact</div>
+    <h2 class="sec-title animate-in">Numbers Don't Lie. <em style="font-style:italic;color:#F5A623;">Results Do.</em></h2>
+    <p class="sec-lead animate-in">ApexMarketer users across Nigeria and West Africa consistently outperform traditional marketing by a significant margin. Here's what the data shows.</p>
+
+    <!-- ROAS STAT CARDS -->
+    <div class="roas-grid">
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(232,25,44,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--fire-grad);border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val tf-val" data-target="4.2" data-suffix="×" style="background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0×</div>
+        <div class="roas-card-lbl">Average ROAS</div>
+        <div class="roas-card-trend" style="color:var(--green);">&#8593; vs 0.3× industry avg</div>
+      </div>
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(0,229,160,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--money-grad);border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val" data-target="60" data-suffix="s" style="color:var(--green);">0s</div>
+        <div class="roas-card-lbl">Campaign Generation</div>
+        <div class="roas-card-trend" style="color:var(--green);">&#8595; vs 8–12 hours manually</div>
+      </div>
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(0,212,255,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyber-grad);border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val" data-target="12" data-suffix="" style="color:var(--cyan);">0</div>
+        <div class="roas-card-lbl">AI Images Per Campaign</div>
+        <div class="roas-card-trend" style="color:var(--cyan);">All platform sizes included</div>
+      </div>
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(245,166,35,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--orange));border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val" data-target="87" data-suffix="%" style="color:var(--gold2);">0%</div>
+        <div class="roas-card-lbl">Cost Reduction vs Agency</div>
+        <div class="roas-card-trend" style="color:var(--green);">Starting ₦9,900/month</div>
+      </div>
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(155,89,245,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--cyan));border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val" data-target="8" data-suffix="+" style="color:var(--purple);">0</div>
+        <div class="roas-card-lbl">Platforms Simultaneously</div>
+        <div class="roas-card-trend" style="color:var(--cyan);">One campaign, everywhere</div>
+      </div>
+      <div class="roas-card animate-in hover-glow" style="border-color:rgba(0,229,160,.2);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--money-grad);border-radius:16px 16px 0 0;"></div>
+        <div class="roas-card-val" data-target="24" data-suffix="" style="color:var(--green);">0</div>
+        <div class="roas-card-lbl">Copy Variants Per Campaign</div>
+        <div class="roas-card-trend" style="color:var(--green);">A/B/C testing built-in</div>
+      </div>
+    </div>
+
+    <!-- CHARTS GRID -->
+    <div class="charts-grid" style="margin-top:32px;">
+
+      <!-- ROAS Comparison Bar Chart -->
+      <div class="chart-card animate-in">
+        <h4>ROAS: ApexMarketer vs Traditional</h4>
+        <div class="chart-sub">Return on Ad Spend comparison across channels</div>
+        <div class="bar-chart" id="roasBarChart">
+          <div class="bar-item">
+            <div class="bar-val" style="color:var(--muted2);">0.3×</div>
+            <div class="bar-fill" id="bc0" style="height:0;background:rgba(128,128,160,.25);" data-h="14%"></div>
+            <div class="bar-lbl">Agency</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-val" style="color:var(--muted2);">0.8×</div>
+            <div class="bar-fill" id="bc1" style="height:0;background:rgba(128,128,160,.35);" data-h="32%"></div>
+            <div class="bar-lbl">Freelancer</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-val" style="color:var(--muted2);">1.1×</div>
+            <div class="bar-fill" id="bc2" style="height:0;background:rgba(128,128,160,.45);" data-h="42%"></div>
+            <div class="bar-lbl">Boosted Posts</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-val" style="color:var(--muted2);">1.8×</div>
+            <div class="bar-fill" id="bc3" style="height:0;background:rgba(0,229,160,.35);" data-h="58%"></div>
+            <div class="bar-lbl">DIY Tools</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-val" style="color:var(--green);font-weight:700;">4.2×</div>
+            <div class="bar-fill" id="bc4" style="height:0;background:linear-gradient(to top,#E8192C,#FF6B2B,#F5A623);" data-h="100%"></div>
+            <div class="bar-lbl" style="color:var(--fire);font-weight:700;">APEX &#9889;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Donut -->
+      <div class="chart-card animate-in">
+        <h4>Revenue Platform Split</h4>
+        <div class="chart-sub">Where ApexMarketer users earn most</div>
+        <div class="donut-wrap">
+          <div class="donut-svg-c">
+            <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="50" fill="none" stroke="var(--bdr2)" stroke-width="18"/>
+              <circle cx="70" cy="70" r="50" fill="none" stroke="#1877F2" stroke-width="18" stroke-dasharray="0 314" stroke-dashoffset="0" id="d0" style="transition:stroke-dasharray 1.5s ease;transform:rotate(-90deg);transform-origin:70px 70px;" opacity=".9"/>
+              <circle cx="70" cy="70" r="50" fill="none" stroke="#E1306C" stroke-width="18" stroke-dasharray="0 314" stroke-dashoffset="0" id="d1" style="transition:stroke-dasharray 1.5s ease .2s;transform:rotate(-90deg);transform-origin:70px 70px;" opacity=".9"/>
+              <circle cx="70" cy="70" r="50" fill="none" stroke="#00D4FF" stroke-width="18" stroke-dasharray="0 314" stroke-dashoffset="0" id="d2" style="transition:stroke-dasharray 1.5s ease .4s;transform:rotate(-90deg);transform-origin:70px 70px;" opacity=".9"/>
+              <circle cx="70" cy="70" r="50" fill="none" stroke="#9B59F5" stroke-width="18" stroke-dasharray="0 314" stroke-dashoffset="0" id="d3" style="transition:stroke-dasharray 1.5s ease .6s;transform:rotate(-90deg);transform-origin:70px 70px;" opacity=".9"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-val" style="background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4.2×</div>
+              <div class="donut-lbl">Avg ROAS</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="dl-row"><div class="dl-dot" style="background:#1877F2;"></div><span class="dl-name">Facebook</span><span class="dl-pct">42%</span></div>
+            <div class="dl-row"><div class="dl-dot" style="background:#E1306C;"></div><span class="dl-name">Instagram</span><span class="dl-pct">28%</span></div>
+            <div class="dl-row"><div class="dl-dot" style="background:#00D4FF;"></div><span class="dl-name">TikTok</span><span class="dl-pct">18%</span></div>
+            <div class="dl-row"><div class="dl-dot" style="background:#9B59F5;"></div><span class="dl-name">Others</span><span class="dl-pct">12%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SVG Line Chart: ROAS Growth over time -->
+      <div class="chart-card animate-in" style="grid-column:1/-1;">
+        <h4>Campaign Performance Growth — 30 Days</h4>
+        <div class="chart-sub">ROAS improvement as AI agents learn your audience patterns</div>
+        <svg viewBox="0 0 700 180" width="100%" style="overflow:visible;margin-top:12px;">
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E8192C" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#E8192C" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="lineGrad2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00E5A0" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#00E5A0" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid -->
+          <line x1="40" y1="10" x2="680" y2="10" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <line x1="40" y1="45" x2="680" y2="45" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <line x1="40" y1="80" x2="680" y2="80" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <line x1="40" y1="115" x2="680" y2="115" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <line x1="40" y1="150" x2="680" y2="150" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+          <!-- Y labels -->
+          <text x="34" y="14" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.7)" text-anchor="end">5×</text>
+          <text x="34" y="84" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.7)" text-anchor="end">3×</text>
+          <text x="34" y="154" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.7)" text-anchor="end">1×</text>
+          <!-- Fill area (APEX) -->
+          <path d="M45,150 L90,138 L135,125 L180,112 L225,98 L270,85 L315,72 L360,65 L405,55 L450,45 L495,38 L540,30 L585,22 L635,15 L635,150 Z" fill="url(#lineGrad)" id="lineFill" style="opacity:0;transition:opacity 1s ease .5s;"/>
+          <!-- APEX Line -->
+          <path d="M45,150 L90,138 L135,125 L180,112 L225,98 L270,85 L315,72 L360,65 L405,55 L450,45 L495,38 L540,30 L585,22 L635,15" fill="none" stroke="#E8192C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="800" id="linePathMain" style="stroke-dashoffset:800;transition:stroke-dashoffset 2s ease;"/>
+          <!-- Industry average line (flat) -->
+          <path d="M45,140 L635,132" fill="none" stroke="rgba(128,128,160,.4)" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <!-- Annotations -->
+          <circle cx="635" cy="15" r="5" fill="#E8192C" id="lineEndDot" style="opacity:0;transition:opacity .3s ease 2s;"/>
+          <text x="643" y="19" font-family="DM Sans" font-size="11" fill="#E8192C" font-weight="700" id="lineEndLabel" style="opacity:0;transition:opacity .3s ease 2s;">4.2× ROAS</text>
+          <text x="643" y="136" font-family="DM Sans" font-size="10" fill="rgba(128,128,160,.6)">Industry avg</text>
+          <!-- X labels -->
+          <text x="45" y="168" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.6)" text-anchor="middle">Day 1</text>
+          <text x="225" y="168" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.6)" text-anchor="middle">Day 7</text>
+          <text x="405" y="168" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.6)" text-anchor="middle">Day 14</text>
+          <text x="585" y="168" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.6)" text-anchor="middle">Day 28</text>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ BENEFITS ══════ -->
+<section class="section-pad" id="benefits">
+  <div class="container">
+    <div class="sec-label" style="color:var(--purple);">05 — Benefits & Opportunities</div>
+    <h2 class="sec-title animate-in">Built to Empower <em style="font-style:italic;color:#9B59F5;">Every Nigerian</em> Who Has Something to Sell.</h2>
+    <p class="sec-lead animate-in">ApexMarketer doesn't just serve businesses. It creates new income streams, bridges market gaps, and accelerates economic mobility across Africa's largest economy.</p>
+
+    <div class="benefits-grid">
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(0,229,160,.15);">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,160,.06),transparent 70%);opacity:0;transition:opacity .3s;" class="bc-glow"></div>
+        <style>.benefit-card:hover .bc-glow{opacity:1!important;}</style>
+        <span class="benefit-card-icon">&#128183;</span>
+        <h3>Slash Marketing Costs by 87%</h3>
+        <p>Replace a ₦500K/month agency with ApexMarketer starting at ₦9,900/month. Same quality output. Faster delivery. Full performance accountability. Every naira tracked, every result measurable.</p>
+        <div class="benefit-highlight" style="background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.2);">&#128176; Starting ₦9,900/month</div>
+      </div>
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(0,212,255,.15);">
+        <span class="benefit-card-icon">&#128241;</span>
+        <h3>One Campaign. Eight Platforms.</h3>
+        <p>Stop managing separate tools for Facebook, Instagram, TikTok, LinkedIn, X, WhatsApp, YouTube, and Threads. ApexMarketer generates platform-native content for all 8 simultaneously — at the right dimensions, tone, and time.</p>
+        <div class="benefit-highlight" style="background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2);">&#9889; 60 seconds. All platforms.</div>
+      </div>
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(245,166,35,.15);">
+        <span class="benefit-card-icon">&#127891;</span>
+        <h3>Zero Learning Curve</h3>
+        <p>ApexMarketer was designed for the Nigerian entrepreneur who knows their product better than any marketer but has never run a Facebook ad. Paste your URL. Click Generate. Review. Publish. Done. No marketing degree required.</p>
+        <div class="benefit-highlight" style="background:rgba(245,166,35,.1);color:var(--gold2);border:1px solid rgba(245,166,35,.2);">&#10003; Works for anyone</div>
+      </div>
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(155,89,245,.15);">
+        <span class="benefit-card-icon">&#128081;</span>
+        <h3>Professional Competitive Edge</h3>
+        <p>Small businesses using ApexMarketer produce marketing content that competes with Dangote-level brands. Hyper-targeted audiences, professional AI visuals, neuromarketing copy — all at startup prices. Level the playing field.</p>
+        <div class="benefit-highlight" style="background:rgba(155,89,245,.1);color:var(--purple);border:1px solid rgba(155,89,245,.2);">&#127919; Enterprise quality</div>
+      </div>
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(232,25,44,.15);">
+        <span class="benefit-card-icon">&#127758;</span>
+        <h3>Pan-African Reach, Local Intelligence</h3>
+        <p>Target by city zone — Lekki, VI, Maitama, Kumasi, Nairobi — or go pan-African. ApexMarketer understands Nigerian consumer psychology, Nollywood cultural references, and African buying patterns that Western tools miss entirely.</p>
+        <div class="benefit-highlight" style="background:rgba(232,25,44,.1);color:var(--fire);border:1px solid rgba(232,25,44,.2);">&#127475;&#127468; African-first intelligence</div>
+      </div>
+
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(0,229,160,.15);">
+        <span class="benefit-card-icon">&#128640;</span>
+        <h3>Multiple Income Streams</h3>
+        <p>The Agency Plan (₦79,900/month) lets you serve 10 clients with 10 separate brand workspaces. Offer AI-powered marketing as a service. Build an agency without hiring staff. ApexMarketer scales your income ceiling infinitely.</p>
+        <div class="benefit-highlight" style="background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.2);">&#128176; Agency plan: 10 clients</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ COMPETITIVE EDGE ══════ -->
+<section class="section-pad" id="edge" style="background:var(--bg2);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);">
+  <div class="container">
+    <div class="sec-label" style="color:var(--fire);">06 — Competitive Edge</div>
+    <h2 class="sec-title animate-in">Why ApexMarketer Wins <em style="font-style:italic;color:#E8192C;">Every Time.</em></h2>
+    <p class="sec-lead animate-in">We compared ApexMarketer against every alternative available to Nigerian businesses. The results speak for themselves.</p>
+
+    <div style="overflow-x:auto;margin-top:32px;" class="animate-in">
+      <table class="edge-table" style="min-width:600px;">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th style="color:var(--fire);">ApexMarketer &#9889;</th>
+            <th>Traditional Agency</th>
+            <th>Generic AI Tools</th>
+            <th>Manual/DIY</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Campaign generation speed</td><td class="edge-apex-col" style="color:var(--green);">60 seconds</td><td style="color:var(--muted);">1–2 weeks</td><td style="color:var(--muted);">2–4 hours</td><td style="color:var(--muted);">8–12 hours</td></tr>
+          <tr><td>Platforms covered simultaneously</td><td class="edge-apex-col" style="color:var(--green);">8+ platforms</td><td style="color:var(--muted);">2–3</td><td style="color:var(--muted);">1–2</td><td style="color:var(--muted);">1–2</td></tr>
+          <tr><td>AI image generation</td><td><span class="edge-check">&#10003;</span></td><td><span class="edge-cross">&#10005;</span></td><td><span style="color:var(--gold);">&#9651; Extra cost</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>Hyper-targeting blueprint</td><td><span class="edge-check">&#10003;</span></td><td><span style="color:var(--gold);">&#9651; Sometimes</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>Nigerian market intelligence</td><td><span class="edge-check">&#10003;</span></td><td><span style="color:var(--gold);">&#9651; If local</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>Auto-publish to all platforms</td><td><span class="edge-check">&#10003;</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>A/B variant testing (3 per post)</td><td><span class="edge-check">&#10003;</span></td><td><span style="color:var(--gold);">&#9651; Extra cost</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>Real-time ROAS analytics</td><td><span class="edge-check">&#10003;</span></td><td><span style="color:var(--gold);">&#9651; Monthly reports</span></td><td><span class="edge-cross">&#10005;</span></td><td><span class="edge-cross">&#10005;</span></td></tr>
+          <tr><td>Monthly cost (entry level)</td><td class="edge-apex-col" style="color:var(--green);">₦9,900</td><td style="color:var(--muted);">₦200,000+</td><td style="color:var(--muted);">₦25,000+</td><td style="color:var(--muted);">₦50,000 (time cost)</td></tr>
+          <tr><td>Average ROAS delivered</td><td class="edge-apex-col" style="color:var(--green);">4.2×</td><td style="color:var(--muted);">0.3–0.8×</td><td style="color:var(--muted);">0.5–1.2×</td><td style="color:var(--muted);">0.3–0.6×</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ECOSYSTEM ORBIT SVG -->
+    <div style="margin-top:60px;text-align:center;" class="animate-in">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);margin-bottom:24px;">ApexMarketer Within the E-WIN Project Ecosystem</div>
+      <div style="max-width:500px;margin:0 auto;position:relative;height:320px;">
+        <svg viewBox="0 0 400 320" width="100%" style="overflow:visible;">
+          <!-- Orbit rings -->
+          <circle cx="200" cy="160" r="140" fill="none" stroke="rgba(232,25,44,.1)" stroke-width="1" stroke-dasharray="4,8"/>
+          <circle cx="200" cy="160" r="100" fill="none" stroke="rgba(245,166,35,.08)" stroke-width="1" stroke-dasharray="3,6"/>
+          <circle cx="200" cy="160" r="60" fill="none" stroke="rgba(0,212,255,.08)" stroke-width="1" stroke-dasharray="2,5"/>
+          <!-- Center: ApexMarketer -->
+          <circle cx="200" cy="160" r="38" fill="rgba(232,25,44,.12)" stroke="rgba(232,25,44,.4)" stroke-width="1.5"/>
+          <text x="200" y="155" font-family="Playfair Display" font-size="9" fill="#E8192C" font-weight="700" text-anchor="middle">APEX</text>
+          <text x="200" y="167" font-family="JetBrains Mono" font-size="7" fill="rgba(232,25,44,.7)" text-anchor="middle">MARKETER</text>
+          <!-- Orbiting E-WIN platforms -->
+          <g id="orbit1" style="animation:none;">
+            <circle cx="200" cy="60" r="26" fill="rgba(0,229,160,.1)" stroke="rgba(0,229,160,.3)" stroke-width="1"/>
+            <text x="200" y="56" font-family="JetBrains Mono" font-size="7" fill="#00E5A0" text-anchor="middle">ProfileX</text>
+            <text x="200" y="66" font-family="JetBrains Mono" font-size="6" fill="rgba(0,229,160,.6)" text-anchor="middle">Career AI</text>
+          </g>
+          <g>
+            <circle cx="340" cy="160" r="26" fill="rgba(0,212,255,.1)" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
+            <text x="340" y="156" font-family="JetBrains Mono" font-size="7" fill="#00D4FF" text-anchor="middle">MedPharm</text>
+            <text x="340" y="167" font-family="JetBrains Mono" font-size="6" fill="rgba(0,212,255,.6)" text-anchor="middle">Health</text>
+          </g>
+          <g>
+            <circle cx="200" cy="262" r="26" fill="rgba(155,89,245,.1)" stroke="rgba(155,89,245,.3)" stroke-width="1"/>
+            <text x="200" y="258" font-family="JetBrains Mono" font-size="7" fill="#9B59F5" text-anchor="middle">VantagePoint</text>
+            <text x="200" y="269" font-family="JetBrains Mono" font-size="6" fill="rgba(155,89,245,.6)" text-anchor="middle">Knowledge</text>
+          </g>
+          <g>
+            <circle cx="60" cy="160" r="26" fill="rgba(245,166,35,.1)" stroke="rgba(245,166,35,.3)" stroke-width="1"/>
+            <text x="60" y="156" font-family="JetBrains Mono" font-size="7" fill="#F5A623" text-anchor="middle">DealX</text>
+            <text x="60" y="167" font-family="JetBrains Mono" font-size="6" fill="rgba(245,166,35,.6)" text-anchor="middle">Hire</text>
+          </g>
+          <g>
+            <circle cx="308" cy="50" r="20" fill="rgba(232,25,44,.08)" stroke="rgba(232,25,44,.2)" stroke-width="1"/>
+            <text x="308" y="47" font-family="JetBrains Mono" font-size="6" fill="rgba(232,25,44,.8)" text-anchor="middle">AkademyX</text>
+            <text x="308" y="57" font-family="JetBrains Mono" font-size="5.5" fill="rgba(232,25,44,.5)" text-anchor="middle">EdTech</text>
+          </g>
+          <g>
+            <circle cx="308" cy="270" r="20" fill="rgba(0,229,160,.08)" stroke="rgba(0,229,160,.2)" stroke-width="1"/>
+            <text x="308" y="267" font-family="JetBrains Mono" font-size="6" fill="rgba(0,229,160,.8)" text-anchor="middle">FinBridge</text>
+            <text x="308" y="277" font-family="JetBrains Mono" font-size="5.5" fill="rgba(0,229,160,.5)" text-anchor="middle">Finance</text>
+          </g>
+          <!-- Connection lines -->
+          <line x1="200" y1="122" x2="200" y2="86" stroke="rgba(0,229,160,.2)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="238" y1="160" x2="314" y2="160" stroke="rgba(0,212,255,.2)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="200" y1="198" x2="200" y2="236" stroke="rgba(155,89,245,.2)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="162" y1="160" x2="86" y2="160" stroke="rgba(245,166,35,.2)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="226" y1="130" x2="294" y2="68" stroke="rgba(232,25,44,.15)" stroke-width="1" stroke-dasharray="3,3"/>
+          <!-- E-WIN label -->
+          <text x="200" y="316" font-family="JetBrains Mono" font-size="9" fill="rgba(128,128,160,.5)" text-anchor="middle" letter-spacing="3">E-WIN PROJECT ECOSYSTEM</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ QUOTES ══════ -->
+<section class="quotes-section section-pad" id="quotes">
+  <div class="container">
+    <div class="sec-label" style="color:var(--cyan);">07 — The Vision</div>
+    <h2 class="sec-title animate-in">Words That <em style="font-style:italic;color:#00D4FF;">Move Empires.</em></h2>
+
+    <div class="quotes-track">
+
+      <div class="quote-block animate-in hover-glow" style="background:rgba(232,25,44,.05);border:1px solid rgba(232,25,44,.15);color:var(--fire);">
+        <div class="quote-text" style="color:var(--txt);">
+          "The best marketing doesn't feel like marketing. It feels like someone finally understood your problem — and solved it before you finished explaining it."
+        </div>
+        <div class="quote-attr">ApexMarketer Principle <span>— The 7-Agent Intelligence</span></div>
+      </div>
+
+      <div class="quote-block animate-in hover-glow" style="background:rgba(0,229,160,.04);border:1px solid rgba(0,229,160,.12);color:var(--green);">
+        <div class="quote-text" style="color:var(--txt);">
+          "In a market where attention is the scarcest currency, the business that controls the narrative across every platform wins every time. ApexMarketer is that control."
+        </div>
+        <div class="quote-attr">On Omni-Channel Dominance <span>— ApexMarketer Strategy</span></div>
+      </div>
+
+      <div class="quote-block animate-in hover-glow" style="background:rgba(155,89,245,.04);border:1px solid rgba(155,89,245,.12);color:var(--purple);">
+        <div class="quote-text" style="color:var(--txt);">
+          "You were not born to spend your genius on writing Instagram captions. You were born to build. Let the AI handle the noise. You focus on the vision."
+        </div>
+        <div class="quote-attr">On Focus and Growth <span>— E-WIN Project Philosophy</span></div>
+      </div>
+
+      <div class="quote-block animate-in hover-glow" style="background:rgba(245,166,35,.04);border:1px solid rgba(245,166,35,.12);color:var(--gold);">
+        <div class="quote-text" style="color:var(--txt);">
+          "Africa's next trillion-dollar businesses will not be built with more hustle. They will be built with better systems. ApexMarketer is that system."
+        </div>
+        <div class="quote-attr">On African Economic Rise <span>— E-WIN Project</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ PRICING PLANS ══════ -->
+<section class="section-pad" id="pricing">
+  <div class="container">
+    <div class="sec-label" style="color:var(--green);">08 — Pricing</div>
+    <h2 class="sec-title animate-in">Your Return On Day One <em style="font-style:italic;color:#00E5A0;">Exceeds Your Investment.</em></h2>
+    <p class="sec-lead animate-in">Three plans built around where you are now and where you're going. No hidden fees. Cancel anytime. Switch plans as you scale.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:40px;">
+
+      <!-- STARTER -->
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(0,229,160,.2);">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:8px;">STARTER</div>
+        <div style="font-family:var(--serif);font-size:40px;font-weight:900;line-height:1;margin-bottom:4px;color:var(--green);">₦9,900<span style="font-size:16px;font-weight:400;color:var(--muted2);">/mo</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">≈ $6 USD &bull; For solopreneurs</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>3 campaigns/month</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>4 platforms</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>50 AI images</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Quick Share publishing</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted2);"><span>&#10005;</span>Auto-Pilot &bull; <span>&#10005;</span>Agency workspace</div>
+        </div>
+      </div>
+
+      <!-- GROWTH (featured) -->
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(232,25,44,.4);background:rgba(232,25,44,.04);position:relative;">
+        <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--fire-grad);color:#fff;font-size:11px;font-weight:700;padding:4px 16px;border-radius:0 0 10px 10px;font-family:var(--mono);letter-spacing:.08em;white-space:nowrap;">&#11088; MOST POPULAR</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--fire);margin-bottom:8px;margin-top:12px;">GROWTH</div>
+        <div style="font-family:var(--serif);font-size:40px;font-weight:900;line-height:1;margin-bottom:4px;background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">₦29,900<span style="font-size:16px;font-weight:400;color:var(--muted2);">/mo</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">≈ $18 USD &bull; For growing businesses</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>15 campaigns/month</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>All 8 platforms</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>250 AI images</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Direct Publish via Ayrshare</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>A/B Testing &bull; Analytics</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Strategy AI chat</div>
+        </div>
+      </div>
+
+      <!-- AGENCY -->
+      <div class="benefit-card animate-in hover-glow" style="border-color:rgba(155,89,245,.3);">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;">AGENCY</div>
+        <div style="font-family:var(--serif);font-size:40px;font-weight:900;line-height:1;margin-bottom:4px;color:var(--purple);">₦79,900<span style="font-size:16px;font-weight:400;color:var(--muted2);">/mo</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">≈ $48 USD &bull; For agencies &amp; scale</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Everything in Growth</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>10 client workspaces</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Auto-Pilot cron scheduling</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>White-label reports</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Weekly performance digests</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:var(--green);">&#10003;</span>Priority support</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ CLOSING CTA ══════ -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg"></div>
+
+  <!-- Final Avatar Group -->
+  <div style="display:flex;justify-content:center;margin-bottom:32px;position:relative;z-index:2;">
+    <div style="display:flex;align-items:center;">
+      <svg width="44" height="44" viewBox="0 0 44 44" style="border-radius:50%;border:2px solid var(--card);margin-right:-10px;z-index:5;background:rgba(232,25,44,.15);" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="16" r="8" fill="#FF6B2B" opacity=".9"/><ellipse cx="22" cy="36" rx="13" ry="9" fill="#E8192C" opacity=".8"/><circle cx="22" cy="16" r="6" fill="#FFB86C"/><circle cx="19" cy="16" r="1.2" fill="#333"/><circle cx="25" cy="16" r="1.2" fill="#333"/><path d="M19.5 19 Q22 21 24.5 19" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+      <svg width="44" height="44" viewBox="0 0 44 44" style="border-radius:50%;border:2px solid var(--card);margin-right:-10px;z-index:4;background:rgba(0,212,255,.15);" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="16" r="8" fill="#00D4FF" opacity=".7"/><ellipse cx="22" cy="36" rx="13" ry="9" fill="#0099AA" opacity=".8"/><circle cx="22" cy="16" r="6" fill="#C9A87A"/><path d="M17 13 Q22 10 27 13" fill="#2C1A0E"/><circle cx="19" cy="16" r="1.2" fill="#333"/><circle cx="25" cy="16" r="1.2" fill="#333"/><path d="M19.5 19 Q22 21.5 24.5 19" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+      <svg width="44" height="44" viewBox="0 0 44 44" style="border-radius:50%;border:2px solid var(--card);margin-right:-10px;z-index:3;background:rgba(0,229,160,.15);" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="16" r="8" fill="#00E5A0" opacity=".7"/><ellipse cx="22" cy="36" rx="13" ry="9" fill="#00AA76" opacity=".8"/><circle cx="22" cy="16" r="6" fill="#B8956A"/><path d="M17 12 Q22 9 27 12" fill="#1C0A04"/><circle cx="19" cy="16" r="1.2" fill="#333"/><circle cx="25" cy="16" r="1.2" fill="#333"/><path d="M19 19 Q22 21.5 25 19" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+      <svg width="44" height="44" viewBox="0 0 44 44" style="border-radius:50%;border:2px solid var(--card);z-index:2;background:rgba(155,89,245,.15);" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="16" r="8" fill="#9B59F5" opacity=".7"/><ellipse cx="22" cy="36" rx="13" ry="9" fill="#7B39D5" opacity=".8"/><circle cx="22" cy="16" r="6" fill="#D4A574"/><circle cx="19" cy="16" r="1.2" fill="#333"/><circle cx="25" cy="16" r="1.2" fill="#333"/><path d="M19 19 Q22 21.5 25 19" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+      <div style="margin-left:12px;font-size:13px;font-weight:600;color:var(--muted);">+2,400 businesses already winning</div>
+    </div>
+  </div>
+
+  <h2 class="cta-title">
+    <span style="display:block;font-size:.6em;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--fire);margin-bottom:12px;font-weight:400;">Your Marketing Revolution Starts Now</span>
+    <span style="display:block;background:var(--fire-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Stop Competing.</span>
+    <span style="display:block;color:#fff;">Start Dominating.</span>
+  </h2>
+
+  <p class="cta-sub">You have the product. You have the vision. ApexMarketer gives you the unfair advantage. Generate your first complete AI campaign in 60 seconds — free on your trial.</p>
+
+  <div class="cta-actions">
+    <button class="btn-primary" style="font-size:16px;padding:16px 40px;" onclick="window.open('https://apexmarketer.ewinproject.org','_blank')">&#9889; Start Free — ApexMarketer</button>
+    <a href="https://wa.me/2349025152818" target="_blank" class="cta-whatsapp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      WhatsApp Us
+    </a>
+  </div>
+
+  <div class="cta-domain" style="margin-top:28px;">
+    &#127760; <a href="https://apexmarketer.ewinproject.org" target="_blank">apexmarketer.ewinproject.org</a>
+    &nbsp;&bull;&nbsp; &#128222; <a href="https://wa.me/2349025152818">+234-902-515-2818</a> (WhatsApp only)
+  </div>
+</section>
+
+
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="footer-logo">ApexMarketer</div>
+  <div class="footer-eco">A Platform by the E-WIN Project Ecosystem</div>
+  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;font-size:12px;">
+    <span>ProfileX</span><span>MedPharmRx</span><span>VantagePoint</span><span>DealXHire</span><span>AkademyX</span>
+  </div>
+  <div>&#169; 2025 E-WIN Project &bull; <a href="https://apexmarketer.ewinproject.org" style="color:var(--cyan);text-decoration:none;">apexmarketer.ewinproject.org</a> &bull; All rights reserved.</div>
+</footer>
+
+
+<script>
+// NAV
+function toggleNav(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navDrawer').classList.toggle('open');
+}
+function scrollTo(id){
+  var el=document.querySelector(id);
+  if(el){el.scrollIntoView({behavior:'smooth'});toggleNav();}
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.nav-drawer')&&!e.target.closest('.hamburger')){
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('navDrawer').classList.remove('open');
+  }
+});
+
+// HERO COUNTERS
+function animateCounter(el,target,suffix,decimals,duration){
+  var start=performance.now();
+  function tick(now){
+    var p=Math.min((now-start)/duration,1);
+    var ease=1-Math.pow(1-p,4);
+    var val=target*ease;
+    el.textContent=(decimals>0?val.toFixed(decimals):Math.floor(val))+suffix;
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+setTimeout(function(){
+  animateCounter(document.getElementById('statCampaigns'),14700,'',0,2000);
+  animateCounter(document.getElementById('statRoas'),4.2,'×',1,1800);
+  animateCounter(document.getElementById('statTime'),60,'s',0,1400);
+  animateCounter(document.getElementById('statPlatforms'),8,'',0,1200);
+},400);
+
+// ROAS STAT CARD COUNTERS
+function animateStatCards(){
+  document.querySelectorAll('[data-target]').forEach(function(el){
+    var t=parseFloat(el.getAttribute('data-target'));
+    var s=el.getAttribute('data-suffix')||'';
+    var dec=(t%1!==0)?1:0;
+    animateCounter(el,t,s,dec,1600);
+  });
+}
+
+// INTERSECTION OBSERVER
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      // Charts
+      if(entry.target.id==='roasBarChart')animateBars();
+      if(entry.target.classList.contains('roas-card'))animateStatCards();
+      // Line chart
+      var lp=document.getElementById('linePathMain');
+      var lf=document.getElementById('lineFill');
+      var ld=document.getElementById('lineEndDot');
+      var ll=document.getElementById('lineEndLabel');
+      if(lp&&entry.target===lp.closest('.chart-card')){
+        lp.style.strokeDashoffset='0';
+        if(lf)lf.style.opacity='1';
+        if(ld)ld.style.opacity='1';
+        if(ll)ll.style.opacity='1';
+      }
+      // Donut
+      if(entry.target.querySelector && entry.target.querySelector('#d0')){animateDonut();}
+      io.unobserve(entry.target);
+    }
+  });
+},{threshold:.2});
+
+document.querySelectorAll('.animate-in,.roas-card,#roasBarChart,.chart-card').forEach(function(el){io.observe(el);});
+
+// BAR CHART
+function animateBars(){
+  var bars=[{id:'bc0',h:'14%'},{id:'bc1',h:'32%'},{id:'bc2',h:'42%'},{id:'bc3',h:'58%'},{id:'bc4',h:'100%'}];
+  bars.forEach(function(b,i){
+    setTimeout(function(){
+      var el=document.getElementById(b.id);
+      if(el)el.style.height=b.h;
+      el.style.transition='height 1.2s cubic-bezier(.34,1.56,.64,1)';
+    },i*120);
+  });
+}
+
+// DONUT CHART
+function animateDonut(){
+  var total=314;
+  var data=[0.42,0.28,0.18,0.12];
+  var colors=['#1877F2','#E1306C','#00D4FF','#9B59F5'];
+  var offset=0;
+  data.forEach(function(pct,i){
+    var dash=total*pct;
+    var el=document.getElementById('d'+i);
+    if(!el)return;
+    el.style.strokeDashoffset=-offset;
+    el.style.strokeDasharray='0 '+total;
+    setTimeout(function(){el.style.strokeDasharray=dash+' '+(total-dash);},100);
+    offset+=dash;
+  });
+}
+
+// SIMULATOR
+var simRunning=false;
+function runSimulator(){
+  if(simRunning)return;
+  simRunning=true;
+  var prog=document.getElementById('simProgress');
+  var out=document.getElementById('simOutput');
+  prog.classList.add('visible');
+  out.classList.remove('visible');
+  // Reset bars
+  for(var i=0;i<7;i++){
+    var b=document.getElementById('sb'+i);
+    var s=document.getElementById('ss'+i);
+    if(b)b.style.width='0%';
+    if(s)s.textContent='0%';
+  }
+  var statuses=['Extracting product DNA...','Writing copy variants...','Generating AI images...','Building targeting blueprint...','Mapping campaign funnel...','Computing peak times...','Syncing analytics...'];
+  var idx=0;
+  function runNext(){
+    if(idx>=7){
+      document.getElementById('simStatusText').textContent='Campaign generated successfully!';
+      setTimeout(function(){prog.classList.remove('visible');out.classList.add('visible');simRunning=false;},500);
+      return;
+    }
+    document.getElementById('simStatusText').textContent=statuses[idx];
+    var bar=document.getElementById('sb'+idx);
+    var stat=document.getElementById('ss'+idx);
+    var w=0;
+    var iv=setInterval(function(){
+      w=Math.min(w+Math.random()*15,100);
+      if(bar)bar.style.width=w+'%';
+      if(stat)stat.textContent=Math.floor(w)+'%';
+      if(w>=100){clearInterval(iv);idx++;setTimeout(runNext,200);}
+    },80);
+  }
+  setTimeout(runNext,300);
+}
+function resetSimulator(){
+  document.getElementById('simProgress').classList.remove('visible');
+  document.getElementById('simOutput').classList.remove('visible');
+  simRunning=false;
+}
+
+// AGENT PIPELINE ANIMATION (auto on scroll)
+var agentIO=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){animateAgents();agentIO.unobserve(e.target);}
+  });
+},{threshold:.3});
+var pip=document.getElementById('agentPipeline');
+if(pip)agentIO.observe(pip);
+function animateAgents(){
+  var statuses=['Analyzing...','Writing...','Generating...','Targeting...','Strategizing...','Scheduling...','Monitoring...'];
+  for(var i=0;i<7;i++){
+    (function(idx){
+      setTimeout(function(){
+        var bar=document.getElementById('ab'+idx);
+        var stat=document.getElementById('as'+idx);
+        var row=document.querySelector('[data-idx="'+idx+'"]');
+        if(stat)stat.textContent=statuses[idx];
+        if(row)row.classList.add('active-agent');
+        var w=0;
+        var iv=setInterval(function(){
+          w=Math.min(w+Math.random()*12,100);
+          if(bar)bar.style.width=w+'%';
+          if(w>=100){
+            clearInterval(iv);
+            if(stat)stat.textContent='Done ✓';
+            if(row)row.classList.remove('active-agent');
+          }
+        },120);
+      },idx*400);
+    })(i);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ProfileX — Your Career. Vaulted. Accelerated.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════ TOKENS */
+:root {
+  --navy:#0d0d1f; --navy2:#151528; --navy3:#1e1e38;
+  --gold:#c9a84c; --gold2:#e8c97a; --gold3:#f5eed8; --goldDark:#8a6b1e;
+  --teal:#1a8870; --teal2:#22b592; --teal3:#d4f5ed;
+  --surface:#f5f3ee; --card:#ffffff; --border:#e2ddd4;
+  --text:#0d0d1f; --body:#3a3630; --muted:#7a7570;
+  --red:#e74c3c; --green:#16a34a; --purple:#5b21b6;
+  --r:12px; --r2:20px; --r3:32px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(201,168,76,.3);color:#fff}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* ═══════════════════════════════════════════ UTILITIES */
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+.text-gold{color:var(--gold2)}
+.text-teal{color:var(--teal2)}
+.serif{font-family:'Playfair Display',serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.hidden{opacity:0;transform:translateY(30px)}
+.visible{opacity:1;transform:translateY(0);transition:opacity .7s ease,transform .7s ease}
+
+/* ═══════════════════════════════════════════ PARTICLES */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;pointer-events:none;animation:particleDrift linear infinite}
+@keyframes particleDrift{
+  0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:.6}
+  100%{transform:translateY(-10vh) translateX(var(--dx)) scale(1);opacity:0}
+}
+
+/* ═══════════════════════════════════════════ HERO */
+#hero{
+  min-height:100vh; position:relative; display:flex;
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:100px 24px 60px; overflow:hidden; z-index:1;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(201,168,76,.18) 0%,transparent 60%),
+             radial-gradient(ellipse 80% 60% at 0% 100%,rgba(26,136,112,.15) 0%,transparent 50%),
+             radial-gradient(ellipse 60% 50% at 100% 80%,rgba(91,33,182,.12) 0%,transparent 50%),
+             linear-gradient(180deg,#0d0d1f 0%,#0a0a1a 100%);
+}
+.hero-grid{
+  position:absolute;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 20%,transparent 75%);
+}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:900px}
+
+/* Favicon logo */
+.hero-logo{
+  display:inline-flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.25);
+  border-radius:50px;padding:8px 20px 8px 8px;
+  margin-bottom:32px;backdrop-filter:blur(8px);
+}
+.logo-mark{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-weight:900;font-size:18px;color:var(--navy);
+  box-shadow:0 4px 16px rgba(201,168,76,.4);
+  flex-shrink:0;
+}
+.logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff}
+.logo-text span{color:var(--gold2)}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);
+  border-radius:30px;padding:6px 18px;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:24px;
+}
+.eyebrow-dot{width:6px;height:6px;background:var(--teal2);border-radius:50%;animation:blink 1.8s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+.hero-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,7vw,78px);font-weight:900;line-height:1.0;
+  letter-spacing:-.02em;margin-bottom:20px;
+}
+.hero-title .line1{display:block;color:#fff}
+.hero-title .line2{
+  display:block;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 40%,var(--teal2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-hook{
+  font-size:clamp(15px,2.2vw,19px);color:rgba(255,255,255,.7);
+  line-height:1.75;max-width:680px;margin:0 auto 40px;font-weight:300;
+}
+.hero-hook strong{color:rgba(255,255,255,.95);font-weight:600}
+
+/* Live stats row */
+.live-stats{
+  display:flex;gap:20px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:48px;
+}
+.live-stat{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r2);padding:18px 24px;text-align:center;
+  backdrop-filter:blur(8px);transition:.3s;min-width:110px;
+  position:relative;overflow:hidden;
+}
+.live-stat::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,.08),transparent);
+  opacity:0;transition:.3s;
+}
+.live-stat:hover::before{opacity:1}
+.live-stat:hover{border-color:rgba(201,168,76,.3);transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.15)}
+.stat-num{
+  font-family:'Playfair Display',serif;font-size:28px;font-weight:800;
+  color:var(--gold2);line-height:1;margin-bottom:4px;
+}
+.stat-label{font-size:11px;color:rgba(255,255,255,.5);font-weight:500;letter-spacing:.04em}
+
+.hero-cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 30px;border-radius:50px;border:none;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .25s;text-decoration:none;white-space:nowrap;
+}
+.btn:active{transform:scale(.96)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--navy);box-shadow:0 6px 30px rgba(201,168,76,.4);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(201,168,76,.55)}
+.btn-outline{
+  background:transparent;color:#fff;
+  border:2px solid rgba(255,255,255,.2);
+}
+.btn-outline:hover{border-color:rgba(201,168,76,.5);color:var(--gold2);background:rgba(201,168,76,.06)}
+
+.scroll-hint{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  animation:fadeFloat 2.5s ease-in-out infinite;
+}
+@keyframes fadeFloat{0%,100%{opacity:.4;transform:translateX(-50%) translateY(0)}50%{opacity:.8;transform:translateX(-50%) translateY(-6px)}}
+.scroll-mouse{
+  width:22px;height:36px;border:2px solid rgba(255,255,255,.2);
+  border-radius:12px;display:flex;align-items:flex-start;justify-content:center;padding-top:5px;
+}
+.scroll-wheel{width:3px;height:8px;background:var(--gold);border-radius:2px;animation:wheel 1.8s ease infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:1}100%{transform:translateY(12px);opacity:0}}
+
+/* ═══════════════════════════════════════════ SECTION BASE */
+section{position:relative;z-index:1;padding:100px 0}
+.section-dark{background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%)}
+.section-darker{background:var(--navy2)}
+.section-light{background:var(--surface);color:var(--text)}
+.section-mid{background:var(--navy3)}
+
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.eyebrow-line{width:32px;height:2px;background:var(--gold);border-radius:1px}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,4.5vw,48px);font-weight:800;
+  line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;
+}
+.section-sub{font-size:clamp(14px,1.8vw,16px);line-height:1.8;opacity:.75;max-width:600px}
+
+/* ═══════════════════════════════════════════ PROBLEM SECTION */
+#problem{padding:100px 0;background:linear-gradient(180deg,var(--navy2) 0%,#100a20 100%);overflow:hidden}
+
+/* Animated problem counter */
+.problem-crisis{
+  background:linear-gradient(135deg,rgba(231,76,60,.08),rgba(231,76,60,.03));
+  border:1px solid rgba(231,76,60,.2);border-radius:var(--r3);
+  padding:48px;margin-bottom:48px;text-align:center;position:relative;overflow:hidden;
+}
+.problem-crisis::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 30px,rgba(231,76,60,.02) 30px,rgba(231,76,60,.02) 31px);
+}
+.crisis-num{
+  font-family:'Playfair Display',serif;font-size:clamp(56px,10vw,96px);
+  font-weight:900;color:var(--red);line-height:1;position:relative;z-index:1;
+}
+.crisis-label{font-size:clamp(16px,2.5vw,22px);color:rgba(255,255,255,.7);margin-top:8px;position:relative;z-index:1}
+
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.pain-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r2);padding:28px;position:relative;overflow:hidden;
+  transition:.3s;
+}
+.pain-card:hover{
+  border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.04);
+  transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.pain-icon{font-size:36px;margin-bottom:14px}
+.pain-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.pain-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.75}
+.pain-person{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;padding:5px 12px;
+  background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.2);
+  border-radius:20px;font-size:11px;color:rgba(255,255,255,.6);font-weight:600;
+}
+
+/* ═══════════════════════════════════════════ AVATAR ILLUSTRATION */
+/* Custom SVG Avatars via CSS */
+.avatar-scene{
+  width:100%;max-width:420px;margin:0 auto;
+  position:relative;height:320px;
+}
+.avatar-wrap{position:relative;display:inline-flex;flex-direction:column;align-items:center}
+.avatar-svg{width:90px;height:90px;border-radius:50%;border:3px solid;overflow:hidden;position:relative}
+.avatar-label{
+  font-size:11px;font-weight:700;color:rgba(255,255,255,.6);
+  margin-top:6px;text-align:center;letter-spacing:.04em;max-width:90px;
+}
+.avatar-emotion{
+  position:absolute;top:-8px;right:-8px;
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;background:var(--navy);border:2px solid var(--navy);
+}
+
+/* ═══════════════════════════════════════════ TURNING POINT */
+#solution{padding:100px 0;background:linear-gradient(180deg,#100a20 0%,var(--navy) 50%,var(--navy3) 100%)}
+.solution-reveal{
+  background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(26,136,112,.08));
+  border:1px solid rgba(201,168,76,.25);border-radius:var(--r3);
+  padding:56px 48px;margin-bottom:48px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.solution-reveal::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.12),transparent 60%);
+  pointer-events:none;
+}
+.solution-big{
+  font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,52px);
+  font-weight:900;line-height:1.1;position:relative;z-index:1;
+  background:linear-gradient(135deg,#fff 0%,var(--gold2) 50%,var(--teal2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.solution-sub{
+  font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,.7);
+  line-height:1.75;max-width:640px;margin:16px auto 0;position:relative;z-index:1;
+}
+
+/* Feature modules */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.module-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r2);padding:28px;transition:.3s;position:relative;overflow:hidden;cursor:default;
+}
+.module-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  transform:scaleX(0);transform-origin:left;transition:transform .4s;
+}
+.module-card.gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.module-card.teal::before{background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.module-card.purple::before{background:linear-gradient(90deg,var(--purple),#8b5cf6)}
+.module-card:hover::before{transform:scaleX(1)}
+.module-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,.3);border-color:rgba(201,168,76,.2)}
+.module-icon-wrap{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:16px;
+}
+.module-icon-wrap.gold{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.2)}
+.module-icon-wrap.teal{background:rgba(26,136,112,.12);border:1px solid rgba(26,136,112,.2)}
+.module-icon-wrap.purple{background:rgba(91,33,182,.12);border:1px solid rgba(91,33,182,.2)}
+.module-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:8px}
+.module-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.75}
+.module-badge{
+  display:inline-block;margin-top:12px;padding:3px 10px;
+  border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.05em;
+  background:rgba(201,168,76,.12);color:var(--gold2);border:1px solid rgba(201,168,76,.2);
+}
+
+/* ═══════════════════════════════════════════ HOW IT WORKS */
+#howitworks{padding:100px 0;background:var(--navy);overflow:hidden}
+.steps-timeline{position:relative;max-width:800px;margin:0 auto}
+.steps-timeline::before{
+  content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--gold) 0%,var(--teal2) 50%,rgba(255,255,255,.1) 100%);
+}
+.step-item{
+  display:flex;align-items:flex-start;gap:28px;
+  margin-bottom:48px;position:relative;
+  opacity:0;transform:translateX(-20px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.step-item.step-visible{opacity:1;transform:none}
+.step-num-wrap{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-weight:900;font-size:18px;color:var(--navy);
+  flex-shrink:0;box-shadow:0 0 0 6px rgba(201,168,76,.12),0 0 0 12px rgba(201,168,76,.05);
+  position:relative;z-index:1;
+}
+.step-content{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r2);padding:28px;flex:1;transition:.3s;
+}
+.step-content:hover{border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.04)}
+.step-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.step-desc{font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.75}
+.step-note{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;padding:5px 12px;
+  background:rgba(26,136,112,.12);border:1px solid rgba(26,136,112,.25);
+  border-radius:20px;font-size:11px;color:var(--teal2);font-weight:600;
+}
+
+/* ═══════════════════════════════════════════ LIVE CHART */
+#analytics{padding:100px 0;background:var(--navy2)}
+.chart-container{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r3);padding:36px;margin-bottom:32px;
+  position:relative;overflow:hidden;
+}
+.chart-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
+.chart-subtitle{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px}
+.chart-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.6)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.chart-svg-wrap{width:100%;overflow:hidden}
+
+/* Bar chart */
+.bar-group{display:flex;gap:8px;align-items:flex-end;height:200px;padding:0 4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.bar-track{
+  flex:1;width:100%;border-radius:6px 6px 0 0;
+  position:relative;overflow:hidden;background:rgba(255,255,255,.05);
+  min-height:8px;
+}
+.bar-fill{
+  position:absolute;bottom:0;left:0;right:0;border-radius:6px 6px 0 0;
+  transition:height 1.4s cubic-bezier(.23,1,.32,1);height:0;
+}
+.bar-label{font-size:10px;color:rgba(255,255,255,.5);text-align:center;white-space:nowrap}
+.bar-val{
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:10px;font-weight:700;color:#fff;white-space:nowrap;
+  opacity:0;transition:opacity .5s .8s;
+}
+.bar-fill.animated .bar-val{opacity:1}
+
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.donut-svg-cont{position:relative;width:180px;height:180px;flex-shrink:0;margin:0 auto}
+.donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.donut-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;color:var(--gold2)}
+.donut-sub{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-top:2px}
+.donut-labels{display:flex;flex-direction:column;gap:10px;flex:1}
+.donut-label-item{display:flex;align-items:center;gap:10px}
+.donut-label-color{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.donut-label-name{font-size:13px;color:rgba(255,255,255,.7)}
+.donut-label-pct{font-size:13px;font-weight:700;color:#fff;margin-left:auto}
+
+/* Animated counter */
+.counter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.counter-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r2);padding:24px;text-align:center;transition:.3s;
+}
+.counter-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.1)}
+.counter-num{
+  font-family:'Playfair Display',serif;font-size:36px;font-weight:900;
+  color:var(--gold2);line-height:1;margin-bottom:6px;
+}
+.counter-label{font-size:12px;color:rgba(255,255,255,.5);font-weight:500}
+
+/* ═══════════════════════════════════════════ AVATAR PERSONAS */
+#personas{padding:100px 0;background:linear-gradient(180deg,var(--navy2) 0%,var(--navy) 100%)}
+.persona-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.persona-card{
+  border-radius:var(--r2);overflow:hidden;transition:.3s;
+  position:relative;cursor:default;
+}
+.persona-card:hover{transform:translateY(-6px);box-shadow:0 24px 72px rgba(0,0,0,.4)}
+.persona-card-top{padding:28px;position:relative;overflow:hidden}
+.persona-card-top::after{
+  content:'';position:absolute;right:-30px;bottom:-30px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,.06);pointer-events:none;
+}
+.p-avatar-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.p-avatar{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);
+  position:relative;
+}
+.p-avatar-badge{
+  position:absolute;bottom:-4px;right:-4px;
+  width:20px;height:20px;border-radius:50%;border:2px solid;
+  display:flex;align-items:center;justify-content:center;font-size:9px;
+}
+.p-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff}
+.p-role{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.p-tagline{
+  font-size:13.5px;color:rgba(255,255,255,.85);font-style:italic;
+  line-height:1.65;border-left:3px solid rgba(255,255,255,.3);padding-left:12px;
+}
+.persona-card-bottom{padding:20px 28px;background:rgba(255,255,255,.05)}
+.p-hook{
+  font-size:12px;font-weight:700;color:var(--gold2);
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;
+}
+.p-hook-text{font-size:13.5px;color:#fff;font-style:italic;line-height:1.6}
+
+/* ═══════════════════════════════════════════ BENEFITS */
+#benefits{padding:100px 0;background:var(--surface);color:var(--text)}
+.benefit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.benefit-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:28px;transition:.3s;
+  position:relative;overflow:hidden;
+}
+.benefit-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,.05),transparent);
+  opacity:0;transition:.3s;
+}
+.benefit-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(201,168,76,.15);
+  border-color:rgba(201,168,76,.4);
+}
+.benefit-card:hover::before{opacity:1}
+.benefit-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));
+  border:1px solid rgba(201,168,76,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:16px;transition:.3s;
+}
+.benefit-card:hover .benefit-icon{background:linear-gradient(135deg,var(--gold),var(--gold2));transform:scale(1.05)}
+.benefit-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.benefit-desc{font-size:13px;color:var(--body);line-height:1.75}
+.benefit-tag{
+  display:inline-block;margin-top:12px;padding:3px 10px;
+  border-radius:20px;font-size:10.5px;font-weight:700;
+  background:rgba(26,136,112,.1);color:var(--teal);border:1px solid rgba(26,136,112,.2);
+}
+
+/* ═══════════════════════════════════════════ QUOTE CAROUSEL */
+#quotes{padding:80px 0;background:var(--navy3);overflow:hidden}
+.quote-track{
+  display:flex;gap:24px;
+  animation:marquee 25s linear infinite;
+  width:max-content;
+}
+.quote-track:hover{animation-play-state:paused}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.quote-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r2);padding:28px 32px;min-width:320px;max-width:360px;
+  flex-shrink:0;position:relative;transition:.3s;
+}
+.quote-card::before{
+  content:'\201C';position:absolute;top:12px;left:20px;
+  font-size:48px;color:rgba(201,168,76,.2);
+  font-family:'Playfair Display',serif;line-height:1;
+}
+.quote-text{
+  font-family:'Playfair Display',serif;font-size:15px;font-style:italic;
+  color:rgba(255,255,255,.85);line-height:1.75;padding-top:16px;
+}
+.quote-attr{
+  margin-top:14px;font-size:11px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--gold);
+}
+
+/* ═══════════════════════════════════════════ PRICING */
+#pricing{padding:100px 0;background:var(--navy)}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:720px;margin:0 auto}
+.pricing-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r2);padding:36px;position:relative;transition:.3s;overflow:hidden;
+}
+.pricing-card.featured{
+  border-color:var(--gold);
+  background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(26,136,112,.06));
+}
+.pricing-card.featured::before{
+  content:'Best Value';position:absolute;top:20px;right:20px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--navy);padding:4px 14px;border-radius:20px;
+  font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+}
+.pricing-plan{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:16px}
+.pricing-price{display:flex;align-items:flex-end;gap:4px;margin-bottom:6px}
+.pricing-currency{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:rgba(255,255,255,.6);padding-bottom:6px}
+.pricing-amount{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:#fff;line-height:1}
+.pricing-period{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px}
+.pricing-save{font-size:12px;color:var(--teal2);font-weight:600;margin-bottom:24px}
+.pricing-features{list-style:none;margin-bottom:28px;display:flex;flex-direction:column;gap:10px}
+.pricing-features li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:rgba(255,255,255,.75)}
+.pricing-check{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);
+  display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:var(--green);
+}
+.pricing-cta{width:100%}
+
+/* ═══════════════════════════════════════════ CLOSING CTA */
+#closing{
+  padding:120px 24px;
+  background:radial-gradient(ellipse 120% 100% at 50% 50%,rgba(201,168,76,.12) 0%,rgba(26,136,112,.08) 40%,var(--navy) 70%);
+  text-align:center;position:relative;overflow:hidden;
+}
+#closing::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 50%,rgba(201,168,76,.06),transparent 40%),
+    radial-gradient(circle at 80% 50%,rgba(26,136,112,.06),transparent 40%);
+}
+.closing-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,6vw,68px);font-weight:900;
+  line-height:1.05;letter-spacing:-.025em;
+  margin-bottom:20px;position:relative;z-index:1;
+}
+.closing-sub{
+  font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,.65);
+  line-height:1.8;max-width:620px;margin:0 auto 40px;
+  position:relative;z-index:1;
+}
+.closing-domain{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:10px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:14px;
+  color:var(--gold2);margin-bottom:32px;position:relative;z-index:1;
+}
+.closing-cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:40px}
+.closing-contact{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:14px;color:rgba(255,255,255,.5);
+  position:relative;z-index:1;
+}
+.wa-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 22px;background:#25d366;color:#fff;
+  border-radius:50px;border:none;font-size:13px;font-weight:700;
+  cursor:pointer;transition:.25s;text-decoration:none;
+}
+.wa-btn:hover{background:#1da851;transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.35)}
+
+/* ═══════════════════════════════════════════ FOOTER */
+footer{
+  background:var(--navy2);border-top:1px solid rgba(255,255,255,.06);
+  padding:40px 24px;text-align:center;
+}
+.footer-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px}
+.footer-text{font-size:12px;color:rgba(255,255,255,.35);line-height:1.7}
+.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.footer-link{font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;transition:.15s}
+.footer-link:hover{color:var(--gold2)}
+
+/* ═══════════════════════════════════════════ SIMULATOR */
+.vault-simulator{
+  background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);
+  border-radius:var(--r3);padding:40px;margin:32px 0;position:relative;overflow:hidden;
+}
+.vault-sim-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.vault-sim-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px}
+.sim-steps{display:flex;flex-direction:column;gap:12px}
+.sim-step{
+  display:flex;align-items:center;gap:14px;padding:14px 20px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r);transition:.5s;
+}
+.sim-step.active{
+  background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.3);
+  box-shadow:0 0 20px rgba(201,168,76,.1);
+}
+.sim-step.done{
+  background:rgba(22,163,74,.06);border-color:rgba(22,163,74,.2);
+}
+.sim-step-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center}
+.sim-step-label{font-size:14px;font-weight:500;color:rgba(255,255,255,.7);transition:.3s}
+.sim-step.active .sim-step-label{color:#fff;font-weight:700}
+.sim-step.done .sim-step-label{color:rgba(255,255,255,.5)}
+.sim-step-status{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em}
+.sim-step.active .sim-step-status{color:var(--gold2)}
+.sim-step.done .sim-step-status{color:var(--teal2)}
+.sim-controls{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.sim-btn{
+  padding:10px 22px;border-radius:30px;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;transition:.2s;
+}
+.sim-start{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy)}
+.sim-reset{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1)}
+.sim-start:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.35)}
+.sim-reset:hover{background:rgba(255,255,255,.1);color:#fff}
+.sim-progress-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-bottom:20px;overflow:hidden}
+.sim-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--teal2));border-radius:2px;width:0;transition:width .6s ease}
+
+/* AI Score gauge */
+.score-gauge{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.gauge-svg-wrap{position:relative;width:160px;height:160px;flex-shrink:0;margin:0 auto}
+.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge-score{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold2)}
+.gauge-label{font-size:11px;color:rgba(255,255,255,.5)}
+.gauge-desc{flex:1}
+.gauge-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.gauge-text{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7}
+.gauge-indicator{display:flex;gap:8px;align-items:center;margin-top:10px}
+.gauge-dot{width:8px;height:8px;border-radius:50%}
+.gauge-dot-label{font-size:12px;color:rgba(255,255,255,.6)}
+
+/* ═══════════════════════════════════════════ ANNOTATED SVG */
+.annotated-map{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r2);padding:28px;margin:24px 0;position:relative;overflow:hidden;
+}
+.map-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.map-sub{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:20px}
+
+/* ═══════════════════════════════════════════ GLOW EFFECTS */
+.glow-gold{box-shadow:0 0 40px rgba(201,168,76,.2),0 0 80px rgba(201,168,76,.06)}
+.glow-teal{box-shadow:0 0 40px rgba(26,136,112,.2),0 0 80px rgba(26,136,112,.06)}
+.glow-text{text-shadow:0 0 30px rgba(201,168,76,.4),0 0 60px rgba(201,168,76,.15)}
+
+/* ═══════════════════════════════════════════ RESPONSIVE */
+@media(max-width:768px){
+  section{padding:72px 0}
+  .hero-title{letter-spacing:-.01em}
+  .live-stats{gap:12px}
+  .live-stat{padding:14px 16px;min-width:90px}
+  .stat-num{font-size:22px}
+  .problem-crisis{padding:32px 20px}
+  .solution-reveal{padding:36px 24px}
+  .vault-simulator{padding:28px 20px}
+  .donut-wrap{flex-direction:column}
+  .donut-svg-cont{width:160px;height:160px}
+  .steps-timeline::before{left:20px}
+  .step-num-wrap{width:42px;height:42px;font-size:16px}
+  .score-gauge{flex-direction:column}
+  .gauge-svg-wrap{margin:0}
+}
+@media(max-width:480px){
+  .container{padding:0 16px}
+  .hero-cta-row{flex-direction:column;align-items:center}
+  .btn{width:100%;justify-content:center}
+  .closing-cta-row{flex-direction:column;align-items:center}
+  .pricing-grid{grid-template-columns:1fr}
+  .pain-grid,.module-grid,.benefit-grid{grid-template-columns:1fr}
+  .persona-cards{grid-template-columns:1fr}
+  .bar-group{gap:4px}
+  .bar-label{font-size:8px}
+  .hero-stats{gap:8px}
+  .live-stat{min-width:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div id="particles"></div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+
+    <div class="hero-logo">
+      <div class="logo-mark">PX</div>
+      <span class="logo-text">Profile<span>X</span></span>
+    </div>
+
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Nigeria's First Results-as-a-Service Career Platform · E-WIN Project
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line1">Your Career.</span>
+      <span class="line2">Vaulted. Accelerated.</span>
+    </h1>
+
+    <p class="hero-hook">
+      Over <strong>53 million Nigerians</strong> are unemployed or underemployed —
+      not because they lack skill, but because they are <strong>unseen, under-presented,
+      and under-equipped.</strong> ProfileX changes everything with a secure AI vault
+      that works 24/7 so you don't have to.
+    </p>
+
+    <div class="live-stats">
+      <div class="live-stat">
+        <div class="stat-num" data-count="53" data-suffix="M+">0</div>
+        <div class="stat-label">Jobseekers</div>
+      </div>
+      <div class="live-stat">
+        <div class="stat-num" data-count="100" data-suffix="+">0</div>
+        <div class="stat-label">Job Sources</div>
+      </div>
+      <div class="live-stat">
+        <div class="stat-num" data-count="7" data-suffix="">0</div>
+        <div class="stat-label">AI Modules</div>
+      </div>
+      <div class="live-stat">
+        <div class="stat-num" data-count="95" data-suffix="%+">0</div>
+        <div class="stat-label">Human Score</div>
+      </div>
+      <div class="live-stat">
+        <div class="stat-num" data-count="1000" data-prefix="₦" data-suffix="">₦0</div>
+        <div class="stat-label">Per Month</div>
+      </div>
+    </div>
+
+    <div class="hero-cta-row">
+      <a href="https://profilex.ewinproject.org" target="_blank" class="btn btn-primary">
+        🚀 Open My Vault Free
+      </a>
+      <button class="btn btn-outline" onclick="document.getElementById('howitworks').scrollIntoView({behavior:'smooth'})">
+        ▶ See How It Works
+      </button>
+    </div>
+
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Discover More</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PROBLEM ═══════════════════════════════ -->
+<section id="problem">
+  <div class="container">
+
+    <div style="margin-bottom:48px" class="hidden">
+      <div class="section-eyebrow" style="color:var(--red)">
+        <div class="eyebrow-line" style="background:var(--red)"></div>
+        The Crisis
+      </div>
+      <h2 class="section-title">Nigeria's Talent Gap Is<br>Breaking Millions of Careers</h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.65)">
+        Qualified. Experienced. Hardworking. And yet — invisible.
+        The problem is not who you are. It is how the world sees you.
+      </p>
+    </div>
+
+    <div class="problem-crisis hidden">
+      <div class="crisis-num" id="crisisCounter">53,000,000+</div>
+      <div class="crisis-label">Nigerian professionals unemployed or underemployed right now</div>
+      <div style="margin-top:20px;font-size:14px;color:rgba(255,255,255,.45);max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7">
+        Most are not unqualified. They are unpresented, unfound, and unsupported.<br>
+        <strong style="color:rgba(255,255,255,.75)">That is the problem ProfileX was built to solve.</strong>
+      </div>
+    </div>
+
+    <!-- Persona pain cards with custom SVG avatars -->
+    <div class="pain-grid">
+
+      <div class="pain-card hidden">
+        <!-- Chiamaka SVG Avatar -->
+        <svg width="60" height="60" viewBox="0 0 60 60" style="margin-bottom:12px;border-radius:50%;display:block">
+          <circle cx="30" cy="30" r="30" fill="#1e1e38"/>
+          <circle cx="30" cy="23" r="10" fill="#c9a84c" opacity=".9"/>
+          <ellipse cx="30" cy="48" rx="14" ry="10" fill="#c9a84c" opacity=".7"/>
+          <circle cx="30" cy="23" r="10" fill="none" stroke="#e8c97a" stroke-width="1.5"/>
+        </svg>
+        <div class="pain-title">Chiamaka, 29 — Accountant</div>
+        <div class="pain-desc">Sends 30+ job applications monthly with a generic Word CV. Gets silence. Her 4 years of flawless audit work are invisible to recruiters who spend 7 seconds on a resume.</div>
+        <div class="pain-person">😔 Qualified but unseen</div>
+      </div>
+
+      <div class="pain-card hidden">
+        <!-- Emeka SVG Avatar -->
+        <svg width="60" height="60" viewBox="0 0 60 60" style="margin-bottom:12px;border-radius:50%;display:block">
+          <circle cx="30" cy="30" r="30" fill="#0e2a1e"/>
+          <circle cx="30" cy="23" r="10" fill="#1a8870" opacity=".9"/>
+          <ellipse cx="30" cy="48" rx="14" ry="10" fill="#1a8870" opacity=".7"/>
+          <text x="30" y="28" text-anchor="middle" fill="#fff" font-size="10" font-family="serif">🎓</text>
+        </svg>
+        <div class="pain-title">Emeka, 23 — Fresh Graduate</div>
+        <div class="pain-desc">First-class engineering degree. Built a solar irrigation prototype. But his CV is one page with a CGPA and no work history. Nobody knows what he is capable of.</div>
+        <div class="pain-person">😟 Talented but unproven</div>
+      </div>
+
+      <div class="pain-card hidden">
+        <!-- Adaeze SVG Avatar -->
+        <svg width="60" height="60" viewBox="0 0 60 60" style="margin-bottom:12px;border-radius:50%;display:block">
+          <circle cx="30" cy="30" r="30" fill="#1a0a00"/>
+          <circle cx="30" cy="23" r="10" fill="#c9a84c" opacity=".85"/>
+          <ellipse cx="30" cy="48" rx="14" ry="10" fill="#c9a84c" opacity=".65"/>
+          <text x="30" y="28" text-anchor="middle" fill="#1a0a00" font-size="10" font-family="serif">🎨</text>
+        </svg>
+        <div class="pain-title">Adaeze, 27 — Creative Pro</div>
+        <div class="pain-desc">World-class graphic design work scattered across Instagram and WhatsApp. Lost 3 corporate contracts because she sent a Google Drive folder instead of a proper portfolio.</div>
+        <div class="pain-person">😤 Brilliant but unpackaged</div>
+      </div>
+
+      <div class="pain-card hidden">
+        <!-- Tunde SVG Avatar -->
+        <svg width="60" height="60" viewBox="0 0 60 60" style="margin-bottom:12px;border-radius:50%;display:block">
+          <circle cx="30" cy="30" r="30" fill="#2d1b69"/>
+          <circle cx="30" cy="23" r="10" fill="#8b5cf6" opacity=".85"/>
+          <ellipse cx="30" cy="48" rx="14" ry="10" fill="#8b5cf6" opacity=".65"/>
+          <text x="30" y="28" text-anchor="middle" fill="#fff" font-size="10" font-family="serif">💼</text>
+        </svg>
+        <div class="pain-title">Tunde, 34 — Product Manager</div>
+        <div class="pain-desc">Shipped 11 products. Raised conversion by 34%. Dreams of a Director role at a global firm but hasn't updated his LinkedIn in 3 years. No portfolio. No digital trace of his decade of work.</div>
+        <div class="pain-person">😩 Experienced but invisible online</div>
+      </div>
+
+      <div class="pain-card hidden">
+        <!-- Dr. Ngozi SVG Avatar -->
+        <svg width="60" height="60" viewBox="0 0 60 60" style="margin-bottom:12px;border-radius:50%;display:block">
+          <circle cx="30" cy="30" r="30" fill="#3d1a00"/>
+          <circle cx="30" cy="23" r="10" fill="#e8c97a" opacity=".9"/>
+          <ellipse cx="30" cy="48" rx="14" ry="10" fill="#e8c97a" opacity=".7"/>
+          <text x="30" y="28" text-anchor="middle" fill="#3d1a00" font-size="10" font-family="serif">👔</text>
+        </svg>
+        <div class="pain-title">Dr. Ngozi, 47 — Executive</div>
+        <div class="pain-desc">20 years. 3 Ministries advised. $40M in donor funds managed. 6 published papers. When the AfDB asked for her digital profile for an advisory role — she had none.</div>
+        <div class="pain-person">😰 Accomplished but unpresented</div>
+      </div>
+
+      <div class="pain-card hidden" style="background:linear-gradient(135deg,rgba(231,76,60,.06),rgba(231,76,60,.02));border-color:rgba(231,76,60,.2)">
+        <div class="pain-icon">⚠️</div>
+        <div class="pain-title" style="color:var(--red)">The AI Detection Trap</div>
+        <div class="pain-desc">Professionals use AI to write CVs. Recruiters use AI to detect it. The system penalises the very tools people rely on. <strong style="color:rgba(255,255,255,.85)">ProfileX humanises every AI-generated document to 95%+ human score — automatically.</strong></div>
+        <div class="pain-person" style="color:var(--red);border-color:rgba(231,76,60,.3)">🤖 The modern recruiter trap</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ SOLUTION ═══════════════════════════════ -->
+<section id="solution">
+  <div class="container">
+
+    <div class="solution-reveal hidden">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">The Turning Point</div>
+      <div class="solution-big">One Vault.<br>Seven AI Engines.<br>Infinite Possibilities.</div>
+      <div class="solution-sub">ProfileX is not software. It is a <strong>Results-as-a-Service (RaaS) platform</strong> — where multi-AI agents work around the clock on your behalf, delivering career outcomes you could never achieve alone.</div>
+    </div>
+
+    <!-- Platform Architecture SVG -->
+    <div class="annotated-map hidden">
+      <div class="map-title">ProfileX Platform Architecture</div>
+      <div class="map-sub">How all 7 modules connect inside your secure vault</div>
+      <svg viewBox="0 0 800 380" width="100%" xmlns="http://www.w3.org/2000/svg" style="max-height:380px">
+        <defs>
+          <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c9a84c" stop-opacity=".3"/>
+            <stop offset="100%" stop-color="#c9a84c" stop-opacity=".05"/>
+          </radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <polygon points="0,0 6,3 0,6" fill="rgba(201,168,76,.4)"/>
+          </marker>
+        </defs>
+
+        <!-- Background -->
+        <rect width="800" height="380" fill="rgba(255,255,255,.02)" rx="16"/>
+
+        <!-- Core circle -->
+        <circle cx="400" cy="190" r="70" fill="url(#coreGrad)" stroke="#c9a84c" stroke-width="1.5" stroke-dasharray="4 3" opacity=".7" filter="url(#glow)"/>
+        <circle cx="400" cy="190" r="50" fill="rgba(201,168,76,.08)" stroke="#c9a84c" stroke-width="1" opacity=".5"/>
+        <text x="400" y="183" text-anchor="middle" fill="#e8c97a" font-size="13" font-family="'Playfair Display', serif" font-weight="700">ProfileX</text>
+        <text x="400" y="200" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter, sans-serif">AI Vault Core</text>
+
+        <!-- Orbiting modules - top -->
+        <!-- 1: Resume Gen -->
+        <line x1="400" y1="120" x2="400" y2="86" stroke="rgba(201,168,76,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="340" y="40" width="120" height="46" rx="10" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.35)" stroke-width="1"/>
+        <text x="400" y="59" text-anchor="middle" fill="#e8c97a" font-size="10" font-family="Inter,sans-serif" font-weight="700">🤖 AI Resume Gen</text>
+        <text x="400" y="75" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">Tailored per job description</text>
+
+        <!-- 2: Cover Letter - top-right -->
+        <line x1="450" y1="148" x2="530" y2="100" stroke="rgba(26,136,112,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="530" y="60" width="130" height="46" rx="10" fill="rgba(26,136,112,.1)" stroke="rgba(26,136,112,.35)" stroke-width="1"/>
+        <text x="595" y="79" text-anchor="middle" fill="#22b592" font-size="10" font-family="Inter,sans-serif" font-weight="700">✉️ Cover Letter AI</text>
+        <text x="595" y="95" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">Humanised &amp; tailored</text>
+
+        <!-- 3: Autopilot - right -->
+        <line x1="470" y1="190" x2="540" y2="190" stroke="rgba(91,33,182,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="540" y="167" width="130" height="46" rx="10" fill="rgba(91,33,182,.1)" stroke="rgba(91,33,182,.35)" stroke-width="1"/>
+        <text x="605" y="186" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Inter,sans-serif" font-weight="700">🔍 Autopilot Search</text>
+        <text x="605" y="202" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">100+ sources · 24/7</text>
+
+        <!-- 4: AI Integrity - bottom-right -->
+        <line x1="450" y1="232" x2="530" y2="275" stroke="rgba(231,76,60,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="530" y="274" width="130" height="46" rx="10" fill="rgba(231,76,60,.08)" stroke="rgba(231,76,60,.3)" stroke-width="1"/>
+        <text x="595" y="293" text-anchor="middle" fill="#f87171" font-size="10" font-family="Inter,sans-serif" font-weight="700">🧪 AI Integrity</text>
+        <text x="595" y="309" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">95%+ human score</text>
+
+        <!-- 5: Portfolio - bottom -->
+        <line x1="400" y1="260" x2="400" y2="294" stroke="rgba(201,168,76,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="340" y="294" width="120" height="46" rx="10" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.3)" stroke-width="1"/>
+        <text x="400" y="313" text-anchor="middle" fill="#e8c97a" font-size="10" font-family="Inter,sans-serif" font-weight="700">🏆 Portfolio</text>
+        <text x="595" y="329" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9"/>
+        <text x="400" y="329" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">Shareable public URL</text>
+
+        <!-- 6: Repository - bottom-left -->
+        <line x1="350" y1="232" x2="270" y2="275" stroke="rgba(22,163,74,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="140" y="274" width="130" height="46" rx="10" fill="rgba(22,163,74,.08)" stroke="rgba(22,163,74,.25)" stroke-width="1"/>
+        <text x="205" y="293" text-anchor="middle" fill="#4ade80" font-size="10" font-family="Inter,sans-serif" font-weight="700">🗄️ Repository</text>
+        <text x="205" y="309" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">IDs, notes, bookmarks</text>
+
+        <!-- 7: Activity - left -->
+        <line x1="330" y1="190" x2="260" y2="190" stroke="rgba(251,191,36,.25)" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+        <rect x="130" y="167" width="130" height="46" rx="10" fill="rgba(251,191,36,.08)" stroke="rgba(251,191,36,.25)" stroke-width="1"/>
+        <text x="195" y="186" text-anchor="middle" fill="#fbbf24" font-size="10" font-family="Inter,sans-serif" font-weight="700">📋 Activity Logs</text>
+        <text x="195" y="202" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="9" font-family="Inter,sans-serif">Tasks &amp; career tracking</text>
+
+        <!-- Vault Lock icon top left -->
+        <text x="195" y="95" text-anchor="middle" fill="#e8c97a" font-size="26">🔐</text>
+        <text x="195" y="115" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="Inter,sans-serif">PIN-secured Vault</text>
+      </svg>
+    </div>
+
+    <!-- Feature Modules -->
+    <div class="module-grid" style="margin-top:40px">
+      <div class="module-card gold hidden">
+        <div class="module-icon-wrap gold">🔐</div>
+        <div class="module-title">Vault-Grade Security</div>
+        <div class="module-desc">Your entire career identity lives behind a custom PIN + password vault. 5 failed attempts = automatic lockout. Access granted shows green. Access denied shows red. Only you hold the key.</div>
+        <span class="module-badge">Security First</span>
+      </div>
+      <div class="module-card teal hidden">
+        <div class="module-icon-wrap teal">🤖</div>
+        <div class="module-title">AI Resume Generator</div>
+        <div class="module-desc">Feed in a job description. Multi-AI agents read your resume data, cross-reference the vacancy, and generate a perfectly tailored application document. History saved. Unlimited generations.</div>
+        <span class="module-badge">Results as a Service</span>
+      </div>
+      <div class="module-card purple hidden">
+        <div class="module-icon-wrap purple">🔍</div>
+        <div class="module-title">Autopilot Job Search</div>
+        <div class="module-desc">Toggle ON. AI agents immediately begin scanning 100+ job sources — Nigerian portals, LinkedIn, remote boards, government sites — 24/7. You wake up to a shortlist of matched vacancies.</div>
+        <span class="module-badge">24/7 Automation</span>
+      </div>
+      <div class="module-card gold hidden">
+        <div class="module-icon-wrap gold">🧪</div>
+        <div class="module-title">AI Integrity Checker</div>
+        <div class="module-desc">Paste any text. Our AI scores it for detectable AI patterns, burstiness, and cliché density — then humanises it to achieve 95%+ human score. Your documents pass every recruiter check.</div>
+        <span class="module-badge">95%+ Human Score</span>
+      </div>
+      <div class="module-card teal hidden">
+        <div class="module-icon-wrap teal">🏆</div>
+        <div class="module-title">Digital Portfolio</div>
+        <div class="module-desc">Showcase skills, projects, marketplace items, courses, and written work on a stunning portfolio page — with your custom public URL. Share one link that says everything.</div>
+        <span class="module-badge">Auto-Generated URL</span>
+      </div>
+      <div class="module-card purple hidden">
+        <div class="module-icon-wrap purple">🗄️</div>
+        <div class="module-title">Digital Repository</div>
+        <div class="module-desc">Secure vault for your IDs, account details, contacts, notes, and bookmarks. Everything sensitive, organised and accessible — protected behind your vault credentials.</div>
+        <span class="module-badge">Encrypted Archives</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ HOW IT WORKS ═══════════════════════════════ -->
+<section id="howitworks">
+  <div class="container">
+    <div style="margin-bottom:56px;text-align:center" class="hidden">
+      <div class="section-eyebrow" style="color:var(--gold);justify-content:center">
+        <div class="eyebrow-line"></div>
+        Step-by-Step Guide
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="color:#fff;text-align:center">From Sign-Up to<br><span style="color:var(--gold2)">Career Acceleration</span></h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.65);margin:0 auto;text-align:center">Four steps. Infinite career possibilities.</p>
+    </div>
+
+    <!-- Live Simulator -->
+    <div class="vault-simulator hidden glow-gold">
+      <div class="vault-sim-title">⚡ Interactive Platform Walkthrough</div>
+      <div class="vault-sim-sub">Press Start to simulate the ProfileX onboarding experience in real-time</div>
+      <div class="sim-progress-bar"><div class="sim-progress-fill" id="simProgress"></div></div>
+      <div class="sim-steps" id="simSteps">
+        <div class="sim-step" id="step1">
+          <div class="sim-step-icon">👤</div>
+          <div class="sim-step-label">Create your secure ProfileX account with full profile setup</div>
+          <div class="sim-step-status" id="s1status">Pending</div>
+        </div>
+        <div class="sim-step" id="step2">
+          <div class="sim-step-icon">🔐</div>
+          <div class="sim-step-label">Set vault PIN + password · Vault turns green on access granted</div>
+          <div class="sim-step-status" id="s2status">Pending</div>
+        </div>
+        <div class="sim-step" id="step3">
+          <div class="sim-step-icon">📄</div>
+          <div class="sim-step-label">Build Digital Resume &amp; CV · Paste Google Drive credential URLs</div>
+          <div class="sim-step-status" id="s3status">Pending</div>
+        </div>
+        <div class="sim-step" id="step4">
+          <div class="sim-step-icon">🏆</div>
+          <div class="sim-step-label">Publish Digital Portfolio · Auto-generated public shareable URL</div>
+          <div class="sim-step-status" id="s4status">Pending</div>
+        </div>
+        <div class="sim-step" id="step5">
+          <div class="sim-step-icon">🔍</div>
+          <div class="sim-step-label">Activate Autopilot Job Search · AI begins scanning 100+ sources</div>
+          <div class="sim-step-status" id="s5status">Pending</div>
+        </div>
+        <div class="sim-step" id="step6">
+          <div class="sim-step-icon">🤖</div>
+          <div class="sim-step-label">Submit job description · AI generates tailored resume in seconds</div>
+          <div class="sim-step-status" id="s6status">Pending</div>
+        </div>
+        <div class="sim-step" id="step7">
+          <div class="sim-step-icon">🧪</div>
+          <div class="sim-step-label">Run AI Integrity Check · Documents humanised to 95%+ score</div>
+          <div class="sim-step-status" id="s7status">Pending</div>
+        </div>
+        <div class="sim-step" id="step8">
+          <div class="sim-step-icon">✅</div>
+          <div class="sim-step-label">Career vault active · AI agents working 24/7 on your behalf</div>
+          <div class="sim-step-status" id="s8status">Pending</div>
+        </div>
+      </div>
+      <div class="sim-controls">
+        <button class="sim-btn sim-start" onclick="startSimulator()">▶ Start Walkthrough</button>
+        <button class="sim-btn sim-reset" onclick="resetSimulator()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Timeline steps -->
+    <div class="steps-timeline">
+      <div class="step-item" id="stepItem1">
+        <div class="step-num-wrap">1</div>
+        <div class="step-content">
+          <div class="step-title">Create Your Account &amp; Set Up Your Vault</div>
+          <div class="step-desc">Register at <strong style="color:var(--gold2)">profilex.ewinproject.org</strong> with your full profile — name, NIN, state, LGA, WhatsApp, and contact details. Choose Monthly (₦1,000) or Yearly (₦10,000) plan. Set your 4-digit vault PIN for maximum security.</div>
+          <div class="step-note">⏱ Takes less than 5 minutes</div>
+        </div>
+      </div>
+      <div class="step-item" id="stepItem2">
+        <div class="step-num-wrap">2</div>
+        <div class="step-content">
+          <div class="step-title">Build Your Digital Resume, CV &amp; Portfolio</div>
+          <div class="step-desc">Fill in all sections — bio-data, qualifications, work experience, certifications, skills, and referees. Upload credentials to Google Drive, paste the shareable link. Your public portfolio URL is auto-generated the moment you save and publish.</div>
+          <div class="step-note">🔗 profilex.ewinproject.org/u/yourname/portfolio</div>
+        </div>
+      </div>
+      <div class="step-item" id="stepItem3">
+        <div class="step-num-wrap">3</div>
+        <div class="step-content">
+          <div class="step-title">Activate Your AI Agents</div>
+          <div class="step-desc">Toggle on the Autopilot Job Search — AI agents immediately begin scanning 100+ job sites across Nigeria, Africa, and globally. Use the Resume Generator to create tailored applications. Run the AI Integrity Checker on every document before sending.</div>
+          <div class="step-note">🤖 AI works while you sleep</div>
+        </div>
+      </div>
+      <div class="step-item" id="stepItem4">
+        <div class="step-num-wrap">4</div>
+        <div class="step-content">
+          <div class="step-title">Track, Apply &amp; Accelerate</div>
+          <div class="step-desc">Every shortlisted vacancy appears in your dashboard with status tracking — from "shortlisted" to "applied" to "interview" to "hired." Monitor your career activity logs. Update your profile and all pages sync automatically.</div>
+          <div class="step-note">📊 Full career intelligence dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Score Gauge -->
+    <div class="vault-simulator hidden" style="margin-top:40px">
+      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;color:#fff">AI Integrity Check — Live Demonstration</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px">See how ProfileX humanises AI-generated text before submission</p>
+      <div class="score-gauge">
+        <div class="gauge-svg-wrap">
+          <svg viewBox="0 0 180 180" width="180" height="180">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#e74c3c"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#16a34a"/>
+              </linearGradient>
+            </defs>
+            <!-- Track -->
+            <circle cx="90" cy="90" r="72" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="14" stroke-dasharray="339 113" stroke-linecap="round" transform="rotate(135 90 90)"/>
+            <!-- Fill animated -->
+            <circle cx="90" cy="90" r="72" fill="none" stroke="url(#gaugeGrad)" stroke-width="14"
+              stroke-dasharray="0 452" stroke-linecap="round" transform="rotate(135 90 90)"
+              id="gaugeFill" style="transition:stroke-dasharray 2s cubic-bezier(.23,1,.32,1)"/>
+            <!-- Markers -->
+            <text x="16" y="160" fill="rgba(255,255,255,.3)" font-size="10" font-family="Inter,sans-serif">0%</text>
+            <text x="75" y="24" fill="rgba(255,255,255,.3)" font-size="10" font-family="Inter,sans-serif">50%</text>
+            <text x="140" y="160" fill="rgba(255,255,255,.3)" font-size="10" font-family="Inter,sans-serif">100%</text>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-score" id="gaugeScore">0%</div>
+            <div class="gauge-label">Human Score</div>
+          </div>
+        </div>
+        <div class="gauge-desc">
+          <div class="gauge-title">Before vs After Humanisation</div>
+          <div class="gauge-text">ProfileX's AI Integrity Agent detects unnatural phrasing, excessive em-dashes, US spelling errors, and repetitive clichés — then rewrites the text to achieve a 95%+ human score. Your documents pass GPTZero, Turnitin, and every recruiter AI check.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+            <div class="gauge-indicator"><div class="gauge-dot" style="background:#e74c3c"></div><span class="gauge-dot-label">Raw AI output — 23% human score ❌</span></div>
+            <div class="gauge-indicator"><div class="gauge-dot" style="background:#f59e0b"></div><span class="gauge-dot-label">After light editing — 67% human score ⚠️</span></div>
+            <div class="gauge-indicator"><div class="gauge-dot" style="background:#16a34a"></div><span class="gauge-dot-label">ProfileX humanised — 96% human score ✅</span></div>
+          </div>
+          <button class="sim-btn sim-start" style="margin-top:16px" onclick="animateGauge()">▶ Run Simulation</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ANALYTICS ═══════════════════════════════ -->
+<section id="analytics">
+  <div class="container">
+    <div style="margin-bottom:48px;text-align:center" class="hidden">
+      <div class="section-eyebrow" style="color:var(--teal2);justify-content:center">
+        <div class="eyebrow-line" style="background:var(--teal2)"></div>
+        Market Intelligence
+        <div class="eyebrow-line" style="background:var(--teal2)"></div>
+      </div>
+      <h2 class="section-title" style="color:#fff">The Numbers That Prove<br><span style="color:var(--teal2)">Why ProfileX Exists</span></h2>
+    </div>
+
+    <!-- Animated counters -->
+    <div class="counter-grid hidden">
+      <div class="counter-card"><div class="counter-num" data-count="53" data-suffix="M+">0</div><div class="counter-label">Unemployed Nigerians</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="4.5" data-suffix="M">0</div><div class="counter-label">New Graduates Yearly</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="88" data-prefix="$" data-suffix="B">$0</div><div class="counter-label">Nigeria Digital Economy</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="25" data-suffix="%">0</div><div class="counter-label">Digital GDP Growth</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="68" data-suffix="%">0</div><div class="counter-label">Open to New Roles</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="14" data-prefix="$" data-suffix="B">$0</div><div class="counter-label">HR-Tech Market Gap</div></div>
+    </div>
+
+    <!-- Bar chart - Job source distribution -->
+    <div class="chart-container hidden" style="margin-top:32px">
+      <div class="chart-title">ProfileX Autopilot — Job Sources Monitored</div>
+      <div class="chart-subtitle">Distribution of 100+ sources across categories (percentage of total)</div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Nigerian Core</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal2)"></div>Pan-African</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Remote Global</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Government</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div>Agency</div>
+      </div>
+      <div class="bar-group" id="barChart">
+        <!-- JS will build these -->
+      </div>
+    </div>
+
+    <!-- Donut chart - Talent gap -->
+    <div class="chart-container hidden" style="margin-top:20px">
+      <div class="chart-title">Nigerian Workforce Opportunity Landscape</div>
+      <div class="chart-subtitle">Where 53M+ professionals sit in the career journey today</div>
+      <div class="donut-wrap">
+        <div class="donut-svg-cont">
+          <svg viewBox="0 0 180 180" width="180" height="180" id="donutSVG">
+            <defs>
+              <filter id="dGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+          </svg>
+          <div class="donut-center">
+            <div class="donut-num">53M+</div>
+            <div class="donut-sub">Total<br>Addressable</div>
+          </div>
+        </div>
+        <div class="donut-labels" id="donutLabels"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PERSONAS ═══════════════════════════════ -->
+<section id="personas">
+  <div class="container">
+    <div style="margin-bottom:48px;text-align:center" class="hidden">
+      <div class="section-eyebrow" style="color:var(--gold);justify-content:center">
+        <div class="eyebrow-line"></div>
+        Who ProfileX Is Built For
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="color:#fff">Real People.<br><span style="color:var(--gold2)">Real Results.</span></h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.6);margin:0 auto;text-align:center">Six audiences. One platform. Infinite career transformations.</p>
+    </div>
+
+    <div class="persona-cards">
+
+      <div class="persona-card hidden" style="transition-delay:.1s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#1a1a2e,#2d1b69)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(201,168,76,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(201,168,76,.2)"/><circle cx="26" cy="20" r="9" fill="#c9a84c"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#c9a84c" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(231,76,60,.2);border-color:rgba(231,76,60,.4);color:var(--red)">!</div>
+            </div>
+            <div><div class="p-name">Chiamaka</div><div class="p-role">Accountant · 29yrs · Lagos</div></div>
+          </div>
+          <div class="p-tagline">"I send 30 applications a month and hear nothing back. What am I doing wrong?"</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"Your CV has been rejected 47 times. ProfileX will make sure the 48th is different."</div>
+        </div>
+      </div>
+
+      <div class="persona-card hidden" style="transition-delay:.2s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#0e2a1e,#1a6b5c)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(26,136,112,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(26,136,112,.2)"/><circle cx="26" cy="20" r="9" fill="#1a8870"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#1a8870" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.4)">🎓</div>
+            </div>
+            <div><div class="p-name">Emeka</div><div class="p-role">Graduate · 23yrs · NYSC</div></div>
+          </div>
+          <div class="p-tagline">"Everyone wants experience. But how do I get experience if no one gives me a chance?"</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"You don't need 5 years of experience. You need 5 minutes on ProfileX."</div>
+        </div>
+      </div>
+
+      <div class="persona-card hidden" style="transition-delay:.3s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#2d1b69,#4c1a6b)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(139,92,246,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(91,33,182,.2)"/><circle cx="26" cy="20" r="9" fill="#8b5cf6"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#8b5cf6" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4)">💼</div>
+            </div>
+            <div><div class="p-name">Tunde</div><div class="p-role">Product Manager · 34yrs</div></div>
+          </div>
+          <div class="p-tagline">"I've shipped 11 products. Led a team of 20. But if you search my name online — nothing."</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"While you sleep, our AI is already finding your next Director role."</div>
+        </div>
+      </div>
+
+      <div class="persona-card hidden" style="transition-delay:.4s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#3d1a00,#8a6b1e)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(201,168,76,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(201,168,76,.15)"/><circle cx="26" cy="20" r="9" fill="#c9a84c"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#c9a84c" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(231,76,60,.2);border-color:rgba(231,76,60,.4)">🎨</div>
+            </div>
+            <div><div class="p-name">Adaeze</div><div class="p-role">Creative Pro · 27yrs</div></div>
+          </div>
+          <div class="p-tagline">"I designed logos you know by name. But I lost a contract because I sent a Google Drive folder."</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"Your talent deserves a home as impressive as the work itself."</div>
+        </div>
+      </div>
+
+      <div class="persona-card hidden" style="transition-delay:.5s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#0e4d6b,#0a2a40)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(34,181,146,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(26,136,112,.15)"/><circle cx="26" cy="20" r="9" fill="#22b592"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#22b592" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(26,136,112,.2);border-color:rgba(26,136,112,.4)">🌍</div>
+            </div>
+            <div><div class="p-name">Dele</div><div class="p-role">Data Scientist · 38yrs · UK</div></div>
+          </div>
+          <div class="p-tagline">"I have 12 years at FTSE 100 firms. I want to return to Nigeria — but the market is invisible to me."</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"Your global career is a superpower in Nigeria. ProfileX helps you translate it."</div>
+        </div>
+      </div>
+
+      <div class="persona-card hidden" style="transition-delay:.6s">
+        <div class="persona-card-top" style="background:linear-gradient(135deg,#3d1a00,#1a1a2e)">
+          <div class="p-avatar-row">
+            <div class="p-avatar" style="border-color:rgba(232,201,122,.5)">
+              <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="rgba(201,168,76,.12)"/><circle cx="26" cy="20" r="9" fill="#e8c97a"/><ellipse cx="26" cy="42" rx="12" ry="8" fill="#e8c97a" opacity=".8"/></svg>
+              <div class="p-avatar-badge" style="background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4)">👔</div>
+            </div>
+            <div><div class="p-name">Dr. Ngozi</div><div class="p-role">Director · 47yrs · Abuja</div></div>
+          </div>
+          <div class="p-tagline">"I've advised three Federal Ministers. When the AfDB asked for my digital profile — I had none."</div>
+        </div>
+        <div class="persona-card-bottom">
+          <div class="p-hook">ProfileX Hook</div>
+          <div class="p-hook-text">"Twenty years of expertise deserves more than a PDF. Build your legacy on ProfileX."</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ BENEFITS ═══════════════════════════════ -->
+<section id="benefits">
+  <div class="container">
+    <div style="margin-bottom:48px" class="hidden">
+      <div class="section-eyebrow" style="color:var(--teal)">
+        <div class="eyebrow-line" style="background:var(--teal)"></div>
+        Competitive Edge &amp; Impact
+      </div>
+      <h2 class="section-title">Why ProfileX Changes<br>Everything for You</h2>
+      <p class="section-sub">Every feature was designed for a specific problem real Nigerian professionals face every day.</p>
+    </div>
+
+    <div class="benefit-grid">
+      <div class="benefit-card hidden"><div class="benefit-icon">🔐</div><div class="benefit-title">Vault-Secured Identity</div><div class="benefit-desc">Your career data is yours alone — PIN-encrypted, password-protected, accessible only by you. No data selling. No privacy compromise. Ever.</div><span class="benefit-tag">Security</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">🤖</div><div class="benefit-title">AI That Never Sleeps</div><div class="benefit-desc">Multi-AI agents orchestrate your entire job search, resume generation, and cover letter writing while you live your life. Outcomes delivered — not just tools provided.</div><span class="benefit-tag">RaaS Intelligence</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">🌐</div><div class="benefit-title">Instant Global Visibility</div><div class="benefit-desc">Shareable portfolio, resume, and CV with your own custom profilex.ewinproject.org URL. One link. Every opportunity. Share it in any application, email, or DM.</div><span class="benefit-tag">Digital Identity</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">🧪</div><div class="benefit-title">Bypass AI Detection</div><div class="benefit-desc">ProfileX is the only platform that humanises AI-generated text to 95%+ human score before submission — turning the biggest career risk of 2025 into a non-issue.</div><span class="benefit-tag">Competitive Edge</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">🛒</div><div class="benefit-title">Built-In Marketplace</div><div class="benefit-desc">Freelancers and entrepreneurs can list physical goods, digital products, and services directly in their portfolio — creating an additional income stream alongside their career profile.</div><span class="benefit-tag">Extra Income</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">₦</div><div class="benefit-title">Radical Price Point</div><div class="benefit-desc">₦1,000 per month for the full enterprise-grade platform. Less than a cup of artisan coffee in Victoria Island. No feature locks. No hidden tiers. Full access for every subscriber.</div><span class="benefit-tag">₦1,000/month</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">📡</div><div class="benefit-title">100+ Job Sources</div><div class="benefit-desc">Nigerian portals, government boards, Pan-African platforms, remote networks, LinkedIn — all monitored simultaneously. The most comprehensive African job intelligence system ever built.</div><span class="benefit-tag">Autopilot Power</span></div>
+      <div class="benefit-card hidden"><div class="benefit-icon">🔄</div><div class="benefit-title">Automatic Sync</div><div class="benefit-desc">Update your profile once — and every document, portfolio section, and public URL updates automatically. No more copy-pasting across 12 different apps and forms.</div><span class="benefit-tag">Smart Platform</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ QUOTES CAROUSEL ═══════════════════════════════ -->
+<section id="quotes">
+  <div class="container" style="margin-bottom:36px;text-align:center">
+    <div class="section-eyebrow" style="color:var(--gold);justify-content:center">
+      <div class="eyebrow-line"></div>
+      Words That Move Mountains
+      <div class="eyebrow-line"></div>
+    </div>
+  </div>
+  <div style="overflow:hidden;position:relative">
+    <!-- Fade edges -->
+    <div style="position:absolute;left:0;top:0;bottom:0;width:80px;background:linear-gradient(to right,var(--navy3),transparent);z-index:2"></div>
+    <div style="position:absolute;right:0;top:0;bottom:0;width:80px;background:linear-gradient(to left,var(--navy3),transparent);z-index:2"></div>
+    <div class="quote-track" id="quoteTrack">
+      <!-- Cards built by JS for infinite loop -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PRICING ═══════════════════════════════ -->
+<section id="pricing">
+  <div class="container">
+    <div style="margin-bottom:48px;text-align:center" class="hidden">
+      <div class="section-eyebrow" style="color:var(--gold);justify-content:center">
+        <div class="eyebrow-line"></div>
+        Full Access. Honest Price.
+        <div class="eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="color:#fff">No Hidden Tiers.<br><span style="color:var(--gold2)">No Locked Features.</span></h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.6);margin:0 auto;text-align:center">Both plans unlock the complete platform. Your only choice is how often you pay.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card hidden">
+        <div class="pricing-plan">Monthly Plan</div>
+        <div class="pricing-price"><span class="pricing-currency">₦</span><span class="pricing-amount">1,000</span></div>
+        <div class="pricing-period">Per month, billed monthly</div>
+        <div class="pricing-divider" style="height:1px;background:rgba(255,255,255,.08);margin-bottom:20px"></div>
+        <ul class="pricing-features">
+          <li><div class="pricing-check">✓</div>Vault-secured personal dashboard</li>
+          <li><div class="pricing-check">✓</div>Digital Portfolio with public URL</li>
+          <li><div class="pricing-check">✓</div>Digital Resume + CV (all sections)</li>
+          <li><div class="pricing-check">✓</div>Unlimited AI Resume Generation</li>
+          <li><div class="pricing-check">✓</div>Unlimited Cover Letter AI</li>
+          <li><div class="pricing-check">✓</div>Autopilot Job Search 24/7</li>
+          <li><div class="pricing-check">✓</div>AI Integrity Check &amp; Humaniser</li>
+          <li><div class="pricing-check">✓</div>Digital Repository &amp; Activity Logs</li>
+        </ul>
+        <a href="https://profilex.ewinproject.org" class="btn btn-outline pricing-cta" target="_blank">Get Started Monthly</a>
+      </div>
+      <div class="pricing-card featured hidden">
+        <div class="pricing-plan">Yearly Plan</div>
+        <div class="pricing-price"><span class="pricing-currency">₦</span><span class="pricing-amount">10,000</span></div>
+        <div class="pricing-period">Per year, billed annually</div>
+        <div class="pricing-save">✓ Save ₦2,000 — 2 months FREE</div>
+        <div class="pricing-divider" style="height:1px;background:rgba(255,255,255,.1);margin-bottom:20px"></div>
+        <ul class="pricing-features">
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Everything in Monthly</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Priority AI processing</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Extended job history archive</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Premium portfolio themes</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Early access to new AI features</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Bulk document export</li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Dedicated support channel</div></li>
+          <li><div class="pricing-check" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.3);color:var(--gold2)">✓</div>Advanced analytics dashboard</li>
+        </ul>
+        <a href="https://profilex.ewinproject.org" class="btn btn-primary pricing-cta" target="_blank">Get Started Yearly</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:12px;color:rgba(255,255,255,.35)">🔒 Secure payments via Paystack · Cancel anytime · 7-day refund policy</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CLOSING ═══════════════════════════════ -->
+<section id="closing">
+  <div style="position:relative;z-index:1;max-width:800px;margin:0 auto;text-align:center">
+
+    <div class="section-eyebrow" style="color:var(--gold);justify-content:center;margin-bottom:20px">
+      <div class="eyebrow-line"></div>
+      Your Next Chapter Starts Now
+      <div class="eyebrow-line"></div>
+    </div>
+
+    <h2 class="closing-title">
+      <span style="color:#fff">Stop Being </span>
+      <span style="background:linear-gradient(135deg,var(--gold),var(--gold2),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" class="glow-text">Invisible.</span>
+    </h2>
+
+    <p class="closing-sub">
+      ProfileX is not just an app. It is the <strong style="color:#fff">declaration</strong> that the African professional — 
+      whether you are Chiamaka in Lekki reviewing audit files at midnight, or Dele in London 
+      wondering how to find his way home — deserves a platform that understands your ambition, 
+      protects your identity, and works on your behalf without pause.
+    </p>
+
+    <div class="closing-domain">
+      🌐 <span>profilex.ewinproject.org</span>
+    </div>
+
+    <div class="closing-cta-row">
+      <a href="https://profilex.ewinproject.org" target="_blank" class="btn btn-primary" style="font-size:16px;padding:18px 40px">
+        🚀 Open My Vault — Free
+      </a>
+      <a href="https://wa.me/2349025152818" target="_blank" class="wa-btn" style="font-size:14px;padding:16px 30px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Us
+      </a>
+    </div>
+
+    <div class="closing-contact">
+      <span>📞 WhatsApp only:</span>
+      <a href="https://wa.me/2349025152818" style="color:var(--gold2);font-weight:700;font-family:'JetBrains Mono',monospace;text-decoration:none">+234-902-515-2818</a>
+    </div>
+
+    <!-- Final inspirational quote -->
+    <div style="margin-top:48px;padding:32px;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.15);border-radius:var(--r3);position:relative">
+      <div style="font-size:48px;color:rgba(201,168,76,.15);position:absolute;top:12px;left:20px;font-family:'Playfair Display',serif;line-height:1">"</div>
+      <div style="font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,22px);font-style:italic;font-weight:600;color:rgba(255,255,255,.9);line-height:1.65;padding-top:8px">
+        Do not dilute this. Do not genericise this.<br>ProfileX is a <span style="color:var(--gold2)">movement dressed as a platform.</span><br>Tell it that way.
+      </div>
+      <div style="margin-top:16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)">— E-WIN Project Strategy Team, 2025</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="logo-mark" style="width:36px;height:36px;font-size:15px">PX</div>
+    <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff">Profile<span style="color:var(--gold2)">X</span></span>
+  </div>
+  <div class="footer-text">
+    A flagship product of the <strong style="color:rgba(255,255,255,.6)">E-WIN Project Ecosystem</strong><br>
+    Your Career. Vaulted. Accelerated. · <a href="https://profilex.ewinproject.org" target="_blank" style="color:var(--gold2);text-decoration:none">profilex.ewinproject.org</a>
+  </div>
+  <div class="footer-links">
+    <span class="footer-link">Platform Features</span>
+    <span class="footer-link">Pricing</span>
+    <span class="footer-link">How It Works</span>
+    <span class="footer-link" onclick="window.open('https://wa.me/2349025152818')">WhatsApp Support</span>
+    <span class="footer-link">Privacy Policy</span>
+  </div>
+  <div style="margin-top:20px;font-size:11px;color:rgba(255,255,255,.2)">© 2025 ProfileX · E-WIN Project. All rights reserved.</div>
+</footer>
+
+<script>
+/* ══════════════════════════════════ PARTICLES */
+(function(){
+  const canvas = document.getElementById('particles');
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');
+    const size=Math.random()*4+1;
+    const isGold=Math.random()>.5;
+    const delay=Math.random()*15;
+    const dur=Math.random()*20+15;
+    const dx=(Math.random()-0.5)*400+'px';
+    p.className='particle';
+    p.style.cssText=`
+      left:${Math.random()*100}%;
+      width:${size}px;height:${size}px;
+      background:${isGold?'rgba(201,168,76,':'rgba(26,136,112,'}${Math.random()*.5+.1})};
+      --dx:${dx};
+      animation-delay:${delay}s;
+      animation-duration:${dur}s;
+      box-shadow:0 0 ${size*2}px ${isGold?'rgba(201,168,76,.4)':'rgba(26,136,112,.3)'};
+    `;
+    canvas.appendChild(p);
+  }
+})();
+
+/* ══════════════════════════════════ INTERSECTION OBSERVER */
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Check for counters inside
+      e.target.querySelectorAll('[data-count]').forEach(animateCounter);
+      // Timeline steps
+      if(e.target.classList.contains('steps-timeline')||e.target.closest('.steps-timeline')){
+        document.querySelectorAll('.step-item').forEach((s,i)=>{
+          setTimeout(()=>s.classList.add('step-visible'),i*180);
+        });
+      }
+      // Bar chart
+      if(e.target.id==='barChart'||e.target.closest('#barChart')){
+        setTimeout(buildBarChart,200);
+      }
+    }
+  });
+},{threshold:.12,rootMargin:'0px 0px -60px 0px'});
+
+document.querySelectorAll('.hidden').forEach(el=>io.observe(el));
+// Also observe timeline steps container
+const tl=document.querySelector('.steps-timeline');
+if(tl)io.observe(tl);
+
+/* Counter for stat-num in hero (auto-run) */
+window.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('#hero .stat-num').forEach(animateCounter);
+  },600);
+  buildQuotes();
+  buildDonutChart();
+});
+
+/* ══════════════════════════════════ COUNTER ANIMATION */
+function animateCounter(el){
+  if(el.dataset.animated) return;
+  el.dataset.animated='1';
+  const target=parseFloat(el.dataset.count);
+  const prefix=el.dataset.prefix||'';
+  const suffix=el.dataset.suffix||'';
+  const isDecimal=target%1!==0;
+  const duration=1800;
+  const start=performance.now();
+  function step(now){
+    const p=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-p,4);
+    const val=target*ease;
+    el.textContent=prefix+(isDecimal?val.toFixed(1):Math.floor(val))+suffix;
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=prefix+target+suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+/* Step-item observer */
+const stepObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.step-item').forEach((s,i)=>{
+        setTimeout(()=>s.classList.add('step-visible'),i*180);
+      });
+      stepObs.disconnect();
+    }
+  });
+},{threshold:.1});
+const stepsSection=document.getElementById('howitworks');
+if(stepsSection)stepObs.observe(stepsSection);
+
+/* Counter for analytics section */
+const analyticsObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.counter-num').forEach(animateCounter);
+      analyticsObs.disconnect();
+    }
+  });
+},{threshold:.1});
+const analyticsSection=document.getElementById('analytics');
+if(analyticsSection)analyticsObs.observe(analyticsSection);
+
+/* Bar chart observer */
+const barObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){buildBarChart();barObs.disconnect();}
+  });
+},{threshold:.1});
+const barChartEl=document.getElementById('barChart');
+if(barChartEl)barObs.observe(barChartEl);
+
+/* ══════════════════════════════════ BAR CHART */
+function buildBarChart(){
+  const bars=[
+    {label:'Nigerian Core',val:20,pct:87,color:'#c9a84c'},
+    {label:'Pan-African',val:14,pct:61,color:'#22b592'},
+    {label:'Remote Global',val:10,pct:43,color:'#8b5cf6'},
+    {label:'Government',val:13,pct:57,color:'#f59e0b'},
+    {label:'Agency',val:12,pct:52,color:'#e74c3c'},
+    {label:'Blogs',val:10,pct:43,color:'#3b82f6'},
+    {label:'Diaspora',val:8,pct:35,color:'#ec4899'},
+    {label:'Other',val:13,pct:57,color:'rgba(255,255,255,.3)'},
+  ];
+  const cont=document.getElementById('barChart');
+  if(!cont)return;
+  cont.innerHTML=bars.map(b=>`
+    <div class="bar-col">
+      <div class="bar-track">
+        <div class="bar-fill" style="background:${b.color}" data-pct="${b.pct}">
+          <div class="bar-val">${b.val}</div>
+        </div>
+      </div>
+      <div class="bar-label">${b.label}</div>
+    </div>`).join('');
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      cont.querySelectorAll('.bar-fill').forEach((bar,i)=>{
+        setTimeout(()=>{
+          bar.style.height=bar.dataset.pct+'%';
+          bar.classList.add('animated');
+        },i*100);
+      });
+    });
+  });
+}
+
+/* ══════════════════════════════════ DONUT CHART */
+function buildDonutChart(){
+  const segments=[
+    {label:'Actively Job Hunting',pct:18,color:'#c9a84c'},
+    {label:'Passively Open',pct:50,color:'#22b592'},
+    {label:'Career Stagnant',pct:20,color:'#8b5cf6'},
+    {label:'Underemployed',pct:12,color:'#e74c3c'},
+  ];
+  const svg=document.getElementById('donutSVG');
+  const labelsEl=document.getElementById('donutLabels');
+  if(!svg||!labelsEl)return;
+
+  const cx=90,cy=90,r=66,strokeW=22;
+  const circumference=2*Math.PI*r;
+  let offset=0;
+
+  segments.forEach((s,i)=>{
+    const len=(s.pct/100)*circumference;
+    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx',cx);circle.setAttribute('cy',cy);circle.setAttribute('r',r);
+    circle.setAttribute('fill','none');circle.setAttribute('stroke',s.color);
+    circle.setAttribute('stroke-width',strokeW);
+    circle.setAttribute('stroke-dasharray',`${len} ${circumference-len}`);
+    circle.setAttribute('stroke-dashoffset',-offset+'');
+    circle.setAttribute('transform',`rotate(-90 ${cx} ${cy})`);
+    circle.style.transition=`stroke-dasharray 1s ${i*.2}s ease`;
+    circle.style.filter='drop-shadow(0 0 4px '+s.color+'44)';
+    // Animate from 0
+    circle.setAttribute('stroke-dasharray',`0 ${circumference}`);
+    svg.appendChild(circle);
+    setTimeout(()=>{circle.setAttribute('stroke-dasharray',`${len} ${circumference-len}`);},100+i*200);
+    offset+=len;
+    labelsEl.innerHTML+= `<div class="donut-label-item"><div class="donut-label-color" style="background:${s.color}"></div><div class="donut-label-name">${s.label}</div><div class="donut-label-pct">${s.pct}%</div></div>`;
+  });
+}
+
+/* ══════════════════════════════════ QUOTES CAROUSEL */
+function buildQuotes(){
+  const quotes=[
+    {text:"The future belongs to those who prepare for it today.",attr:"Malcolm X"},
+    {text:"Your network is your net worth — ProfileX makes yours visible to the world.",attr:"ProfileX Principle"},
+    {text:"Done is better than perfect — but with AI, you can have both.",attr:"Platform Truth"},
+    {text:"In the age of AI, the ones who win are not the smartest. They are the best presented.",attr:"E-WIN Strategy"},
+    {text:"African talent has always been world-class. Now it has a world-class platform to prove it.",attr:"ProfileX Mission"},
+    {text:"Stop applying. Start accelerating.",attr:"ProfileX Tagline"},
+    {text:"The greatest risk is not taking any risk in a world that is changing rapidly.",attr:"Mark Zuckerberg"},
+    {text:"ProfileX does not just find you jobs. It makes you unfindable to miss.",attr:"Platform Voice"},
+    {text:"Every resume sent without ProfileX is a missed opportunity to be extraordinary.",attr:"User Insight"},
+    {text:"One vault. Every opportunity. Zero excuses.",attr:"ProfileX"},
+  ];
+  const track=document.getElementById('quoteTrack');
+  if(!track)return;
+  // Double for infinite loop
+  [...quotes,...quotes].forEach(q=>{
+    const card=document.createElement('div');
+    card.className='quote-card';
+    card.innerHTML=`<div class="quote-text">${q.text}</div><div class="quote-attr">— ${q.attr}</div>`;
+    track.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════ GAUGE ANIMATION */
+let gaugeAnimated=false;
+function animateGauge(){
+  if(gaugeAnimated)return;
+  gaugeAnimated=true;
+  const fill=document.getElementById('gaugeFill');
+  const scoreEl=document.getElementById('gaugeScore');
+  if(!fill||!scoreEl)return;
+  const circumference=2*Math.PI*72;
+  const maxAngle=270; // degrees of arc
+  const maxDash=(maxAngle/360)*circumference;
+  let score=0;
+  const target=96;
+  const interval=setInterval(()=>{
+    score=Math.min(score+1,target);
+    const dashLen=(score/100)*maxDash;
+    fill.setAttribute('stroke-dasharray',`${dashLen} ${circumference}`);
+    scoreEl.textContent=score+'%';
+    if(score>=target)clearInterval(interval);
+  },20);
+}
+
+/* Also auto-animate gauge on scroll */
+const gaugeObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){setTimeout(animateGauge,400);gaugeObs.disconnect();}});
+},{threshold:.3});
+const gaugeSec=document.querySelector('.gauge-svg-wrap');
+if(gaugeSec)gaugeObs.observe(gaugeSec);
+
+/* ══════════════════════════════════ SIMULATOR */
+let simRunning=false;
+let simTimer=null;
+
+function startSimulator(){
+  if(simRunning)return;
+  simRunning=true;
+  resetSimulator(false);
+  const steps=8;
+  let current=0;
+  const progress=document.getElementById('simProgress');
+
+  function runStep(n){
+    if(n>=steps){simRunning=false;return;}
+    // Deactivate prev
+    if(n>0){
+      const prev=document.getElementById('step'+n);
+      if(prev){prev.classList.remove('active');prev.classList.add('done');document.getElementById('s'+n+'status').textContent='✓ Done';}
+    }
+    const step=document.getElementById('step'+(n+1));
+    const stat=document.getElementById('s'+(n+1)+'status');
+    if(step){step.classList.add('active');if(stat)stat.textContent='Running...';}
+    if(progress)progress.style.width=((n+1)/steps*100)+'%';
+    simTimer=setTimeout(()=>runStep(n+1),1100);
+  }
+  runStep(0);
+}
+
+function resetSimulator(resetFlag=true){
+  if(simTimer)clearTimeout(simTimer);
+  if(resetFlag)simRunning=false;
+  for(let i=1;i<=8;i++){
+    const s=document.getElementById('step'+i);
+    const st=document.getElementById('s'+i+'status');
+    if(s){s.classList.remove('active','done');}
+    if(st)st.textContent='Pending';
+  }
+  const p=document.getElementById('simProgress');
+  if(p)p.style.width='0';
+}
+
+/* ══════════════════════════════════ NAVBAR EFFECT */
+window.addEventListener('scroll',()=>{
+  const hero=document.getElementById('hero');
+  if(!hero)return;
+},{passive:true});
+
+/* ══════════════════════════════════ CRISIS COUNTER */
+(function animateCrisis(){
+  const el=document.getElementById('crisisCounter');
+  if(!el)return;
+  const io2=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        let n=0;const target=53000000;const dur=2000;const start=performance.now();
+        const step=now=>{
+          const p=Math.min((now-start)/dur,1);
+          const ease=1-Math.pow(1-p,4);
+          n=Math.floor(target*ease);
+          el.textContent=n.toLocaleString()+'+';
+          if(p<1)requestAnimationFrame(step);
+          else el.textContent='53,000,000+';
+        };
+        requestAnimationFrame(step);
+        io2.disconnect();
+      }
+    });
+  },{threshold:.5});
+  io2.observe(el);
+})();
+</script>
+</body>
+</html>

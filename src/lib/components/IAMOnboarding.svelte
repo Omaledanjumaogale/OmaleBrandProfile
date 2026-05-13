@@ -47,7 +47,7 @@
 
 			{#if registrationOpen}
 				<a
-					href="/register/iam"
+					href="#contact"
 					class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 bg-[var(--gold)] text-[var(--bg)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold2)] hover:translate-x-1 transition-all shadow-[var(--shadow-gold)] group min-h-[48px]"
 				>
 					Submit Application
@@ -61,7 +61,7 @@
 					<p class="text-[13px] text-[var(--muted2)] leading-relaxed mb-4">
 						We are processing the current intake. Your application will be placed in our priority queue.
 					</p>
-					<a href="/register/iam" class="inline-flex items-center gap-2 px-8 py-3 border border-[var(--gold)] text-[var(--gold)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold)] hover:text-[var(--bg)] transition-all min-h-[44px]">
+					<a href="#contact" class="inline-flex items-center gap-2 px-8 py-3 border border-[var(--gold)] text-[var(--gold)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold)] hover:text-[var(--bg)] transition-all min-h-[44px]">
 						Join the Queue
 					</a>
 				</div>
@@ -91,11 +91,11 @@
 			</div>
 
 			<!-- Floating stats — positioned relative on mobile, absolute on lg+ -->
-			<div class="hidden lg:block absolute -bottom-8 -left-8 p-5 bg-[#0d0d12ee] border border-[var(--border)] rounded-2xl backdrop-blur-xl shadow-2xl reveal delay-400">
+			<div class="hidden lg:block absolute -bottom-8 -left-8 p-5 bg-[var(--surface)]/95 border border-[var(--border)] rounded-2xl backdrop-blur-xl shadow-2xl reveal delay-400">
 				<div class="font-['Bebas_Neue'] text-3xl text-[var(--gold)] tracking-widest">10,000,000+</div>
 				<div class="text-[9px] text-[var(--muted)] uppercase tracking-widest mt-1">Goal: Impact Ambassadors</div>
 			</div>
-			<div class="hidden lg:block absolute -top-8 -right-8 p-5 bg-[#0d0d12ee] border border-[var(--border)] rounded-2xl backdrop-blur-xl shadow-2xl reveal delay-500">
+			<div class="hidden lg:block absolute -top-8 -right-8 p-5 bg-[var(--surface)]/95 border border-[var(--border)] rounded-2xl backdrop-blur-xl shadow-2xl reveal delay-500">
 				<div class="font-['Bebas_Neue'] text-3xl text-[var(--teal2)] tracking-widest">6+</div>
 				<div class="text-[9px] text-[var(--muted)] uppercase tracking-widest mt-1">Income Streams</div>
 			</div>

@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Page Not Found · E-WIN Project</title>
+	<title>Page Not Found · Omale Danjuma Ogale</title>
 </svelte:head>
 
 <script lang="ts">

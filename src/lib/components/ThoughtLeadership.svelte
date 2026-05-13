@@ -42,7 +42,7 @@
 				<h3 class="font-['Bebas_Neue'] text-xl sm:text-2xl tracking-[0.5px] leading-[1.1] mb-3 flex items-center gap-3">
 					{thought.title}
 				</h3>
-				<p class="text-sm md:text-[12px] leading-[1.75] text-muted2 font-light">
+				<p class="text-sm md:text-[12px] leading-[1.75] text-muted2 font-normal">
 					{thought.body}
 				</p>
 				<span class="block mt-6 text-xl text-gold transition-transform duration-250 group-hover:translate-x-1.5">

@@ -67,9 +67,17 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-[var(--bg)] selection:bg-[var(--gold)] selection:text-[var(--bg)]">
+	<!-- Skip to main content for keyboard users -->
+	<a 
+		href="#main-content" 
+		class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-gold focus:text-bg focus:font-bold focus:rounded-xl focus:shadow-2xl transition-all"
+	>
+		Skip to content
+	</a>
+
 	<Header />
 
-	<main class="flex-grow overflow-x-hidden">
+	<main id="main-content" class="flex-grow overflow-x-hidden">
 		{@render children()}
 	</main>
 
@@ -79,4 +87,5 @@
 	<!-- Service request modal — visitors can request Omale's services -->
 	<ServiceRequestModal />
 	<Toast />
+	<BackToTop />
 </div>

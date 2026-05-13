@@ -54,7 +54,7 @@
 			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,6vw,84px)] tracking-[2px] leading-[0.9] mb-6">
 				Strategic Solutions.<br /><span class="text-gold">Expert Implementation.</span>
 			</h2>
-			<p class="text-sm md:text-[15px] leading-[1.8] text-muted2 max-w-[600px] mx-auto font-light">
+			<p class="text-sm md:text-[15px] leading-[1.8] text-muted2 max-w-[600px] mx-auto font-normal">
 				Leveraging a decade of interdisciplinary expertise to deliver high-impact results across technology, business, and research sectors. 🌍
 			</p>
 		</div>
@@ -72,7 +72,7 @@
 						{service.title}
 					</h3>
 					
-					<p class="text-sm md:text-[13px] leading-[1.7] text-muted2 font-light mb-6 flex-grow">
+					<p class="text-sm md:text-[13px] leading-[1.7] text-muted2 font-normal mb-6 flex-grow">
 						{service.desc}
 					</p>
 
@@ -97,7 +97,7 @@
 
 		<div class="mt-20 p-6 sm:p-10 bg-surface border border-gold-line/20 rounded-[var(--radius)] text-center reveal">
 			<h4 class="font-['Bebas_Neue'] text-3xl tracking-[2px] mb-4">Ready to start a project? 🤝</h4>
-			<p class="text-sm md:text-[14px] text-muted2 mb-8 max-w-[500px] mx-auto font-light">
+			<p class="text-sm md:text-[14px] text-muted2 mb-8 max-w-[500px] mx-auto font-normal">
 				Whether you need a full-scale enterprise application or a comprehensive business plan, I am ready to bring your vision to life.
 			</p>
 			<button 

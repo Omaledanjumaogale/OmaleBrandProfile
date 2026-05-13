@@ -39,7 +39,7 @@
 			<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
 				The code I<br />build by.
 			</h2>
-			<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-light max-w-[540px] mt-4">
+			<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-normal max-w-[540px] mt-4">
 				Every product decision, every strategic choice flows from a deliberately constructed philosophical framework. These aren't slogans — they are constraints that produce better outcomes. 🏗️
 			</p>
 		</div>
@@ -52,7 +52,7 @@
 						<div class="font-['Bebas_Neue'] text-xl tracking-[1px] mb-1.5 flex items-center gap-2">
 							{principle.title}
 						</div>
-						<p class="text-sm md:text-[12px] leading-[1.75] text-muted2 font-light">
+						<p class="text-sm md:text-[12px] leading-[1.75] text-muted2 font-normal">
 							{principle.text}
 						</p>
 					</div>
