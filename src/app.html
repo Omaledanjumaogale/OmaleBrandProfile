@@ -1,8 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<!-- Theme FOUC prevention: applies saved theme before first paint -->
+		<script>
+			(function() {
+				try {
+					var t = localStorage.getItem('ewin-theme');
+					var d = document.documentElement;
+					d.classList.remove('dark', 'light');
+					if (t === 'dark') { d.classList.add('dark'); }
+					else { d.classList.add('light'); }
+				} catch(e) {}
+			})();
+		</script>
 		<meta name="description" content="Danjuma Umar Omale Ogale — AI-Augmented Developer, Sociologist, Business Strategist & Founder of the E-WIN Project. Building Africa's future through technology, research, and workforce innovation." />
 		<meta name="keywords" content="Danjuma Omale, E-WIN Project, AI Developer, Business Strategy, I-AM Network, Elite Workforce Impact Nigeria, Africa Tech, Workforce Innovation" />
 		<meta name="author" content="Danjuma Umar Omale Ogale" />

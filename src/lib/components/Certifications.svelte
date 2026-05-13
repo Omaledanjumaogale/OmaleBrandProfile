@@ -32,7 +32,7 @@
 				<div class="text-sm md:text-[13px] text-text font-medium leading-[1.4] mb-1 group-hover:text-gold transition-colors">
 					{cert.name}
 				</div>
-				<div class="text-sm md:text-[11px] text-muted font-light mt-1">
+				<div class="text-sm md:text-[11px] text-muted font-normal mt-1">
 					{cert.issuer}
 				</div>
 			</div>

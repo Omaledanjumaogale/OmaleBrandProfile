@@ -30,7 +30,7 @@
 			{status === 404 ? "This page doesn't exist." : 'An error occurred.'}
 		</h1>
 
-		<p class="text-[15px] text-[var(--muted2)] leading-relaxed mb-2 font-light">
+		<p class="text-[15px] text-[var(--muted2)] leading-relaxed mb-2 font-normal">
 			{message}
 		</p>
 

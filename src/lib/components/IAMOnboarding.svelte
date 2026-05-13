@@ -26,7 +26,7 @@
 			<h2 class="font-['Bebas_Neue'] text-[clamp(36px,6vw,84px)] tracking-[2px] leading-[0.9] mb-8 text-[var(--text)]">
 				Become an <span class="text-[var(--gold)]">Impact Ambassador.</span>
 			</h2>
-			<p class="text-[15px] leading-[1.8] text-[var(--muted2)] font-light mb-10 max-w-[560px]">
+			<p class="text-[15px] leading-[1.8] text-[var(--muted2)] font-normal mb-10 max-w-[560px]">
 				Onboard into the <strong class="text-[var(--text)]">I-AM Network</strong> and unlock the potential to work across the entire E-WIN Project ecosystem.
 				<br /><br />
 				<strong class="text-[var(--gold)]">Our target: 10,000,000+ youths, graduates, and skilled persons earning ₦200,000+ monthly across our platforms.</strong>

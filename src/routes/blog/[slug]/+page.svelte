@@ -1,6 +1,6 @@
 <script lang="ts">
 	let { data } = $props();
-	const post = data.post;
+	const post = $derived(data.post);
 </script>
 
 <svelte:head>

@@ -8,6 +8,7 @@
 	import ServiceRequestModal from '$lib/components/ServiceRequestModal.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
+	import PageLoader from '$lib/components/ui/PageLoader.svelte';
 	import { theme } from '$lib/stores/ui';
 
 	let { children } = $props();
@@ -68,6 +69,9 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-[var(--bg)] selection:bg-[var(--gold)] selection:text-[var(--bg)]">
+	<!-- Page transition loader -->
+	<PageLoader />
+
 	<!-- Skip to main content for keyboard users -->
 	<a 
 		href="#main-content" 

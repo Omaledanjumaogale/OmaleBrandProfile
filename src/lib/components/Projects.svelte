@@ -4,16 +4,16 @@
       id: "ewin-core",
       title: "E-WIN Core Ecosystem",
       category: "Nation Building / Fintech",
-      description: "A multi-platform workforce innovation ecosystem designed to create sustainable income pathways for 1M+ Nigerians through decentralized trade and training.",
+      description: "A multi-platform workforce innovation ecosystem designed to create sustainable income pathways for 1M+ Nigerians through decentralised trade and training.",
       impact: "Architecture & Strategy",
-      metrics: ["3 Platforms", "Edge Deployment", "Decentralized"],
+      metrics: ["3 Platforms", "Edge Deployment", "Decentralised"],
       color: "from-[#1a5c3a] to-[#2d8a5c]"
     },
     {
       id: "iam-network",
       title: "I-AM Network",
       category: "Identity & Governance",
-      description: "A decentralized identity and resource management system for the E-WIN ecosystem, ensuring secure access and verified workforce credentials.",
+      description: "A decentralised identity and resource management system for the E-WIN ecosystem, ensuring secure access and verified workforce credentials.",
       impact: "Governance Layer",
       metrics: ["Role-Based Access", "Convex Backend", "Real-time Audits"],
       color: "from-[#c5a059] to-[#8a6d3b]"
@@ -30,25 +30,25 @@
   ];
 </script>
 
-<section id="projects" class="py-24 bg-[var(--surface-bright)] border-y border-[var(--border)]">
-  <div class="container mx-auto px-6">
+<section id="projects" class="py-24 bg-surface border-y border-border">
+  <div class="max-w-[1200px] mx-auto px-6">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 reveal">
       <div class="max-w-2xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--gold)]/20 bg-[var(--gold)]/5 mb-6">
-          <span class="w-2 h-2 rounded-full bg-[var(--gold)]"></span>
-          <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--gold)]">Case Studies</span>
+        <div class="badge-gold mb-6">
+          <span class="w-2 h-2 rounded-full bg-gold"></span>
+          Case Studies
         </div>
-        <h2 class="text-4xl md:text-5xl font-black text-[var(--text-main)] mb-6 tracking-tight">
-          Featured <span class="text-gradient">Case Studies</span>
+        <h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] text-text mb-6">
+          Featured <span class="text-gradient-gold">Case Studies</span>
         </h2>
-        <p class="text-[var(--text-muted2)] text-lg font-medium leading-relaxed">
+        <p class="text-muted2 text-[15px] font-medium leading-relaxed">
           Deep dives into the systems and strategies I've engineered to solve large-scale socio-economic challenges through technology.
         </p>
       </div>
       <div class="mt-8 md:mt-0">
-        <a href="/blog" class="group flex items-center gap-3 text-[var(--text-main)] font-black uppercase tracking-widest text-xs">
-          View All Insights
-          <div class="w-8 h-8 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--gold)] group-hover:border-[var(--gold)] group-hover:text-white transition-all">
+        <a href="/blog" class="group flex items-center gap-3 text-text font-bold uppercase tracking-widest text-xs hover:text-gold transition-colors">
+          View All Articles
+          <div class="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7" />
             </svg>
@@ -57,62 +57,58 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {#each projects as project, i}
-        <div class="group relative flex flex-col h-full bg-[var(--surface)] border border-[var(--border)] rounded-3xl overflow-hidden hover:shadow-2xl hover:border-[var(--gold)]/30 transition-all duration-500 reveal" style="transition-delay: {i * 100}ms">
-          <!-- Card Header / Image Area -->
+        <div
+          class="card card-hover group relative flex flex-col h-full rounded-3xl overflow-hidden reveal"
+          style="transition-delay: {i * 100}ms"
+        >
+          <!-- Card Header -->
           <div class="relative h-48 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br {project.color} opacity-80 group-hover:scale-110 transition-transform duration-700"></div>
-            <div class="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+            <div class="absolute inset-0 bg-gradient-to-br {project.color} opacity-90 group-hover:scale-110 transition-transform duration-700"></div>
             <div class="absolute inset-0 flex items-center justify-center">
-              <span class="text-white/20 text-6xl font-black">{project.title.charAt(0)}</span>
+              <span class="text-white/20 text-7xl font-black select-none">{project.title.charAt(0)}</span>
             </div>
-            <div class="absolute top-6 left-6">
-              <span class="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest">
+            <div class="absolute top-4 left-4">
+              <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[9px] font-bold uppercase tracking-widest">
                 {project.category}
+              </span>
+            </div>
+            <div class="absolute top-4 right-4">
+              <span class="px-3 py-1 rounded-full bg-gold/80 text-white text-[9px] font-bold uppercase tracking-widest">
+                {project.impact}
               </span>
             </div>
           </div>
 
           <!-- Card Content -->
-          <div class="flex-1 p-8 flex flex-col">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-2xl font-black text-[var(--text-main)] leading-tight">{project.title}</h3>
-              <span class="text-[var(--gold)] font-black text-[10px] uppercase tracking-tighter">{project.impact}</span>
-            </div>
-            <p class="text-[var(--text-muted2)] font-medium mb-8 line-clamp-3">
+          <div class="flex-1 p-6 sm:p-8 flex flex-col">
+            <h3 class="font-['Bebas_Neue'] text-2xl tracking-[1px] text-text leading-tight mb-3">
+              {project.title}
+            </h3>
+            <p class="text-muted2 text-[13px] leading-[1.75] font-normal mb-6 flex-grow">
               {project.description}
             </p>
 
-            <div class="mt-auto pt-6 border-t border-[var(--border)]">
-              <div class="flex flex-wrap gap-2">
+            <div class="mt-auto pt-5 border-t border-border">
+              <div class="flex flex-wrap gap-2 mb-4">
                 {#each project.metrics as metric}
-                  <span class="text-[10px] font-bold text-[var(--text-muted1)] bg-[var(--surface-bright)] px-2 py-1 rounded-md border border-[var(--border)]">
+                  <span class="text-[9px] font-bold tracking-[1px] uppercase text-muted bg-surface2 border border-border2 px-2.5 py-1 rounded-lg">
                     {metric}
                   </span>
                 {/each}
               </div>
+              <a
+                href="/blog/{project.id}"
+                class="w-full py-2.5 bg-gold/10 border border-gold/30 text-gold text-[10px] font-bold tracking-[2px] uppercase rounded-xl hover:bg-gold hover:text-white transition-all duration-300 min-h-[44px] flex items-center justify-center gap-2 group/btn"
+              >
+                View Case Study
+                <span class="transition-transform group-hover/btn:translate-x-1" aria-hidden="true">→</span>
+              </a>
             </div>
-          </div>
-
-          <!-- Hover Overlay -->
-          <div class="absolute inset-0 bg-[var(--gold)] translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col items-center justify-center p-8 text-center z-20">
-            <h4 class="text-white text-2xl font-black mb-4">Explore {project.title}</h4>
-            <p class="text-white/80 font-medium mb-8">View full architecture breakdown and impact metrics.</p>
-            <a href="/blog/{project.id}" class="px-8 py-4 bg-white text-[var(--text-main)] font-black rounded-full hover:scale-105 transition-transform uppercase tracking-widest text-xs shadow-xl">
-              View Case Study
-            </a>
           </div>
         </div>
       {/each}
     </div>
   </div>
 </section>
-
-<style>
-  .text-gradient {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-</style>

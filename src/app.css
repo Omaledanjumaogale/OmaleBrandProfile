@@ -163,6 +163,27 @@ html.dark {
   /* Ensure contrast for light mode — text on light surfaces */
   .text-on-light { color: var(--text); }
   .bg-page       { background-color: var(--bg); }
+
+  /* Label typography — overrides the problematic 'text-sm md:text-[10px]' pattern */
+  /* Mobile: 11px, desktop: 10px — min-readable on cream background */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* Section body text — always legible min 13px */
+  .body-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--muted2);
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .body-text { font-size: 15px; }
+  }
 }
 
 /* ── COMPONENT LAYER ────────────────────────────────────────── */
