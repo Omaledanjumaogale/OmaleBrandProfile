@@ -23,7 +23,7 @@
 		"@context": "https://schema.org",
 		"@type": "Person",
 		"name": "Omale Danjuma Ogale",
-		"url": "https://danjumaomaleogale.dev",
+		"url": "https://omaledanjumaogale.ewinproject.org",
 		"jobTitle": "Entrepreneur, Tech Leader & Nation Builder",
 		"description": "Omale Danjuma Ogale is the founder of the E-WIN Project, a software architect, and a workforce innovation strategist committed to building sustainable income pathways in Nigeria.",
 		"sameAs": [],

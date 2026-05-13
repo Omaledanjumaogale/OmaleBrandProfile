@@ -12,7 +12,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	// Domain Standardization (SEO — canonical domain)
-	const targetDomain = 'danjumaomaleogale.dev';
+	const targetDomain = 'omaledanjumaogale.ewinproject.org';
 	if (
 		event.url.hostname.startsWith('www.') &&
 		!event.url.hostname.includes('localhost') &&

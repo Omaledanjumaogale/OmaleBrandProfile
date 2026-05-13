@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /platforms/*.html$
 
-Sitemap: https://danjumaomaleogale.dev/sitemap.xml
+Sitemap: https://omaledanjumaogale.ewinproject.org/sitemap.xml
