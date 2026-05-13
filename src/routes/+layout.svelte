@@ -11,13 +11,7 @@
 
 	let { children } = $props();
 
-	// Hide chrome (Header/Footer) on admin & dashboard routes — they have their own shell
-	const isShellRoute = $derived(
-		$page.url.pathname.startsWith('/admin') ||
-		$page.url.pathname.startsWith('/dashboard')
-	);
-
-	// ── Scroll-reveal observer (no polling interval) ───────────────
+	// ── Scroll-reveal observer ──────────────────────────────────────
 	let revealObserver: IntersectionObserver | null = null;
 
 	function setupRevealObserver() {
@@ -45,11 +39,11 @@
 		theme.init();
 		setupRevealObserver();
 
-		// Use MutationObserver to catch dynamically added .reveal elements
+		// Catch dynamically added .reveal elements
 		const mutObs = new MutationObserver(() => setupRevealObserver());
 		mutObs.observe(document.body, { childList: true, subtree: true });
 
-		// Fallback: reveal all after 3s in case JS animations are blocked
+		// Fallback: reveal all after 3s if animations are blocked
 		const fallback = setTimeout(() => {
 			document.querySelectorAll<HTMLElement>('.reveal').forEach((el) =>
 				el.classList.add('visible')
@@ -73,19 +67,16 @@
 </script>
 
 <div class="min-h-screen flex flex-col bg-[var(--bg)] selection:bg-[var(--gold)] selection:text-[var(--bg)]">
-	{#if !isShellRoute}
-		<Header />
-	{/if}
+	<Header />
 
 	<main class="flex-grow overflow-x-hidden">
 		{@render children()}
 	</main>
 
-	{#if !isShellRoute}
-		<Footer />
-		<BottomNav />
-	{/if}
+	<Footer />
+	<BottomNav />
 
+	<!-- Service request modal — visitors can request Omale's services -->
 	<ServiceRequestModal />
 	<Toast />
 </div>

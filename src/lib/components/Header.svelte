@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { user, auth } from '$lib/stores/auth';
 	import { openServiceModal } from '$lib/stores/ui';
 	import ThemeToggle from '$lib/components/ui/ThemeToggle.svelte';
 
@@ -26,25 +24,13 @@
 	});
 
 	const navLinks = [
-		{ name: 'About',    href: '/#about',          icon: '👤' },
-		{ name: 'Services', href: '/#services',        icon: '🛠️' },
-		{ name: 'Expertise',href: '/#expertise',       icon: '🧠' },
-		{ name: 'Career',   href: '/#iam-onboarding',  icon: '💼' },
-		{ name: 'E-WIN',    href: '/#ecosystem',       icon: '🌍' },
-		{ name: 'Insights', href: '/#thought',         icon: '💡' }
+		{ name: 'About',     href: '/#about',         icon: '👤' },
+		{ name: 'Services',  href: '/#services',       icon: '🛠️' },
+		{ name: 'Expertise', href: '/#expertise',      icon: '🧠' },
+		{ name: 'Career',    href: '/#career',         icon: '💼' },
+		{ name: 'E-WIN',     href: '/#ecosystem',      icon: '🌍' },
+		{ name: 'Insights',  href: '/#thought',        icon: '💡' }
 	];
-
-	const handleLogout = async () => {
-		if (!auth) return;
-		try {
-			await fetch('/api/session', { method: 'DELETE' });
-			await auth.signOut();
-			closeMenu();
-			goto('/');
-		} catch (e) {
-			console.error('Logout failed:', e);
-		}
-	};
 </script>
 
 <nav
@@ -56,8 +42,8 @@
 >
 	<div class="px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between gap-3">
 		<!-- Brand -->
-		<a href="/#hero" class="font-['Bebas_Neue'] text-2xl tracking-widest text-[var(--text)] flex items-center gap-1 shrink-0" aria-label="E-WIN ProfileX home">
-			<span class="text-[var(--gold)]">E</span>-WIN<span class="text-[13px] text-[var(--muted)] tracking-[3px] ml-1 hidden sm:inline">PROFILEX</span>
+		<a href="/#hero" class="font-['Bebas_Neue'] text-2xl tracking-widest text-[var(--text)] flex items-center gap-1 shrink-0" aria-label="Omale Danjuma Ogale — Personal Brand home">
+			<span class="text-[var(--gold)]">O</span>MALE<span class="text-[13px] text-[var(--muted)] tracking-[3px] ml-1 hidden sm:inline">PROFILEX</span>
 		</a>
 
 		<div class="flex items-center gap-2">
@@ -120,8 +106,8 @@
 	</div>
 
 	<!-- Nav links -->
-	<nav class="flex-grow overflow-y-auto px-4 py-4 space-y-1 scroll-container" aria-label="Site pages">
-		<div class="font-['Space_Mono'] text-[9px] tracking-[3px] uppercase text-[var(--muted)] mb-3 px-3" aria-hidden="true">Pages</div>
+	<nav class="flex-grow overflow-y-auto px-4 py-4 space-y-1 scroll-container" aria-label="Site sections">
+		<div class="font-['Space_Mono'] text-[9px] tracking-[3px] uppercase text-[var(--muted)] mb-3 px-3" aria-hidden="true">Sections</div>
 		{#each navLinks as link}
 			<a
 				href={link.href}
@@ -132,53 +118,6 @@
 				{link.name}
 			</a>
 		{/each}
-
-		<div class="h-px w-full bg-[var(--border)] my-3" aria-hidden="true"></div>
-		<div class="font-['Space_Mono'] text-[9px] tracking-[3px] uppercase text-[var(--muted)] mb-3 px-3" aria-hidden="true">Account</div>
-
-		{#if $user}
-			<a
-				href="/admin"
-				onclick={closeMenu}
-				class="font-['Bebas_Neue'] text-xl tracking-[2px] text-[var(--gold)] hover:text-[var(--gold2)] transition-colors flex items-center gap-3 group px-3 py-2 rounded-xl hover:bg-[var(--gold)]/5 min-h-[44px]"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">🛡️</span>
-				Admin Portal
-			</a>
-			<a
-				href="/dashboard"
-				onclick={closeMenu}
-				class="font-['Bebas_Neue'] text-xl tracking-[2px] text-[var(--teal2)] hover:text-[var(--teal2)]/80 transition-colors flex items-center gap-3 group px-3 py-2 rounded-xl hover:bg-[var(--teal2)]/5 min-h-[44px]"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">📊</span>
-				My Dashboard
-			</a>
-			<button
-				onclick={handleLogout}
-				class="w-full font-['Bebas_Neue'] text-xl tracking-[2px] text-red-400 hover:text-red-500 transition-colors flex items-center gap-3 group text-left px-3 py-2 rounded-xl hover:bg-red-400/5 min-h-[44px]"
-				aria-label="Sign out of your account"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">🚪</span>
-				Sign Out
-			</button>
-		{:else}
-			<a
-				href="/admin/login"
-				onclick={closeMenu}
-				class="font-['Bebas_Neue'] text-xl tracking-[2px] text-[var(--text)] hover:text-[var(--gold)] transition-colors flex items-center gap-3 group px-3 py-2 rounded-xl hover:bg-[var(--gold)]/5 min-h-[44px]"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">🗝️</span>
-				Admin Login
-			</a>
-			<a
-				href="/register/iam"
-				onclick={closeMenu}
-				class="font-['Bebas_Neue'] text-xl tracking-[2px] text-[var(--teal2)] hover:text-[var(--teal2)]/80 transition-colors flex items-center gap-3 group px-3 py-2 rounded-xl hover:bg-[var(--teal2)]/5 min-h-[44px]"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">🚀</span>
-				Join I-AM Network
-			</a>
-		{/if}
 	</nav>
 
 	<!-- CTA -->
@@ -190,7 +129,7 @@
 			<span aria-hidden="true">🤝</span> Connect Now
 		</button>
 		<p class="text-[9px] text-[var(--muted)] font-['Space_Mono'] text-center mt-3 tracking-widest uppercase">
-			© 2026 Danjuma Omale-Ogale · E-WIN Project
+			© 2026 Omale Danjuma Ogale
 		</p>
 	</div>
 </div>
@@ -198,6 +137,6 @@
 <style>
 	.scroll-container::-webkit-scrollbar { width: 4px; }
 	.scroll-container::-webkit-scrollbar-track { background: transparent; }
-	.scroll-container::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 10px; }
-	.scroll-container::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.5); }
+	.scroll-container::-webkit-scrollbar-thumb { background: rgba(160,120,32,0.3); border-radius: 10px; }
+	.scroll-container::-webkit-scrollbar-thumb:hover { background: rgba(160,120,32,0.5); }
 </style>

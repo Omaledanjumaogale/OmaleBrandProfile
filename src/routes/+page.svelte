@@ -14,28 +14,20 @@
 </script>
 
 <svelte:head>
-	<title>E-WIN Hub - Free Workforce Innovation & AI Training | Omale Ogale ProfileX</title>
-	<meta name="description" content="Empower your career with E-WIN Hub's free AI-augmented training and workforce innovation tools. Build sustainable earning pathways instantly—no signup needed." />
-	
+	<title>Omale Danjuma Ogale — Tech Leader, Builder & Nation Builder | ProfileX</title>
+	<meta name="description" content="Official personal brand of Omale Danjuma Ogale — entrepreneur, software architect, workforce innovation strategist, and founder of the E-WIN Project. Explore his story, services, and mission." />
+
 	<!-- JSON-LD Schema Markup -->
 	<script type="application/ld+json">
 	{
 		"@context": "https://schema.org",
-		"@type": "WebApplication",
-		"name": "E-WIN Hub 🌍",
-		"url": "https://danjumaomaleogale.ewinproject.org",
-		"description": "The central command platform for the Elite Workforce Impact Nigeria ecosystem — housing the mission, activator programmes, I-AM Network portal, and strategic intelligence.",
-		"applicationCategory": "BusinessApplication",
-		"operatingSystem": "All",
-		"author": {
-			"@type": "Person",
-			"name": "Danjuma Umar Omale Ogale"
-		},
-		"offers": {
-			"@type": "Offer",
-			"price": "0",
-			"priceCurrency": "USD"
-		}
+		"@type": "Person",
+		"name": "Omale Danjuma Ogale",
+		"url": "https://danjumaomaleogale.dev",
+		"jobTitle": "Entrepreneur, Tech Leader & Nation Builder",
+		"description": "Omale Danjuma Ogale is the founder of the E-WIN Project, a software architect, and a workforce innovation strategist committed to building sustainable income pathways in Nigeria.",
+		"sameAs": [],
+		"knowsAbout": ["Software Architecture", "AI & Automation", "Workforce Development", "Entrepreneurship", "Nation Building"]
 	}
 	</script>
 </svelte:head>
