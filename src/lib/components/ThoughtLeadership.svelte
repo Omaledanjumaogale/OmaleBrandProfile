@@ -1,18 +1,21 @@
 <script lang="ts">
 	const thoughts = [
 		{
+			slug: 'the-agentic-shift',
 			tag: 'Featured Essay ✍️',
 			title: 'The Agentic Shift: Why the Next Decade Belongs to AI-Augmented Founders 🤖',
-			body: 'We are entering the most significant redistribution of productive capacity in human history. AI agents are not tools — they are leverage. And founders who learn to orchestrate them will operate at the velocity of entire teams. Here\'s what that means for how we build, what we build, and who gets to build it.',
+			body: 'We are entering the most significant redistribution of productive capacity in human history. AI agents are not tools — they are leverage. And founders who learn to orchestrate them will operate at the velocity of entire teams.',
 			featured: true
 		},
 		{
+			slug: 'emerging-markets-ai-gap',
 			tag: 'Analysis 📊',
 			title: 'Emerging Markets & The AI Access Gap 🌍',
-			body: 'The democratisation of AI is uneven. Without intentional infrastructure investment and localised model training, the gap between AI-enabled and AI-excluded economies will widen dramatically by 2030. Approximately 26% of jobs in low-income countries are already exposed to AI displacement.',
+			body: 'The democratisation of AI is uneven. Without intentional infrastructure investment and localised model training, the gap between AI-enabled and AI-excluded economies will widen dramatically by 2030.',
 			featured: false
 		},
 		{
+			slug: 'building-for-dignity',
 			tag: 'Framework 🏗️',
 			title: 'Building for Dignity: A Sociological Framework for Ethical AI Product Design ⚖️',
 			body: 'Ethical AI is not about compliance checklists. It is about designing systems that preserve human dignity, expand agency, and distribute value fairly across all users — not just the most profitable segment.',
@@ -26,17 +29,26 @@
 		<div
 			class="font-['Space_Mono'] text-sm md:text-[10px] tracking-[3px] uppercase text-gold mb-[14px] flex items-center gap-[10px]"
 		>
-			<span class="w-6 h-[1px] bg-gold"></span> AI Thought Leadership 🧠
+			<span class="w-6 h-px bg-gold"></span> AI Thought Leadership 🧠
 		</div>
-		<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
-			Perspectives on<br />what's coming.
-		</h2>
+		<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+			<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95]">
+				Perspectives on<br />what's coming.
+			</h2>
+			<a href="/insights" class="font-['Bebas_Neue'] text-xl tracking-[2px] text-gold hover:text-text transition-colors flex items-center gap-2 pb-2">
+				Explore Knowledge Base →
+			</a>
+		</div>
 	</div>
 
-	<div class="grid grid-cols-1 lg:grid-cols-4 gap-[1px] bg-border border border-border rounded-[var(--radius)] overflow-hidden">
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden">
 		{#each thoughts as thought, i}
-			<div class="bg-surface p-9 transition-colors duration-300 hover:bg-surface2 group cursor-default {thought.featured ? 'lg:col-span-2 bg-surface2' : ''} reveal delay-{i * 100}">
-				<div class="font-['Space_Mono'] text-sm md:text-[8px] tracking-[2px] uppercase text-gold mb-4">
+			<a 
+				href="/insights/{thought.slug}"
+				class="group bg-bg p-8 flex flex-col transition-all duration-500 hover:bg-surface reveal"
+				style="transition-delay: {i * 100}ms"
+			>
+				<div class="font-['Space_Mono'] text-[9px] tracking-[2px] uppercase text-gold mb-6">
 					{thought.tag}
 				</div>
 				<h3 class="font-['Bebas_Neue'] text-xl sm:text-2xl tracking-[0.5px] leading-[1.1] mb-3 flex items-center gap-3">
@@ -45,10 +57,10 @@
 				<p class="text-sm md:text-[12px] leading-[1.75] text-muted2 font-normal">
 					{thought.body}
 				</p>
-				<span class="block mt-6 text-xl text-gold transition-transform duration-250 group-hover:translate-x-1.5">
+				<span class="block mt-6 text-xl text-gold transition-transform duration-250 group-hover:translate-x-1.5" aria-hidden="true">
 					→
 				</span>
-			</div>
+			</a>
 		{/each}
 	</div>
-</section>
+</section>

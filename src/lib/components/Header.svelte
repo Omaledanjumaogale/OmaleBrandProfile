@@ -29,7 +29,7 @@
 		{ name: 'Expertise', href: '/#expertise',      icon: '🧠' },
 		{ name: 'Career',    href: '/#career',         icon: '💼' },
 		{ name: 'E-WIN',     href: '/#ecosystem',      icon: '🌍' },
-		{ name: 'Insights',  href: '/#thought',        icon: '💡' }
+		{ name: 'Insights',  href: '/insights',        icon: '💡' }
 	];
 </script>
 
