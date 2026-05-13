@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>{post.title} — Insights — Omale Danjuma Ogale</title>
+	<title>{post.title} — Blog — Omale Danjuma Ogale</title>
 	<meta name="description" content={post.excerpt} />
 	<meta property="og:title" content={post.title} />
 	<meta property="og:description" content={post.excerpt} />
@@ -14,11 +14,11 @@
 <article class="pt-32 pb-24 px-6">
 	<div class="max-w-3xl mx-auto">
 		<!-- Back link -->
-		<a href="/insights" class="inline-flex items-center gap-2 text-gold font-['Space_Mono'] text-[10px] tracking-[2px] uppercase mb-12 hover:gap-4 transition-all duration-300">
+		<a href="/blog" class="inline-flex items-center gap-2 text-gold font-['Space_Mono'] text-[10px] tracking-[2px] uppercase mb-12 hover:gap-4 transition-all duration-300">
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<path d="M19 12H5M12 19l-7-7 7-7"/>
 			</svg>
-			Back to Insights
+			Back to Blog
 		</a>
 
 		<!-- Header -->

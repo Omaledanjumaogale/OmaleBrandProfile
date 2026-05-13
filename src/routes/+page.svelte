@@ -6,6 +6,8 @@
 	import IAMOnboarding from '$lib/components/IAMOnboarding.svelte';
 	import Expertise from '$lib/components/Expertise.svelte';
 	import Career from '$lib/components/Career.svelte';
+	import Projects from '$lib/components/Projects.svelte';
+	import Testimonials from '$lib/components/Testimonials.svelte';
 	import Ecosystem from '$lib/components/Ecosystem.svelte';
 	import Philosophy from '$lib/components/Philosophy.svelte';
 	import ThoughtLeadership from '$lib/components/ThoughtLeadership.svelte';
@@ -38,6 +40,8 @@
 <Services />
 <IAMOnboarding />
 <Expertise />
+<Projects />
+<Testimonials />
 <Career />
 <Ecosystem />
 <Philosophy />

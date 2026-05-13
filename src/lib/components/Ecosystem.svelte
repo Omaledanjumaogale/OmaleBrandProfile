@@ -130,10 +130,10 @@
 		},
 		{
 			badge: 'Market Intelligence',
-			name: 'InsightsTrade',
+			name: 'MarketIntel',
 			overview: 'Real-time market intelligence and trade analytics platform providing actionable insights for commodities, forex, and emerging market investment decisions.',
 			icon: '📈',
-			href: '/platforms/InsightsTrade.html',
+			href: '/platforms/MarketIntel.html',
 			external: false
 		},
 		{
@@ -146,10 +146,10 @@
 		},
 		{
 			badge: 'Commerce',
-			name: 'TradezMarket',
+			name: 'InsightsTrade',
 			overview: 'Decentralised marketplace for physical and digital goods, powered by the E-WIN infrastructure — enabling vendors and buyers to transact securely at scale.',
 			icon: '📦',
-			href: '/platforms/TradezMarket.html',
+			href: '/platforms/InsightsTrade.html',
 			external: false
 		},
 		{

@@ -7,6 +7,7 @@
 	import BottomNav from '$lib/components/BottomNav.svelte';
 	import ServiceRequestModal from '$lib/components/ServiceRequestModal.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
+	import BackToTop from '$lib/components/ui/BackToTop.svelte';
 	import { theme } from '$lib/stores/ui';
 
 	let { children } = $props();

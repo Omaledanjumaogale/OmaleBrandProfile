@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Insights & Thought Leadership — Omale Danjuma Ogale</title>
+	<title>The Blog — Omale Danjuma Ogale</title>
 	<meta name="description" content="Essays and analysis on the agentic shift, AI orchestration, and the future of technology in emerging markets." />
 </svelte:head>
 
@@ -18,10 +18,10 @@
 		<!-- Header -->
 		<div class="reveal mb-16">
 			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold mb-4 flex items-center gap-3">
-				<span class="w-8 h-px bg-gold"></span> THE KNOWLEDGE BASE 🧠
+				<span class="w-8 h-px bg-gold"></span> THE BLOG ✍️
 			</div>
 			<h1 class="font-['Bebas_Neue'] text-[clamp(48px,8vw,96px)] tracking-[1px] leading-[0.9] mb-6">
-				Insights &<br />Thought <span class="text-gold italic">Leadership.</span>
+				E-WIN<br />Official <span class="text-gold italic">Blog.</span>
 			</h1>
 			<p class="text-muted2 max-w-[600px] leading-[1.8] font-normal">
 				Deep dives into the intersection of cognitive orchestration, social infrastructure, and the emerging agentic economy.
@@ -41,7 +41,7 @@
 						</div>
 						
 						<h2 class="font-['Bebas_Neue'] text-2xl tracking-[0.5px] leading-tight mb-4 group-hover:text-gold transition-colors duration-300">
-							<a href="/insights/{post.slug}">{post.title}</a>
+							<a href="/blog/{post.slug}">{post.title}</a>
 						</h2>
 						
 						<p class="text-sm text-muted2 leading-relaxed font-normal mb-8 flex-grow">
@@ -54,7 +54,7 @@
 								<span class="text-[10px] text-gold tracking-wider uppercase mt-1">{post.readTime}</span>
 							</div>
 							<a 
-								href="/insights/{post.slug}" 
+								href="/blog/{post.slug}" 
 								class="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center group-hover:bg-gold group-hover:text-bg transition-all duration-300"
 								aria-label="Read full essay: {post.title}"
 							>

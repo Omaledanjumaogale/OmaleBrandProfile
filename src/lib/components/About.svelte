@@ -1,8 +1,9 @@
 <script lang="ts">
+	import Counter from './ui/Counter.svelte';
 	const stats = [
-		{ num: '10M+', label: 'Youth Targeted 🎯' },
-		{ num: '25+', label: 'Platforms Live & Coming Soon 💻' },
-		{ num: '∞', label: 'Impact Potential 🚀' }
+		{ num: 10, suffix: 'M+', label: 'Youth Targeted 🎯' },
+		{ num: 25, suffix: '+', label: 'Platforms Live & Coming Soon 💻' },
+		{ num: 0, suffix: '∞', label: 'Impact Potential 🚀' }
 	];
 
 	const creds = [
@@ -39,7 +40,7 @@
 				{#each stats as stat}
 					<div class="bg-bg p-6 text-center border-b sm:border-b-0 border-border last:border-b-0">
 						<div class="font-['Bebas_Neue'] text-[36px] sm:text-[44px] text-gold tracking-widest leading-none">
-							{stat.num}
+							<Counter target={stat.num} suffix={stat.suffix} />
 						</div>
 						<div class="text-sm md:text-[9px] tracking-[2px] uppercase text-muted mt-[6px]">
 							{stat.label}

@@ -35,8 +35,8 @@
 			<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95]">
 				Perspectives on<br />what's coming.
 			</h2>
-			<a href="/insights" class="font-['Bebas_Neue'] text-xl tracking-[2px] text-gold hover:text-text transition-colors flex items-center gap-2 pb-2">
-				Explore Knowledge Base →
+			<a href="/blog" class="font-['Bebas_Neue'] text-xl tracking-[2px] text-gold hover:text-text transition-colors flex items-center gap-2 pb-2">
+				Explore All Articles →
 			</a>
 		</div>
 	</div>
@@ -44,7 +44,7 @@
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden">
 		{#each thoughts as thought, i}
 			<a 
-				href="/insights/{thought.slug}"
+				href="/blog/{thought.slug}"
 				class="group bg-bg p-8 flex flex-col transition-all duration-500 hover:bg-surface reveal"
 				style="transition-delay: {i * 100}ms"
 			>
