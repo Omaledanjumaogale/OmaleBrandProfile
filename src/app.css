@@ -1,65 +1,105 @@
 @import "tailwindcss";
 
-/* ── Design Token System ─────────────────────────────────────────── */
-@theme {
-  --color-bg: #060608;
-  --color-surface: #0d0d12;
-  --color-surface2: #13131a;
-  --color-surface3: #1a1a24;
-  --color-gold: #c9a84c;
-  --color-gold2: #f0cc7a;
-  --color-teal: #1a6b5c;
-  --color-teal2: #22917a;
-  --font-display: 'Bebas Neue', system-ui, sans-serif;
-  --font-mono: 'Space Mono', 'Courier New', monospace;
-}
+/* ═══════════════════════════════════════════════════════════════════
+   E-WIN PROFILEX — ENTERPRISE DESIGN TOKEN SYSTEM
+   Light mode is the DEFAULT. Dark mode is opt-in via html.dark.
+   All Tailwind color utilities are dynamically mapped to CSS vars
+   using @theme inline so they respond to theme switching.
+═══════════════════════════════════════════════════════════════════ */
 
-/* ── Dark Mode (default) ─────────────────────────────────────────── */
+/* ── LIGHT MODE — Default / Primary Theme ─────────────────────── */
 :root {
-  --bg: #060608;
-  --surface: #0d0d12;
-  --surface2: #13131a;
-  --surface3: #1a1a24;
-  --gold: #c9a84c;
-  --gold2: #f0cc7a;
-  --gold-dim: rgba(201, 168, 76, 0.15);
-  --gold-line: rgba(201, 168, 76, 0.25);
-  --teal: #1a6b5c;
-  --teal2: #22917a;
-  --text: #eeeae2;
-  --muted: #6b6860;
-  --muted2: #9b9690;
-  --border: rgba(201, 168, 76, 0.12);
-  --border2: rgba(255, 255, 255, 0.06);
-  --radius: 12px;
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-gold: 0 8px 32px rgba(201, 168, 76, 0.2);
+  --bg:           #f7f5f0;
+  --surface:      #ffffff;
+  --surface2:     #f0ece4;
+  --surface3:     #e5e0d5;
+  --gold:         #a07820;
+  --gold2:        #c9a84c;
+  --gold-dim:     rgba(160, 120, 32, 0.10);
+  --gold-line:    rgba(160, 120, 32, 0.22);
+  --teal:         #155a4c;
+  --teal2:        #1a7a64;
+  --text:         #18160e;
+  --muted:        #6b6350;
+  --muted2:       #4a4438;
+  --border:       rgba(160, 120, 32, 0.16);
+  --border2:      rgba(0, 0, 0, 0.06);
+  --radius:       12px;
+  --shadow-card:  0 2px 16px rgba(0, 0, 0, 0.07);
+  --shadow-gold:  0 4px 20px rgba(160, 120, 32, 0.14);
 }
 
-/* ── Light Mode (system preference) ─────────────────────────────── */
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f5f3ee;
-    --surface: #ffffff;
-    --surface2: #f0ece4;
-    --surface3: #e8e3d8;
-    --gold: #a07820;
-    --gold2: #c9a84c;
-    --gold-dim: rgba(160, 120, 32, 0.12);
-    --gold-line: rgba(160, 120, 32, 0.3);
-    --teal: #155a4c;
-    --teal2: #1a7a64;
-    --text: #0d0d12;
-    --muted: #5a5650;
-    --muted2: #3a3630;
-    --border: rgba(160, 120, 32, 0.18);
-    --border2: rgba(0, 0, 0, 0.08);
-    --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.1);
-    --shadow-gold: 0 4px 20px rgba(160, 120, 32, 0.15);
+/* ── DARK MODE — Applied when html.dark class is set ─────────── */
+html.dark {
+  --bg:           #060608;
+  --surface:      #0d0d12;
+  --surface2:     #13131a;
+  --surface3:     #1a1a24;
+  --gold:         #c9a84c;
+  --gold2:        #f0cc7a;
+  --gold-dim:     rgba(201, 168, 76, 0.15);
+  --gold-line:    rgba(201, 168, 76, 0.25);
+  --teal:         #1a6b5c;
+  --teal2:        #22917a;
+  --text:         #eeeae2;
+  --muted:        #6b6860;
+  --muted2:       #9b9690;
+  --border:       rgba(201, 168, 76, 0.12);
+  --border2:      rgba(255, 255, 255, 0.06);
+  --shadow-card:  0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-gold:  0 8px 32px rgba(201, 168, 76, 0.2);
+}
+
+/* ── SYSTEM DARK PREFERENCE — Fallback when no JS class is set ── */
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    --bg:           #060608;
+    --surface:      #0d0d12;
+    --surface2:     #13131a;
+    --surface3:     #1a1a24;
+    --gold:         #c9a84c;
+    --gold2:        #f0cc7a;
+    --gold-dim:     rgba(201, 168, 76, 0.15);
+    --gold-line:    rgba(201, 168, 76, 0.25);
+    --teal:         #1a6b5c;
+    --teal2:        #22917a;
+    --text:         #eeeae2;
+    --muted:        #6b6860;
+    --muted2:       #9b9690;
+    --border:       rgba(201, 168, 76, 0.12);
+    --border2:      rgba(255, 255, 255, 0.06);
+    --shadow-card:  0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-gold:  0 8px 32px rgba(201, 168, 76, 0.2);
   }
 }
 
-/* ── Base Styles ─────────────────────────────────────────────────── */
+/* ── TAILWIND v4 DYNAMIC COLOR INTEGRATION ──────────────────────
+   @theme inline maps Tailwind utilities to CSS variables.
+   bg-surface → background-color: var(--surface) [dynamic!]
+   text-gold  → color: var(--gold)                [dynamic!]
+   This means ALL Tailwind color classes respond to theme toggle.
+─────────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-bg:        var(--bg);
+  --color-surface:   var(--surface);
+  --color-surface2:  var(--surface2);
+  --color-surface3:  var(--surface3);
+  --color-gold:      var(--gold);
+  --color-gold2:     var(--gold2);
+  --color-gold-dim:  var(--gold-dim);
+  --color-gold-line: var(--gold-line);
+  --color-teal:      var(--teal);
+  --color-teal2:     var(--teal2);
+  --color-text:      var(--text);
+  --color-muted:     var(--muted);
+  --color-muted2:    var(--muted2);
+  --color-border:    var(--border);
+  --color-border2:   var(--border2);
+  --font-display:    'Bebas Neue', system-ui, sans-serif;
+  --font-mono:       'Space Mono', 'Courier New', monospace;
+}
+
+/* ── BASE STYLES ─────────────────────────────────────────────── */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -67,6 +107,8 @@
     background-color: var(--bg);
     color: var(--text);
     font-family: system-ui, sans-serif;
+    /* Smooth theme transitions */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
@@ -74,7 +116,6 @@
     cursor: default;
   }
 
-  /* Global Anti-Overflow Rules */
   *, *::before, *::after {
     max-width: 100%;
     overflow-wrap: break-word;
@@ -86,41 +127,52 @@
     max-width: 100%;
   }
 
-  /* Focus Visible — keyboard accessibility */
   :focus-visible {
     outline: 2px solid var(--gold);
     outline-offset: 3px;
     border-radius: 4px;
   }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar       { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb {
     background: var(--surface3);
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  /* Smooth transition on all themed elements */
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 0.25s;
+    transition-timing-function: ease;
+  }
+  /* Don't transition layout or sizing properties */
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color;
+  }
 }
 
-/* ── Utility Layer ───────────────────────────────────────────────── */
+/* ── UTILITY LAYER ──────────────────────────────────────────── */
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Safe area padding for notch/home-bar devices */
   .safe-top    { padding-top: max(env(safe-area-inset-top, 0px), 0px); }
   .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px); }
+
+  /* Ensure contrast for light mode — text on light surfaces */
+  .text-on-light { color: var(--text); }
+  .bg-page       { background-color: var(--bg); }
 }
 
-/* ── Component Layer ─────────────────────────────────────────────── */
+/* ── COMPONENT LAYER ────────────────────────────────────────── */
 @layer components {
-  /* Scroll-reveal animation */
+  /* Scroll-reveal */
   .reveal {
     opacity: 0;
-    transform: translateY(2rem);
-    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(1.5rem);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform, opacity;
   }
   .reveal.visible {
@@ -128,7 +180,7 @@
     transform: translateY(0);
   }
 
-  /* Delay helpers */
+  /* Transition delay helpers */
   .delay-100 { transition-delay: 100ms; }
   .delay-200 { transition-delay: 200ms; }
   .delay-300 { transition-delay: 300ms; }
@@ -136,7 +188,7 @@
   .delay-500 { transition-delay: 500ms; }
   .delay-600 { transition-delay: 600ms; }
 
-  /* Gold text gradient */
+  /* Gold gradient text */
   .text-gradient-gold {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
     -webkit-background-clip: text;
@@ -160,11 +212,11 @@
     text-transform: uppercase;
   }
 
-  /* Input / Select shared style — consistent across all forms */
+  /* Input / Select — consistent enterprise form style */
   .input-base {
     width: 100%;
     background: var(--bg);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
     padding: 12px 16px;
     min-height: 44px;
@@ -194,8 +246,16 @@
   }
   .card-hover:hover {
     border-color: var(--gold-line);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-gold);
+  }
+
+  /* Premium section divider */
+  .divider-gold {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+    border: none;
+    margin: 0;
   }
 
   /* Reduced motion */
@@ -205,9 +265,6 @@
       transform: none !important;
       transition: none !important;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: none;
-    }
+    .reveal.visible { opacity: 1; transform: none; }
   }
 }

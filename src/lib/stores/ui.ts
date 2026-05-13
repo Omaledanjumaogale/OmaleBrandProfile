@@ -55,21 +55,24 @@ export const openServiceModal  = () => isServiceModalOpen.set(true);
 export const closeServiceModal = () => isServiceModalOpen.set(false);
 
 // ── Theme Store ────────────────────────────────────────
+// Light is the default — matches the CSS :root variables.
 function detectInitialTheme(): 'dark' | 'light' {
-  if (typeof localStorage === 'undefined') return 'dark';
+  if (typeof localStorage === 'undefined') return 'light'; // SSR safe default
   const stored = localStorage.getItem('ewin-theme');
   if (stored === 'light' || stored === 'dark') return stored;
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  // Default to light unless user explicitly prefers dark
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function createThemeStore() {
-  const _theme = writable<'dark' | 'light'>('dark');
+  const _theme = writable<'dark' | 'light'>('light'); // Default: light
 
   function apply(t: 'dark' | 'light') {
     _theme.set(t);
     if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('light', t === 'light');
+      // Apply theme class to html element — CSS vars respond to html.dark / html.light
       document.documentElement.classList.toggle('dark', t === 'dark');
+      document.documentElement.classList.toggle('light', t === 'light');
     }
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('ewin-theme', t);
