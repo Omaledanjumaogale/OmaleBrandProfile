@@ -101,8 +101,9 @@
       <!-- Controls -->
       <div class="flex justify-center md:justify-end gap-4 mt-12">
         <button
-          on:click={prev}
-          class="p-3 rounded-full border border-border bg-surface text-text hover:border-gold hover:text-gold transition-all group min-h-[44px] min-w-[44px] flex items-center justify-center"
+          type="button"
+          onclick={prev}
+          class="p-3 rounded-full border border-border bg-surface text-text hover:border-gold hover:text-gold transition-all group min-h-[44px] min-w-[44px] flex items-center justify-center active:scale-95"
           aria-label="Previous testimonial"
         >
           <svg class="w-5 h-5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -110,8 +111,9 @@
           </svg>
         </button>
         <button
-          on:click={next}
-          class="p-3 rounded-full border border-border bg-surface text-text hover:border-gold hover:text-gold transition-all group min-h-[44px] min-w-[44px] flex items-center justify-center"
+          type="button"
+          onclick={next}
+          class="p-3 rounded-full border border-border bg-surface text-text hover:border-gold hover:text-gold transition-all group min-h-[44px] min-w-[44px] flex items-center justify-center active:scale-95"
           aria-label="Next testimonial"
         >
           <svg class="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -124,7 +126,8 @@
       <div class="flex justify-center gap-2 mt-6" role="tablist" aria-label="Testimonial slides">
         {#each testimonials as _, i}
           <button
-            on:click={() => currentIndex = i}
+            type="button"
+            onclick={() => { currentIndex = i; }}
             role="tab"
             aria-selected={currentIndex === i}
             class="h-1.5 rounded-full transition-all duration-300 {currentIndex === i ? 'w-8 bg-gold' : 'w-2 bg-border hover:bg-gold/50'}"
