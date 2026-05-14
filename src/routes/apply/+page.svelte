@@ -1,7 +1,5 @@
 <script lang="ts">
 	import IAMApplicationForm from '$lib/components/IAMApplicationForm.svelte';
-	import Header from '$lib/components/Header.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 </script>
 
 <svelte:head>
@@ -10,8 +8,6 @@
 	<meta property="og:title" content="Apply to I-AM Network — E-WIN Project" />
 	<meta property="og:url" content="https://omaledanjumaogale.ewinproject.org/apply" />
 </svelte:head>
-
-<Header />
 
 <main id="main-content" class="min-h-screen bg-[var(--bg)] pt-20">
 	<!-- Hero Banner -->
@@ -52,5 +48,3 @@
 	<!-- Application Form -->
 	<IAMApplicationForm />
 </main>
-
-<Footer />
