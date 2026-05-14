@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedPharmRx — Healthcare RaaS Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:       #0E9F8E;
+  --teal-lt:    #14C4AE;
+  --teal-dk:    #097A6C;
+  --teal-glow:  rgba(14,159,142,0.35);
+  --emerald:    #10B981;
+  --midnight:   #070F1C;
+  --navy:       #0D1F38;
+  --navy2:      #0A2540;
+  --amber:      #F59E0B;
+  --amber-dk:   #B45309;
+  --gold:       #FDE68A;
+  --red:        #EF4444;
+  --white:      #FFFFFF;
+  --off:        #F1F5F9;
+  --silver:     #94A3B8;
+  --slate:      #1E293B;
+  --muted:      #64748B;
+  --serif:      'Playfair Display', Georgia, serif;
+  --sans:       'DM Sans', sans-serif;
+  --mono:       'DM Mono', monospace;
+  --radius:     16px;
+  --radius-sm:  10px;
+  --trans:      0.3s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:var(--sans);
+  background:var(--midnight);
+  color:var(--white);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+::selection{background:var(--teal);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--midnight)}
+::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
+
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:.4;
+}
+
+/* ── TYPOGRAPHY ── */
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;line-height:1.15}
+.mono{font-family:var(--mono)}
+
+/* ── GLOW UTILITIES ── */
+.glow-teal{box-shadow:0 0 30px var(--teal-glow),0 0 60px rgba(14,159,142,.15)}
+.glow-amber{box-shadow:0 0 30px rgba(245,158,11,.3)}
+.text-teal{color:var(--teal-lt)}
+.text-amber{color:var(--amber)}
+.text-gold{color:var(--gold)}
+.text-silver{color:var(--silver)}
+.text-muted{color:var(--muted)}
+
+/* ── GRID BG ── */
+.grid-bg{
+  background-image:
+    linear-gradient(rgba(14,159,142,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,159,142,.06) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── HEADER / NAV ── */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 1.5rem;
+  background:rgba(7,15,28,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(14,159,142,.2);
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-family:var(--serif);font-size:1.35rem;font-weight:900;
+  color:var(--white);letter-spacing:-.01em;
+  display:flex;align-items:center;gap:.55rem;
+}
+.logo-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--teal),var(--emerald));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-family:var(--mono);font-weight:700;
+  color:#fff;box-shadow:0 0 20px var(--teal-glow);
+  flex-shrink:0;
+}
+.nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center}
+.nav-links a{
+  font-size:.82rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--silver);text-decoration:none;transition:color var(--trans);
+}
+.nav-links a:hover{color:var(--teal-lt)}
+.nav-cta{
+  background:var(--teal);color:#fff !important;
+  padding:.45rem 1.1rem;border-radius:8px;
+  box-shadow:0 0 16px var(--teal-glow);
+  transition:all var(--trans) !important;
+}
+.nav-cta:hover{background:var(--teal-lt) !important;box-shadow:0 0 24px var(--teal-glow) !important}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--silver);border-radius:2px;transition:all var(--trans)}
+@media(max-width:768px){
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:64px;left:0;right:0;
+    background:rgba(7,15,28,.98);padding:1.5rem;gap:1rem;border-bottom:1px solid rgba(14,159,142,.2);
+  }
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+}
+
+/* ── SECTIONS ── */
+section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto}
+.section-full{max-width:100%;padding:5rem 0;overflow:hidden}
+.section-label{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--teal-lt);margin-bottom:1.2rem;
+}
+.section-label::before{content:'';display:block;width:24px;height:2px;background:var(--teal)}
+.section-title{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:1rem;line-height:1.15}
+.section-sub{font-size:1.05rem;color:var(--silver);max-width:620px;line-height:1.7}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;padding-top:64px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14,159,142,.18) 0%, transparent 70%),
+             radial-gradient(ellipse 60% 40% at 80% 80%, rgba(16,185,129,.08) 0%, transparent 60%),
+             var(--midnight);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(14,159,142,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(14,159,142,.05) 1px,transparent 1px);
+  background-size:50px 50px;
+  mask-image:radial-gradient(ellipse at center,black 40%,transparent 80%);
+}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
+  animation:orbFloat 8s ease-in-out infinite alternate;
+}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(14,159,142,.18),transparent 70%);top:-15%;left:-10%}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,.12),transparent 70%);bottom:-10%;right:-10%;animation-delay:3s}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(245,158,11,.08),transparent 70%);top:40%;right:20%;animation-delay:5s}
+@keyframes orbFloat{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-40px) scale(1.05)}}
+
+.hero-inner{
+  max-width:1200px;width:100%;margin:0 auto;padding:2rem 1.5rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+  position:relative;z-index:1;
+}
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr;text-align:center}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-lt);background:rgba(14,159,142,.1);
+  border:1px solid rgba(14,159,142,.25);
+  padding:.4rem 1rem;border-radius:100px;margin-bottom:1.5rem;
+  animation:fadeSlideUp .8s ease both;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal-lt);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-h1{
+  font-size:clamp(2.2rem,5.5vw,4.2rem);
+  line-height:1.1;margin-bottom:1.2rem;
+  animation:fadeSlideUp .9s .1s ease both;
+}
+.hero-h1 em{
+  font-style:italic;color:transparent;
+  background:linear-gradient(135deg,var(--teal-lt),var(--emerald));
+  -webkit-background-clip:text;background-clip:text;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--silver);line-height:1.75;
+  margin-bottom:2rem;
+  animation:fadeSlideUp 1s .2s ease both;
+}
+.hero-actions{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  animation:fadeSlideUp 1s .3s ease both;
+}
+@media(max-width:900px){.hero-actions{justify-content:center}}
+
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.85rem 1.8rem;border-radius:var(--radius-sm);
+  font-family:var(--sans);font-size:.9rem;font-weight:600;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:all var(--trans);white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--teal),var(--emerald));
+  color:#fff;box-shadow:0 4px 24px rgba(14,159,142,.4);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(14,159,142,.5)}
+.btn-outline{
+  background:transparent;color:var(--teal-lt);
+  border:1.5px solid rgba(14,159,142,.4);
+}
+.btn-outline:hover{background:rgba(14,159,142,.1);border-color:var(--teal-lt);transform:translateY(-2px)}
+.btn-amber{
+  background:linear-gradient(135deg,var(--amber),#f97316);
+  color:#fff;box-shadow:0 4px 20px rgba(245,158,11,.35);
+}
+.btn-amber:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,158,11,.45)}
+
+/* ── HERO VISUAL CARD ── */
+.hero-visual{animation:fadeSlideUp 1s .4s ease both}
+.phone-mockup{
+  position:relative;max-width:340px;margin:0 auto;
+  filter:drop-shadow(0 40px 80px rgba(14,159,142,.25));
+}
+.phone-frame{
+  background:linear-gradient(160deg,#1a2a3a,#0d1f38);
+  border:2px solid rgba(14,159,142,.3);
+  border-radius:40px;padding:1rem;
+  position:relative;overflow:hidden;
+}
+.phone-frame::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:28px;background:var(--midnight);border-radius:0 0 16px 16px;z-index:2;
+}
+.app-screen{
+  background:var(--midnight);border-radius:28px;padding:1rem;overflow:hidden;
+  min-height:520px;
+}
+.app-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.app-logo{font-family:var(--serif);font-size:.85rem;font-weight:700;color:var(--teal-lt)}
+.app-notif{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(14,159,142,.15);display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:var(--teal-lt);position:relative;
+}
+.app-notif::after{
+  content:'3';position:absolute;top:-4px;right:-4px;
+  background:var(--red);color:#fff;font-size:.55rem;font-weight:700;
+  width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.app-greeting{font-size:.75rem;color:var(--silver);margin-bottom:.2rem}
+.app-name{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:1rem}
+.app-stats-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem}
+.app-stat{
+  background:rgba(14,159,142,.08);border:1px solid rgba(14,159,142,.15);
+  border-radius:12px;padding:.6rem;
+}
+.app-stat-val{font-size:1rem;font-weight:700;color:var(--teal-lt)}
+.app-stat-lbl{font-size:.62rem;color:var(--silver);margin-top:.1rem}
+.app-map{
+  background:linear-gradient(135deg,#0d2235,#071828);
+  border:1px solid rgba(14,159,142,.2);border-radius:12px;
+  height:110px;position:relative;overflow:hidden;margin-bottom:.8rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.map-pulse{
+  position:absolute;width:16px;height:16px;border-radius:50%;
+  background:var(--teal);box-shadow:0 0 12px var(--teal);
+  animation:mapPulse 2s infinite;
+}
+@keyframes mapPulse{
+  0%{box-shadow:0 0 0 0 rgba(14,159,142,.6)}
+  70%{box-shadow:0 0 0 20px rgba(14,159,142,0)}
+  100%{box-shadow:0 0 0 0 rgba(14,159,142,0)}
+}
+.map-dot{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--amber);opacity:.8;
+}
+.map-dot:nth-child(2){top:30%;left:25%}
+.map-dot:nth-child(3){top:60%;right:30%}
+.map-dot:nth-child(4){bottom:25%;left:45%;background:var(--emerald)}
+.map-eta{
+  position:absolute;bottom:8px;right:8px;
+  background:rgba(14,159,142,.9);border-radius:6px;
+  padding:.2rem .5rem;font-size:.62rem;font-weight:700;
+}
+.app-req{
+  background:linear-gradient(135deg,rgba(14,159,142,.12),rgba(16,185,129,.06));
+  border:1px solid rgba(14,159,142,.2);border-radius:12px;padding:.7rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.req-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--teal),var(--emerald));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+}
+.req-info{flex:1}
+.req-name{font-size:.75rem;font-weight:600}
+.req-detail{font-size:.62rem;color:var(--silver)}
+.req-fee{font-size:.8rem;font-weight:700;color:var(--amber)}
+.req-actions{display:flex;gap:.3rem;margin-top:.5rem}
+.req-btn{
+  flex:1;padding:.25rem;border-radius:6px;font-size:.6rem;font-weight:700;
+  border:none;cursor:pointer;transition:all var(--trans);
+}
+.req-accept{background:var(--teal);color:#fff}
+.req-decline{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+
+/* ── LIVE STATS TICKER ── */
+.ticker-bar{
+  background:linear-gradient(90deg,var(--navy2),var(--navy));
+  border-top:1px solid rgba(14,159,142,.15);
+  border-bottom:1px solid rgba(14,159,142,.15);
+  padding:.6rem 0;overflow:hidden;
+}
+.ticker-track{
+  display:flex;gap:4rem;
+  animation:tickerScroll 30s linear infinite;
+  white-space:nowrap;width:max-content;
+}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.78rem;font-weight:600;color:var(--silver);
+}
+.ticker-item strong{color:var(--teal-lt)}
+.ticker-sep{color:rgba(14,159,142,.4);font-size:1rem}
+
+/* ── STAT CARDS ── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1.25rem;margin:3rem 0;
+}
+.stat-card{
+  background:linear-gradient(135deg,rgba(14,159,142,.08),rgba(16,185,129,.04));
+  border:1px solid rgba(14,159,142,.18);
+  border-radius:var(--radius);padding:1.5rem;
+  position:relative;overflow:hidden;
+  transition:all var(--trans);cursor:default;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--teal),var(--emerald));
+  transform:scaleX(0);transition:transform var(--trans);transform-origin:left;
+}
+.stat-card:hover::before{transform:scaleX(1)}
+.stat-card:hover{border-color:rgba(14,159,142,.4);transform:translateY(-4px);box-shadow:0 12px 40px rgba(14,159,142,.15)}
+.stat-icon{font-size:1.6rem;margin-bottom:.75rem}
+.stat-num{
+  font-family:var(--serif);font-size:2rem;font-weight:900;
+  color:var(--white);display:block;
+}
+.stat-label{font-size:.8rem;color:var(--silver);margin-top:.25rem;line-height:1.4}
+.stat-badge{
+  position:absolute;top:1rem;right:1rem;
+  font-size:.62rem;font-weight:700;
+  background:rgba(16,185,129,.15);color:var(--emerald);
+  border:1px solid rgba(16,185,129,.3);border-radius:100px;padding:.15rem .5rem;
+}
+
+/* ── PROBLEM CARDS ── */
+.problems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:2.5rem}
+.problem-card{
+  background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(239,68,68,.02));
+  border:1px solid rgba(239,68,68,.18);border-radius:var(--radius);
+  padding:1.5rem;transition:all var(--trans);position:relative;overflow:hidden;
+}
+.problem-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(239,68,68,.3),transparent);
+}
+.problem-card:hover{border-color:rgba(239,68,68,.35);transform:translateY(-3px)}
+.problem-icon{font-size:1.8rem;margin-bottom:.75rem}
+.problem-title{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.problem-desc{font-size:.85rem;color:var(--silver);line-height:1.6}
+.problem-stat{
+  display:inline-block;margin-top:.75rem;
+  font-size:.75rem;font-weight:700;color:var(--red);
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+  padding:.2rem .6rem;border-radius:6px;
+}
+
+/* ── PERSONAS ── */
+.personas-row{display:flex;gap:1.25rem;overflow-x:auto;padding-bottom:1rem;margin-top:2.5rem;scroll-snap-type:x mandatory}
+.personas-row::-webkit-scrollbar{height:4px}
+.persona-card{
+  flex-shrink:0;scroll-snap-align:start;
+  width:260px;background:linear-gradient(160deg,var(--navy2),var(--navy));
+  border:1px solid rgba(14,159,142,.15);border-radius:var(--radius);
+  padding:1.5rem;transition:all var(--trans);cursor:pointer;
+}
+.persona-card:hover{border-color:rgba(14,159,142,.4);transform:translateY(-4px);box-shadow:0 12px 40px rgba(14,159,142,.12)}
+.persona-avatar{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;
+  margin-bottom:.85rem;position:relative;
+}
+.persona-name{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:.15rem}
+.persona-role{font-size:.75rem;color:var(--teal-lt);font-weight:600;margin-bottom:.6rem}
+.persona-pain{font-size:.8rem;color:var(--silver);line-height:1.55;border-top:1px solid rgba(255,255,255,.07);padding-top:.6rem}
+.persona-hook{font-size:.78rem;font-style:italic;color:var(--gold);margin-top:.5rem;line-height:1.5}
+
+/* ── HOW IT WORKS ── */
+.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:2.5rem}
+.step-card{
+  background:var(--navy2);border:1px solid rgba(14,159,142,.12);
+  border-radius:var(--radius);padding:1.5rem;
+  position:relative;transition:all var(--trans);
+}
+.step-card:hover{border-color:rgba(14,159,142,.35);transform:translateY(-4px);box-shadow:0 8px 32px rgba(14,159,142,.1)}
+.step-num{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--teal),var(--emerald));
+  color:#fff;font-family:var(--mono);font-size:.85rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1rem;box-shadow:0 4px 16px rgba(14,159,142,.35);
+}
+.step-title{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.step-desc{font-size:.83rem;color:var(--silver);line-height:1.6}
+.step-detail{
+  margin-top:.75rem;font-size:.75rem;color:var(--teal-lt);font-weight:600;
+  display:flex;align-items:center;gap:.3rem;
+}
+
+/* ── FEATURE TABS ── */
+.tabs-wrapper{margin-top:2.5rem}
+.tab-nav{
+  display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;
+  border-bottom:1px solid rgba(14,159,142,.1);padding-bottom:1px;
+}
+.tab-btn{
+  padding:.6rem 1.2rem;border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  font-family:var(--sans);font-size:.82rem;font-weight:600;
+  border:none;cursor:pointer;transition:all var(--trans);
+  background:transparent;color:var(--muted);border-bottom:2px solid transparent;
+}
+.tab-btn.active{color:var(--teal-lt);border-bottom-color:var(--teal);background:rgba(14,159,142,.06)}
+.tab-btn:hover:not(.active){color:var(--silver);background:rgba(255,255,255,.03)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:center}
+@media(max-width:700px){.feature-grid{grid-template-columns:1fr}}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.feature-list li{
+  display:flex;align-items:flex-start;gap:.75rem;
+  font-size:.88rem;color:var(--silver);line-height:1.6;
+}
+.feature-list li::before{
+  content:'✦';color:var(--teal-lt);flex-shrink:0;
+  margin-top:.05rem;font-size:.75rem;
+}
+.feature-visual{
+  background:linear-gradient(160deg,var(--navy2),#071a2d);
+  border:1px solid rgba(14,159,142,.15);border-radius:var(--radius);
+  padding:1.5rem;min-height:280px;
+  display:flex;flex-direction:column;gap:.75rem;
+}
+
+/* ── LIVE CHART ── */
+.chart-section{
+  background:linear-gradient(160deg,var(--navy2),var(--midnight));
+  border:1px solid rgba(14,159,142,.15);border-radius:var(--radius);
+  padding:2rem;margin-top:2rem;
+}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:gap}
+.chart-title{font-family:var(--serif);font-size:1.1rem;font-weight:700}
+.chart-legend{display:flex;gap:1rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--silver)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.chart-area{position:relative;height:200px;margin-bottom:1rem}
+.bar-chart{display:flex;align-items:flex-end;gap:.4rem;height:100%;padding:0 .25rem}
+.bar{
+  flex:1;border-radius:6px 6px 0 0;position:relative;
+  transition:height .8s cubic-bezier(.4,0,.2,1);cursor:pointer;min-width:0;
+}
+.bar::after{
+  content:attr(data-label);
+  position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:.6rem;color:var(--muted);white-space:nowrap;
+}
+.bar-tooltip{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--midnight);border:1px solid rgba(14,159,142,.3);
+  border-radius:6px;padding:.3rem .6rem;font-size:.7rem;font-weight:700;
+  color:var(--teal-lt);white-space:nowrap;
+  opacity:0;transition:opacity .2s;pointer-events:none;
+}
+.bar:hover .bar-tooltip{opacity:1}
+.chart-footer{display:flex;gap:2rem;flex-wrap:wrap;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.05)}
+.chart-kpi{display:flex;flex-direction:column;gap:.15rem}
+.chart-kpi-val{font-family:var(--serif);font-size:1.4rem;font-weight:900;color:var(--teal-lt)}
+.chart-kpi-lbl{font-size:.72rem;color:var(--muted)}
+
+/* ── MEDSWIFT SIMULATOR ── */
+.simulator{
+  background:linear-gradient(160deg,rgba(14,159,142,.06),rgba(16,185,129,.03));
+  border:1px solid rgba(14,159,142,.2);border-radius:var(--radius);
+  padding:2rem;margin-top:2rem;
+}
+.sim-title{font-family:var(--serif);font-size:1.2rem;font-weight:700;margin-bottom:.3rem}
+.sim-sub{font-size:.82rem;color:var(--silver);margin-bottom:1.5rem}
+.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+@media(max-width:600px){.sim-controls{grid-template-columns:1fr}}
+.sim-control{display:flex;flex-direction:column;gap:.4rem}
+.sim-label{font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.04em}
+.sim-select,.sim-range{
+  background:var(--navy2);border:1px solid rgba(14,159,142,.2);
+  border-radius:8px;color:var(--white);font-family:var(--sans);font-size:.85rem;
+  padding:.5rem .75rem;transition:border-color var(--trans);
+  -webkit-appearance:none;
+}
+.sim-select:focus,.sim-range:focus{outline:none;border-color:var(--teal)}
+.sim-range{padding:.4rem 0;cursor:pointer;accent-color:var(--teal)}
+.sim-results{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;
+}
+.sim-result-card{
+  background:var(--navy2);border:1px solid rgba(14,159,142,.12);
+  border-radius:var(--radius-sm);padding:1rem;text-align:center;
+  transition:all var(--trans);
+}
+.sim-result-card.highlight{border-color:rgba(14,159,142,.4);box-shadow:0 0 20px rgba(14,159,142,.1)}
+.sim-result-val{font-family:var(--serif);font-size:1.4rem;font-weight:900;color:var(--teal-lt)}
+.sim-result-lbl{font-size:.68rem;color:var(--muted);margin-top:.2rem}
+
+/* ── QUOTE BLOCK ── */
+.quote-block{
+  border-left:3px solid var(--amber);
+  padding:1.25rem 1.5rem;margin:2rem 0;
+  background:linear-gradient(90deg,rgba(245,158,11,.06),transparent);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+}
+.quote-text{font-family:var(--serif);font-size:1.15rem;font-style:italic;color:var(--gold);line-height:1.6;margin-bottom:.5rem}
+.quote-attr{font-size:.78rem;color:var(--amber-dk);font-weight:600}
+
+/* ── BENEFIT CARDS ── */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2.5rem}
+.benefit-card{
+  background:linear-gradient(160deg,var(--navy2),var(--midnight));
+  border:1px solid rgba(14,159,142,.12);border-radius:var(--radius);
+  padding:1.5rem;transition:all var(--trans);position:relative;overflow:hidden;
+}
+.benefit-card::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
+  background:linear-gradient(to bottom,var(--teal),var(--emerald));
+  transform:scaleY(0);transition:transform var(--trans);
+}
+.benefit-card:hover::before{transform:scaleY(1)}
+.benefit-card:hover{border-color:rgba(14,159,142,.3);transform:translateX(4px);box-shadow:0 8px 32px rgba(14,159,142,.1)}
+.benefit-icon{font-size:1.5rem;margin-bottom:.75rem}
+.benefit-title{font-family:var(--serif);font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.benefit-desc{font-size:.83rem;color:var(--silver);line-height:1.6}
+
+/* ── COMPETITIVE TABLE ── */
+.comp-table-wrap{overflow-x:auto;margin-top:2rem;border-radius:var(--radius);border:1px solid rgba(14,159,142,.15)}
+.comp-table{width:100%;border-collapse:collapse;min-width:600px}
+.comp-table th{
+  background:rgba(14,159,142,.1);
+  padding:.85rem 1rem;font-size:.78rem;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--teal-lt);
+  text-align:left;
+}
+.comp-table th:not(:first-child){text-align:center}
+.comp-table td{
+  padding:.75rem 1rem;font-size:.83rem;color:var(--silver);
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.comp-table td:not(:first-child){text-align:center}
+.comp-table tr:hover td{background:rgba(14,159,142,.03)}
+.comp-table .medpharmrx-col{font-weight:700;color:var(--white)}
+.comp-table .check{color:var(--emerald);font-size:1rem}
+.comp-table .cross{color:var(--red);font-size:1rem;opacity:.5}
+.comp-table .partial{color:var(--amber);font-size:.8rem}
+.comp-table .highlight-col{background:rgba(14,159,142,.04)}
+
+/* ── INCOME STREAMS ── */
+.income-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2rem}
+.income-card{
+  background:linear-gradient(160deg,rgba(245,158,11,.06),rgba(245,158,11,.02));
+  border:1px solid rgba(245,158,11,.18);border-radius:var(--radius);
+  padding:1.25rem;transition:all var(--trans);
+}
+.income-card:hover{border-color:rgba(245,158,11,.35);transform:translateY(-3px)}
+.income-emoji{font-size:1.5rem;margin-bottom:.5rem}
+.income-title{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--gold);margin-bottom:.4rem}
+.income-range{font-size:1rem;font-weight:700;color:var(--amber);margin-bottom:.4rem}
+.income-desc{font-size:.78rem;color:var(--silver);line-height:1.5}
+
+/* ── CTA SECTION ── */
+.cta-section{
+  background:linear-gradient(160deg,var(--navy2),var(--midnight));
+  border-top:1px solid rgba(14,159,142,.12);
+  border-bottom:1px solid rgba(14,159,142,.12);
+  padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,rgba(14,159,142,.12),transparent 70%);
+  pointer-events:none;
+}
+.cta-content{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.cta-h2{font-size:clamp(2rem,4.5vw,3.2rem);margin-bottom:1rem}
+.cta-sub{font-size:1.05rem;color:var(--silver);max-width:560px;margin:0 auto 2.5rem;line-height:1.7}
+.cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+.cta-link{font-size:.85rem;color:var(--silver);text-decoration:none;transition:color var(--trans);display:flex;align-items:center;gap:.35rem}
+.cta-link:hover{color:var(--teal-lt)}
+
+/* ── FOOTER ── */
+footer{
+  background:linear-gradient(180deg,var(--midnight),#040b14);
+  border-top:1px solid rgba(14,159,142,.1);
+  padding:3rem 1.5rem 2rem;
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:3rem}
+@media(max-width:800px){.footer-top{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr}}
+.footer-brand{display:flex;flex-direction:column;gap:.75rem}
+.footer-desc{font-size:.83rem;color:var(--muted);line-height:1.65;max-width:300px}
+.footer-contact{font-size:.83rem;color:var(--teal-lt);font-weight:600}
+.footer-col h4{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-lt);margin-bottom:.85rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.footer-links a{font-size:.82rem;color:var(--muted);text-decoration:none;transition:color var(--trans)}
+.footer-links a:hover{color:var(--teal-lt)}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.05);padding-top:1.5rem;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+}
+.footer-copy{font-size:.75rem;color:var(--muted)}
+.footer-badges{display:flex;gap:.5rem;flex-wrap:wrap}
+.badge{
+  font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;
+  border:1px solid;
+}
+.badge-green{color:var(--emerald);border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.06)}
+.badge-teal{color:var(--teal-lt);border-color:rgba(14,159,142,.3);background:rgba(14,159,142,.06)}
+
+/* ── SVG ANNOTATED ── */
+.svg-annotated{
+  background:linear-gradient(160deg,var(--navy2),#071828);
+  border:1px solid rgba(14,159,142,.15);border-radius:var(--radius);
+  padding:1.5rem;overflow:hidden;position:relative;
+}
+.svg-annotated svg{width:100%;max-width:100%;display:block}
+
+/* ── PROGRESS RING ── */
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1.5rem}
+.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.ring-svg{width:90px;height:90px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(14,159,142,.12);stroke-width:8}
+.ring-prog{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+.ring-label{text-align:center}
+.ring-val{font-family:var(--serif);font-size:1.1rem;font-weight:900;color:var(--white)}
+.ring-name{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;margin-top:2rem;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:.8rem;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--teal),rgba(14,159,142,.1))}
+.timeline-item{position:relative;margin-bottom:1.5rem;padding-left:1.5rem}
+.timeline-item::before{
+  content:'';position:absolute;left:-1.55rem;top:.25rem;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--teal);box-shadow:0 0 10px var(--teal-glow);
+  border:2px solid var(--midnight);
+}
+.timeline-time{font-size:.72rem;font-weight:600;color:var(--teal-lt);margin-bottom:.2rem;font-family:var(--mono)}
+.timeline-title{font-family:var(--serif);font-size:.95rem;font-weight:700;margin-bottom:.2rem}
+.timeline-desc{font-size:.8rem;color:var(--silver);line-height:1.55}
+
+/* ── PULSE BADGE ── */
+.pulse-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.72rem;font-weight:700;
+  color:var(--emerald);background:rgba(16,185,129,.1);
+  border:1px solid rgba(16,185,129,.2);border-radius:100px;
+  padding:.2rem .65rem;
+}
+.pulse-dot{width:5px;height:5px;border-radius:50%;background:var(--emerald);animation:blink 1.5s infinite}
+
+/* ── SEPARATOR ── */
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(14,159,142,.2),transparent);margin:4rem 0}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── MOBILE FIXES ── */
+@media(max-width:480px){
+  section{padding:3.5rem 1rem}
+  .btn{padding:.7rem 1.2rem;font-size:.82rem}
+  .hero-h1{font-size:2rem}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-num{font-size:1.5rem}
+  .footer-top{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">Rx</div>
+    MedPharmRx
+  </div>
+  <nav>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#platform">Platform</a></li>
+      <li><a href="#howitworks">How It Works</a></li>
+      <li><a href="#income">Income</a></li>
+      <li><a href="#impact">Impact</a></li>
+      <li><a href="#cta" class="nav-cta">Get Started</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+</header>
+
+<!-- ══════ TICKER ══════ -->
+<div class="ticker-bar" style="margin-top:64px">
+  <div class="ticker-track" id="ticker">
+    <span class="ticker-item"><strong>52,847</strong> Registered Users <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>1,284</strong> Verified Professionals <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>₦2.4B</strong> MedSwift AUM <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>4.1 min</strong> Avg Emergency Response <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>98%</strong> Patient Satisfaction <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>6 States</strong> Active Coverage <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>₦165K+</strong> Avg Monthly Pro Earnings <span class="ticker-sep">•</span></span>
+    <span class="ticker-item">🟢 <strong>Platform Live</strong> &amp; Growing <span class="ticker-sep">•</span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><strong>52,847</strong> Registered Users <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>1,284</strong> Verified Professionals <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>₦2.4B</strong> MedSwift AUM <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>4.1 min</strong> Avg Emergency Response <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>98%</strong> Patient Satisfaction <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>6 States</strong> Active Coverage <span class="ticker-sep">•</span></span>
+    <span class="ticker-item"><strong>₦165K+</strong> Avg Monthly Pro Earnings <span class="ticker-sep">•</span></span>
+    <span class="ticker-item">🟢 <strong>Platform Live</strong> &amp; Growing <span class="ticker-sep">•</span></span>
+  </div>
+</div>
+
+<!-- ══════ HERO ══════ -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        E-WIN Project Ecosystem · Healthcare RaaS
+      </div>
+      <h1 class="hero-h1">
+        Nigeria Has<br>220 Million People.<br>
+        <em>Only 32,000 Doctors.</em>
+      </h1>
+      <p class="hero-sub">
+        The healthcare system was never built to reach everyone. MedPharmRx is the infrastructure that closes that gap — putting verified doctors, nurses, pharmacists and emergency responders at your door, in minutes, through one intelligent platform.
+      </p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary">
+          <span>🚀</span> Join the Platform
+        </a>
+        <a href="#platform" class="btn btn-outline">
+          <span>▶</span> See How It Works
+        </a>
+      </div>
+      <div style="display:flex;gap:1.5rem;margin-top:2rem;flex-wrap:wrap">
+        <div>
+          <div style="font-family:var(--serif);font-size:1.5rem;font-weight:900;color:var(--teal-lt)" id="heroCount1">0</div>
+          <div style="font-size:.72rem;color:var(--muted)">Users Served</div>
+        </div>
+        <div>
+          <div style="font-family:var(--serif);font-size:1.5rem;font-weight:900;color:var(--amber)" id="heroCount2">0</div>
+          <div style="font-size:.72rem;color:var(--muted)">Professionals</div>
+        </div>
+        <div>
+          <div style="font-family:var(--serif);font-size:1.5rem;font-weight:900;color:var(--emerald)" id="heroCount3">₦0</div>
+          <div style="font-size:.72rem;color:var(--muted)">MedSwift AUM</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-frame">
+          <div class="app-screen">
+            <div class="app-header">
+              <div class="app-logo">MedPharmRx</div>
+              <div class="app-notif">🔔</div>
+            </div>
+            <div class="app-greeting">Good morning,</div>
+            <div class="app-name">Amaka 👋</div>
+            <div class="app-stats-row">
+              <div class="app-stat">
+                <div class="app-stat-val" id="appEarn">₦0</div>
+                <div class="app-stat-lbl">This Month's Earnings</div>
+              </div>
+              <div class="app-stat">
+                <div class="app-stat-val">4.9 ⭐</div>
+                <div class="app-stat-lbl">Professional Rating</div>
+              </div>
+            </div>
+            <div class="app-map">
+              <div class="map-pulse"></div>
+              <div class="map-dot"></div>
+              <div class="map-dot"></div>
+              <div class="map-dot"></div>
+              <div class="map-eta">📍 1.4 km · 9 min</div>
+            </div>
+            <div class="app-req">
+              <div class="req-avatar">👨‍⚕️</div>
+              <div class="req-info">
+                <div class="req-name">Mr. Okafor, 68</div>
+                <div class="req-detail">Wound dressing · Diabetic · Surulere</div>
+                <div class="req-fee">₦6,500</div>
+                <div class="req-actions">
+                  <button class="req-btn req-accept">✓ Accept</button>
+                  <button class="req-btn req-decline">✕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ LIVE STATS ══════ -->
+<section id="stats">
+  <div class="section-label">Platform Impact</div>
+  <h2 class="section-title">Real Numbers. <em style="font-style:italic;color:var(--teal-lt)">Real Lives.</em></h2>
+  <p class="section-sub">Every figure below represents a real interaction on the platform — a bill paid, a life reached, a professional empowered.</p>
+  <div class="stats-grid reveal">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <span class="stat-num" data-target="52847" data-prefix="">0</span>
+      <div class="stat-label">Registered patients &amp; families actively using the platform</div>
+      <span class="stat-badge">+2.3K/mo</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🩺</div>
+      <span class="stat-num" data-target="1284" data-prefix="">0</span>
+      <div class="stat-label">Verified doctors, nurses, pharmacists &amp; paramedics</div>
+      <span class="stat-badge">NMCN·PCN·MDCN</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <span class="stat-num" data-target="2.4" data-prefix="₦" data-suffix="B">₦0</span>
+      <div class="stat-label">Total MedSwift community health fund under management</div>
+      <span class="stat-badge">+₦80M/mo</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <span class="stat-num" data-target="4.1" data-prefix="" data-suffix=" min">0</span>
+      <div class="stat-label">Average emergency response time — WHO target is &lt;10 min</div>
+      <span class="stat-badge">SLA 95%+</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💊</div>
+      <span class="stat-num" data-target="98" data-prefix="" data-suffix="%">0</span>
+      <div class="stat-label">Patient satisfaction score across all platform interactions</div>
+      <span class="stat-badge">Verified</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏥</div>
+      <span class="stat-num" data-target="37" data-prefix="" data-suffix=" partner hospitals">0</span>
+      <div class="stat-label">Registered MedSwift-accepting hospitals nationwide</div>
+      <span class="stat-badge">Growing</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ THE PROBLEM ══════ -->
+<section id="problem">
+  <div class="section-label">The Crisis We're Solving</div>
+  <h2 class="section-title">Nigeria's Healthcare System<br><em style="font-style:italic;color:#ef4444">Is Broken in Six Ways at Once.</em></h2>
+  <p class="section-sub">These are not abstract statistics. They are the daily reality of 220 million people — including you, your mother, your child.</p>
+  <div class="problems-grid reveal">
+    <div class="problem-card">
+      <div class="problem-icon">👨‍⚕️</div>
+      <div class="problem-title">Doctor Scarcity</div>
+      <div class="problem-desc">Nigeria has 0.4 doctors per 1,000 people. The WHO recommends 10×. Qualified doctors leave for Canada and the UK at 5,000+ per year.</div>
+      <span class="problem-stat">0.4 per 1,000 people</span>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🏥</div>
+      <div class="problem-title">No Access, No Time</div>
+      <div class="problem-desc">The average Nigerian travels 30–90 minutes to reach a hospital. In emergencies, every minute is a life-or-death variable no one should have to gamble with.</div>
+      <span class="problem-stat">90 min avg travel time</span>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">💊</div>
+      <div class="problem-title">Counterfeit Drugs</div>
+      <div class="problem-desc">30% of drugs in Nigerian circulation are unverified or counterfeit. Patients are paying real money for pills that may make them sicker.</div>
+      <span class="problem-stat">30% unverified supply</span>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">💸</div>
+      <div class="problem-title">Out-of-Pocket Crisis</div>
+      <div class="problem-desc">70% of Nigerians pay for healthcare entirely out of pocket, with no insurance, no savings structure, and no safety net. One illness bankrupts families.</div>
+      <span class="problem-stat">70% uninsured</span>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🎓</div>
+      <div class="problem-title">Unemployed Professionals</div>
+      <div class="problem-desc">400,000 trained Nigerian healthcare professionals are under-employed or unemployed — skills wasted while patients suffer without care.</div>
+      <span class="problem-stat">400K under-employed</span>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🏃</div>
+      <div class="problem-title">Medical Tourism Drain</div>
+      <div class="problem-desc">$2 billion leaves Nigeria annually as patients fly to India, the UK and Ghana for care that could and should be delivered here. That wealth must stay home.</div>
+      <span class="problem-stat">$2B annual loss</span>
+    </div>
+  </div>
+  <div class="quote-block reveal" style="margin-top:3rem">
+    <div class="quote-text">"The gap between where Nigerian healthcare is and where it should be is not a funding problem. It is an infrastructure problem. And infrastructure can be built."</div>
+    <div class="quote-attr">— E-WIN Project Founding Brief, 2024</div>
+  </div>
+</section>
+
+<!-- ══════ WHO NEEDS THIS ══════ -->
+<section id="personas" style="padding-top:2rem">
+  <div class="section-label">Real People. Real Stories.</div>
+  <h2 class="section-title">These People Are Your<br><em style="font-style:italic;color:var(--teal-lt)">Neighbours.</em></h2>
+  <div class="personas-row reveal">
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(14,159,142,.2),rgba(16,185,129,.1));font-size:2rem">👩</div>
+      <div class="persona-name">Ngozi, 38</div>
+      <div class="persona-role">Mother of 3 · Surulere, Lagos</div>
+      <div class="persona-pain">Her son has a fever at 2AM. The nearest clinic is 45 minutes away and closed. She has no car. She is terrified.</div>
+      <div class="persona-hook">"A verified paediatrician arrived at her door in 12 minutes. She has not panicked since."</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(251,146,60,.1));font-size:2rem">👨‍💼</div>
+      <div class="persona-name">Emeka, 44</div>
+      <div class="persona-role">Operations Manager · Lekki, Lagos</div>
+      <div class="persona-pain">Hypertension for 6 years. He has rescheduled his last 4 doctor's appointments. His blood pressure is not managing itself.</div>
+      <div class="persona-hook">"Regular check-ins, prescription delivery, AI health monitoring — from his office chair."</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(109,40,217,.2),rgba(167,139,250,.1));font-size:2rem">👩‍💻</div>
+      <div class="persona-name">Adaeze, 34</div>
+      <div class="persona-role">Software Engineer · London → Enugu parents</div>
+      <div class="persona-pain">Her parents are in Enugu. She is in London. She cannot be there when the insulin runs out. The guilt is unbearable.</div>
+      <div class="persona-hook">"She monitors her parents' health daily. MedSwift pays their bills. She sleeps at night."</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(5,150,105,.1));font-size:2rem">👩‍⚕️</div>
+      <div class="persona-name">Dr. Fatima, 31</div>
+      <div class="persona-role">Qualified Doctor · Kaduna</div>
+      <div class="persona-pain">7 years of medical training. Government salary: ₦105,000/month. She is already applying for Canada immigration.</div>
+      <div class="persona-hook">"Now earning ₦210,000/month on her own schedule. The Canada application is on pause."</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(234,179,8,.1));font-size:2rem">👨‍🔬</div>
+      <div class="persona-name">Tunde, 23</div>
+      <div class="persona-role">Lab Scientist · NYSC Complete · Ibadan</div>
+      <div class="persona-pain">BSc Biomedical Sciences. MLSCN certified. Sent 31 applications. No responses. Skills wasting every day.</div>
+      <div class="persona-hook">"Verified in 72 hours. 84 lab orders processed in 30 days. Building his own practice."</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:linear-gradient(135deg,rgba(14,159,142,.2),rgba(6,182,212,.1));font-size:2rem">🏢</div>
+      <div class="persona-name">FinServe Ltd</div>
+      <div class="persona-role">250-Staff Fintech · Victoria Island</div>
+      <div class="persona-pain">Staff sick days cost ₦8M in lost productivity last year. Their HMO plan covers less than 40% of actual needs.</div>
+      <div class="persona-hook">"MedPharmRx Enterprise: 250 staff. Full coverage. ₦3.2M/year. Sick days down 60%."</div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══════ PLATFORM ══════ -->
+<section id="platform">
+  <div class="section-label">What Is MedPharmRx?</div>
+  <h2 class="section-title">Nigeria's First Healthcare<br><em style="font-style:italic;color:var(--teal-lt)">Results-as-a-Service Platform</em></h2>
+  <p class="section-sub">You don't pay for access. You pay for outcomes. A verified professional at your door. A confirmed prescription in your hand. Real results — guaranteed.</p>
+
+  <div class="tabs-wrapper reveal">
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('patients',this)">👥 For Patients</button>
+      <button class="tab-btn" onclick="switchTab('pros',this)">🩺 For Professionals</button>
+      <button class="tab-btn" onclick="switchTab('pharma',this)">💊 For Pharmacies</button>
+      <button class="tab-btn" onclick="switchTab('medswift',this)">🏦 MedSwift Fund</button>
+      <button class="tab-btn" onclick="switchTab('emergency',this)">🚨 Emergency SOS</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-patients">
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li>Open MedPharmRx — register in under 3 minutes with your phone number &amp; NIN</li>
+          <li>Describe your health need or use the <strong style="color:var(--teal-lt)">AI Health Oracle</strong> — Nigeria's first AI symptom checker trained on local disease profiles</li>
+          <li>See verified professionals near you — credentials, ratings, live ETA displayed clearly</li>
+          <li>Book a home visit, video consultation, or in-person appointment in one tap</li>
+          <li>Receive <strong style="color:var(--teal-lt)">PCN-verified medication</strong> delivered from certified pharmacies only</li>
+          <li>Track your health history, active prescriptions, and upcoming appointments — all in one dashboard</li>
+          <li><strong style="color:var(--amber)">Guarantee:</strong> Doctor at your door in 15 minutes — or the visit is free</li>
+        </ul>
+        <div class="feature-visual">
+          <div style="font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">AI Health Oracle</div>
+          <div style="background:var(--midnight);border-radius:10px;padding:.75rem;flex:1;display:flex;flex-direction:column;gap:.5rem;overflow:hidden">
+            <div style="display:flex;gap:.5rem;align-items:flex-end">
+              <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--emerald));display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">🤖</div>
+              <div style="background:rgba(14,159,142,.1);border-radius:10px 10px 10px 0;padding:.5rem .75rem;font-size:.75rem;color:#c8e6e2;max-width:80%">Hi! I'm your AI Health Oracle. Tell me what you're experiencing.</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end">
+              <div style="background:rgba(14,159,142,.2);border-radius:10px 10px 0 10px;padding:.5rem .75rem;font-size:.75rem;color:var(--white);max-width:80%">I've had a persistent headache for 2 days and slight fever.</div>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:flex-end">
+              <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--emerald));display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">🤖</div>
+              <div style="background:rgba(14,159,142,.1);border-radius:10px 10px 10px 0;padding:.5rem .75rem;font-size:.75rem;color:#c8e6e2;max-width:80%">Noted. Possible viral infection — Diagnostic confidence: <strong style="color:var(--teal-lt)">87%</strong>. I'm connecting you with Dr. Adewale, 1.2km away. <strong style="color:var(--amber)">ETA: 9 minutes.</strong></div>
+            </div>
+            <div style="margin-top:auto;background:rgba(14,159,142,.08);border:1px solid rgba(14,159,142,.2);border-radius:8px;padding:.5rem .75rem;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:.7rem;color:var(--silver)">Dr. Adewale · GP · 4.9⭐</span>
+              <button style="background:var(--teal);color:#fff;border:none;border-radius:6px;padding:.25rem .6rem;font-size:.65rem;font-weight:700;cursor:pointer">CONFIRM ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-pros">
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li>Register your professional licence — NMCN, PCN, MDCN, MLSCN — in minutes</li>
+          <li><strong style="color:var(--teal-lt)">AI credential verification</strong> completes in under 24 hours — no waiting, no bureaucracy</li>
+          <li>Set your service radius (1–30km), availability hours, and your own consultation rates</li>
+          <li>Go live — your profile reaches 52,000+ verified patients immediately</li>
+          <li>Receive dispatched requests with full patient context, accept or decline instantly</li>
+          <li>In-app GPS navigation, real-time patient communication, digital notes</li>
+          <li><strong style="color:var(--amber)">Earnings:</strong> ₦150,000 – ₦250,000/month average. Weekly payouts. Zero deduction surprises.</li>
+        </ul>
+        <div class="feature-visual">
+          <div style="font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">Professional Dashboard</div>
+          <div style="display:flex;flex-direction:column;gap:.6rem">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+              <div style="background:var(--midnight);border-radius:8px;padding:.65rem;text-align:center">
+                <div style="font-family:var(--serif);font-size:1.1rem;font-weight:900;color:var(--amber)">₦187,500</div>
+                <div style="font-size:.62rem;color:var(--muted)">This Month</div>
+              </div>
+              <div style="background:var(--midnight);border-radius:8px;padding:.65rem;text-align:center">
+                <div style="font-family:var(--serif);font-size:1.1rem;font-weight:900;color:var(--emerald)">43</div>
+                <div style="font-size:.62rem;color:var(--muted)">Patients Seen</div>
+              </div>
+            </div>
+            <div style="background:var(--midnight);border-radius:8px;padding:.75rem">
+              <div style="font-size:.68rem;color:var(--silver);margin-bottom:.4rem">Upcoming Request</div>
+              <div style="display:flex;gap:.5rem;align-items:center">
+                <div style="font-size:1.2rem">🏠</div>
+                <div>
+                  <div style="font-size:.78rem;font-weight:600">Mrs. Adebisi · BP Monitoring</div>
+                  <div style="font-size:.65rem;color:var(--teal-lt)">2.3 km · ₦5,000 · 3:30 PM today</div>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:.25rem">
+                  <button style="background:var(--teal);color:#fff;border:none;border-radius:6px;padding:.25rem .55rem;font-size:.62rem;font-weight:700;cursor:pointer">✓</button>
+                  <button style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:.25rem .55rem;font-size:.62rem;cursor:pointer">✕</button>
+                </div>
+              </div>
+            </div>
+            <div style="height:60px;background:var(--midnight);border-radius:8px;padding:.5rem .75rem;display:flex;align-items:flex-end;gap:2px">
+              <div style="font-size:.62rem;color:var(--muted);writing-mode:vertical-lr;transform:rotate(180deg);margin-right:.25rem;padding-bottom:.25rem">Earnings</div>
+              ${[40,55,35,70,85,60,95].map(h=>`<div style="flex:1;height:${h}%;background:linear-gradient(to top,var(--teal),var(--emerald));border-radius:3px 3px 0 0;opacity:.8"></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-pharma">
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li>Register your PCN-licensed pharmacy, diagnostic lab, or wellness centre on the platform</li>
+          <li>Get <strong style="color:var(--teal-lt)">verified supplier status</strong> — patients see the PCN badge on every product you list</li>
+          <li>Receive prescription routing automatically from platform consultations in your area</li>
+          <li>Process digital orders, manage inventory, and track delivery through the app</li>
+          <li>Access real-time demand analytics — know what patients near you need before they arrive</li>
+          <li>Build a verified review profile — platform trust drives 3× more orders than walk-ins alone</li>
+          <li><strong style="color:var(--amber)">Impact:</strong> Average pharmacy earns 2.8× more after joining the platform network</li>
+        </ul>
+        <div class="feature-visual">
+          <div style="font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Verified Drug Tracking</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            ${[
+              ['Amlodipine 5mg','Batch #NK2024-08','Pfizer Nigeria','✓ PCN Verified'],
+              ['Metformin 500mg','Batch #FD2024-11','EMZOR Pharma','✓ PCN Verified'],
+              ['Insulin Glargine','Batch #SN2024-06','Sanofi Nigeria','✓ PCN Verified'],
+            ].map(([name,batch,mfr,status])=>`
+            <div style="background:var(--midnight);border:1px solid rgba(14,159,142,.12);border-radius:8px;padding:.6rem .75rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">
+              <div>
+                <div style="font-size:.78rem;font-weight:600">${name}</div>
+                <div style="font-size:.62rem;color:var(--muted)">${batch} · ${mfr}</div>
+              </div>
+              <div style="font-size:.65rem;font-weight:700;color:var(--emerald);background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:5px;padding:.15rem .4rem;white-space:nowrap">${status}</div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-medswift">
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li>Enrol in MedSwift — Nigeria's first digitally-managed community contributory health fund</li>
+          <li>Contribute from <strong style="color:var(--teal-lt)">₦500/week</strong> — less than a single meal in most Lagos restaurants</li>
+          <li>Choose weekly, monthly, quarterly, or annual contribution frequency</li>
+          <li>Your fund is yours — fully auditable, fully transparent, zero management fees</li>
+          <li>When you need care, submit the bill — MedSwift pays the hospital <em>directly</em>, no cash to you needed</li>
+          <li>Enrol your spouse, children, and parents under one family plan</li>
+          <li><strong style="color:var(--amber)">Diaspora feature:</strong> Send contributions to family in Nigeria from abroad — in any currency</li>
+        </ul>
+        <div class="feature-visual" id="medswiftViz">
+          <div style="font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Your MedSwift Balance</div>
+          <div style="font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--teal-lt);margin-bottom:.25rem">₦245,000</div>
+          <div style="font-size:.75rem;color:var(--silver);margin-bottom:1rem">52 weeks of ₦500 contributions + employer top-up</div>
+          <div style="background:var(--midnight);border-radius:8px;padding:.75rem;margin-bottom:.5rem">
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.4rem">
+              <span style="color:var(--silver)">Annual Goal</span>
+              <span style="color:var(--teal-lt);font-weight:700">₦300,000</span>
+            </div>
+            <div style="background:rgba(14,159,142,.1);border-radius:4px;height:8px;overflow:hidden">
+              <div style="width:82%;height:100%;background:linear-gradient(90deg,var(--teal),var(--emerald));border-radius:4px;transition:width 1s ease" id="swiftProgress"></div>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem">82% funded — ₦55,000 to goal</div>
+          </div>
+          <div style="font-size:.72rem;color:var(--silver)">
+            <div style="display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.05)">
+              <span>Last bill paid — LASUTH</span><span style="color:var(--emerald);font-weight:700">₦72,500</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.35rem 0">
+              <span>Enrollment — Mama Ngozi</span><span style="color:var(--teal-lt);font-weight:700">Active ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-emergency">
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li>One-tap <strong style="color:#ef4444">Emergency SOS</strong> dispatches the nearest verified responder automatically</li>
+          <li>Platform uses H3 hexagonal geospatial indexing — precise location routing, not just GPS approximation</li>
+          <li>Simultaneously notifies up to 3 next-of-kin contacts with live tracking link</li>
+          <li>Average emergency response time: <strong style="color:var(--teal-lt)">4.1 minutes</strong> — fastest in Nigeria</li>
+          <li>Connects to nearest MedPharmRx-registered hospital for seamless handoff</li>
+          <li>Complete incident report auto-generated for insurance and medical records</li>
+          <li><strong style="color:var(--amber)">SLA Guarantee:</strong> Response under 8 minutes — or full refund of monthly subscription</li>
+        </ul>
+        <div class="feature-visual" style="align-items:center;justify-content:center;text-align:center">
+          <div style="font-size:.75rem;font-weight:600;color:var(--teal-lt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Emergency SOS</div>
+          <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.5rem">
+            <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(239,68,68,.1);animation:mapPulse 2s infinite"></div>
+            <div style="position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(239,68,68,.15);animation:mapPulse 2s .4s infinite"></div>
+            <button onclick="triggerSOS()" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:.8rem;font-weight:900;border:none;cursor:pointer;box-shadow:0 0 30px rgba(239,68,68,.5);position:relative;z-index:1;letter-spacing:.04em">SOS</button>
+          </div>
+          <div id="sosStatus" style="font-size:.78rem;color:var(--silver);line-height:1.6">
+            Tap SOS to simulate emergency dispatch
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-top:1rem">
+            <div style="background:var(--midnight);border-radius:8px;padding:.5rem;text-align:center">
+              <div style="font-size:1rem">🚑</div>
+              <div style="font-size:.6rem;color:var(--muted)">Ambulance</div>
+              <div style="font-size:.7rem;font-weight:700;color:var(--teal-lt)">4 min</div>
+            </div>
+            <div style="background:var(--midnight);border-radius:8px;padding:.5rem;text-align:center">
+              <div style="font-size:1rem">👨‍⚕️</div>
+              <div style="font-size:.6rem;color:var(--muted)">Doctor</div>
+              <div style="font-size:.7rem;font-weight:700;color:var(--teal-lt)">7 min</div>
+            </div>
+            <div style="background:var(--midnight);border-radius:8px;padding:.5rem;text-align:center">
+              <div style="font-size:1rem">🏥</div>
+              <div style="font-size:.6rem;color:var(--muted)">Hospital</div>
+              <div style="font-size:.7rem;font-weight:700;color:var(--teal-lt)">12 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ HOW IT WORKS ══════ -->
+<section id="howitworks" style="background:linear-gradient(180deg,transparent,rgba(14,159,142,.03),transparent)">
+  <div class="section-label">Step-by-Step Process</div>
+  <h2 class="section-title">From Download to<br><em style="font-style:italic;color:var(--teal-lt)">Doctor at Your Door</em><br>in Under 15 Minutes</h2>
+  <div class="how-steps reveal">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-title">Download & Register</div>
+      <div class="step-desc">Download from iOS or Android. Register with your phone number and NIN. Full profile setup in under 3 minutes — no paperwork, no waiting rooms.</div>
+      <div class="step-detail">⚡ 3 minutes · Free to join</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-title">Describe Your Need</div>
+      <div class="step-desc">Type your symptoms or answer AI Health Oracle's guided questions. The system classifies urgency, suggests a care type, and identifies the right professional for you.</div>
+      <div class="step-detail">🤖 AI-powered triage</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-title">See Verified Professionals</div>
+      <div class="step-desc">A live map shows verified professionals near you — with their credentials, photo, ratings, specialty, and real-time estimated arrival. No guessing. No blind trust required.</div>
+      <div class="step-detail">📍 Live location matching</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-title">Book & Pay Securely</div>
+      <div class="step-desc">Confirm your booking with one tap. Pay via card, bank transfer, USSD, or your MedSwift fund. Professional is notified and navigating to you immediately.</div>
+      <div class="step-detail">💳 All payment methods</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">05</div>
+      <div class="step-title">Care Delivered</div>
+      <div class="step-desc">Professional arrives. Care is delivered. Digital notes, prescription, and follow-up are logged automatically to your health profile. Your medical history builds over time.</div>
+      <div class="step-detail">✅ Outcomes guaranteed</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">06</div>
+      <div class="step-title">Continuous Monitoring</div>
+      <div class="step-desc">Platform schedules follow-ups, refills prescriptions, and monitors your health trends. The AI flags changes and recommends action. Healthcare that actually follows up.</div>
+      <div class="step-detail">📊 AI health tracking</div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══════ LIVE CHART ══════ -->
+<section id="impact">
+  <div class="section-label">Platform Performance</div>
+  <h2 class="section-title">The Growth Is <em style="font-style:italic;color:var(--teal-lt)">Undeniable</em></h2>
+  <div class="chart-section reveal">
+    <div class="chart-header">
+      <div class="chart-title">Monthly Platform Activity — 2025</div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Patient Requests</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Pro Earnings (₦K avg)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--emerald)"></div>MedSwift Contributions</div>
+      </div>
+    </div>
+    <div class="chart-area">
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+    <div class="chart-footer">
+      <div class="chart-kpi"><div class="chart-kpi-val">↑ 312%</div><div class="chart-kpi-lbl">YTD User Growth</div></div>
+      <div class="chart-kpi"><div class="chart-kpi-val">₦684K</div><div class="chart-kpi-lbl">Top Professional YTD Earnings</div></div>
+      <div class="chart-kpi"><div class="chart-kpi-val">4.9 ★</div><div class="chart-kpi-lbl">Platform App Store Rating</div></div>
+      <div class="chart-kpi"><div class="chart-kpi-val">37 cities</div><div class="chart-kpi-lbl">Active Coverage Zones</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ MEDSWIFT SIMULATOR ══════ -->
+<section style="padding-top:2rem">
+  <div class="section-label">Try It Yourself</div>
+  <h2 class="section-title">MedSwift Calculator</h2>
+  <p class="section-sub">See exactly how much your community health fund grows — and what it covers — based on your contribution plan.</p>
+  <div class="simulator reveal">
+    <div class="sim-title">💰 Your MedSwift Health Fund Simulator</div>
+    <div class="sim-sub">Adjust the sliders to see your projected fund balance and coverage over time.</div>
+    <div class="sim-controls">
+      <div class="sim-control">
+        <label class="sim-label">Weekly Contribution</label>
+        <select class="sim-select" id="simAmount" onchange="calcSwift()">
+          <option value="500">₦500 / week (Basic)</option>
+          <option value="1000">₦1,000 / week (Standard)</option>
+          <option value="2500" selected>₦2,500 / week (Premium)</option>
+          <option value="5000">₦5,000 / week (Family Plus)</option>
+          <option value="10000">₦10,000 / week (Enterprise)</option>
+        </select>
+      </div>
+      <div class="sim-control">
+        <label class="sim-label">Duration (Months): <span id="simDurLabel">12</span></label>
+        <input type="range" class="sim-range" id="simDur" min="3" max="36" value="12" oninput="document.getElementById('simDurLabel').textContent=this.value;calcSwift()">
+      </div>
+      <div class="sim-control">
+        <label class="sim-label">Family Members Covered</label>
+        <select class="sim-select" id="simMembers" onchange="calcSwift()">
+          <option value="1">Just Me</option>
+          <option value="2">Me + Spouse</option>
+          <option value="4" selected>Family of 4</option>
+          <option value="6">Extended Family (6)</option>
+        </select>
+      </div>
+      <div class="sim-control">
+        <label class="sim-label">Employer Top-Up (%): <span id="simTopupLabel">50</span>%</label>
+        <input type="range" class="sim-range" id="simTopup" min="0" max="100" value="50" oninput="document.getElementById('simTopupLabel').textContent=this.value;calcSwift()">
+      </div>
+    </div>
+    <div class="sim-results" id="simResults"></div>
+  </div>
+</section>
+
+<!-- ══════ INCOME STREAMS ══════ -->
+<section id="income">
+  <div class="section-label">Earn With MedPharmRx</div>
+  <h2 class="section-title">Multiple Ways to<br><em style="font-style:italic;color:var(--amber)">Generate Income</em></h2>
+  <p class="section-sub">MedPharmRx is not just a healthcare platform. It is a multi-revenue ecosystem for every type of health professional and entrepreneur.</p>
+  <div class="income-grid reveal">
+    <div class="income-card">
+      <div class="income-emoji">🩺</div>
+      <div class="income-title">Medical Consultations</div>
+      <div class="income-range">₦3,500 – ₦15,000/visit</div>
+      <div class="income-desc">Home visits, video consultations, follow-ups. Set your rates. Earn per interaction.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">💊</div>
+      <div class="income-title">Pharmacy Orders</div>
+      <div class="income-range">₦800 – ₦5,000/order</div>
+      <div class="income-desc">Platform-routed prescriptions. Verified supplier status = 3× more orders than walk-ins.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">🔬</div>
+      <div class="income-title">Lab Diagnostics</div>
+      <div class="income-range">₦2,000 – ₦12,000/test</div>
+      <div class="income-desc">In-home sample collection or lab visits. Results digitally delivered to attending physicians.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">🏋️</div>
+      <div class="income-title">Wellness Services</div>
+      <div class="income-range">₦4,000 – ₦20,000/session</div>
+      <div class="income-desc">Physiotherapy, nutrition coaching, mental health sessions — all platform-bookable.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">🚑</div>
+      <div class="income-title">Emergency Response</div>
+      <div class="income-range">₦8,000 – ₦25,000/dispatch</div>
+      <div class="income-desc">Priority tier. Certified responders earn premium rates for SOS dispatches.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">👥</div>
+      <div class="income-title">Referral Network</div>
+      <div class="income-range">₦1,000 – ₦5,000/referral</div>
+      <div class="income-desc">Refer patients to specialists within the network and earn platform referral commissions.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">🏢</div>
+      <div class="income-title">Corporate Wellness</div>
+      <div class="income-range">₦50K – ₦500K/contract</div>
+      <div class="income-desc">Serve SMEs and corporates with staff wellness plans. Recurring, predictable income.</div>
+    </div>
+    <div class="income-card">
+      <div class="income-emoji">🎓</div>
+      <div class="income-title">Health Education</div>
+      <div class="income-range">₦2,000 – ₦8,000/session</div>
+      <div class="income-desc">Platform-hosted health talks, community sessions, and corporate wellness workshops.</div>
+    </div>
+  </div>
+
+  <div class="quote-block reveal" style="margin-top:3rem">
+    <div class="quote-text">"The best way to predict the future is to create it — with infrastructure that empowers the people doing the work."</div>
+    <div class="quote-attr">— Peter Drucker</div>
+  </div>
+</section>
+
+<!-- ══════ PROGRESS RINGS ══════ -->
+<section style="padding-top:1rem">
+  <div class="section-label">RaaS Guarantee Performance</div>
+  <h2 class="section-title">We Don't Just Promise<br><em style="font-style:italic;color:var(--teal-lt)">Outcomes. We Measure Them.</em></h2>
+  <div class="ring-grid reveal" id="ringGrid"></div>
+</section>
+
+<!-- ══════ COMPETITIVE EDGE ══════ -->
+<section>
+  <div class="section-label">Why MedPharmRx Wins</div>
+  <h2 class="section-title">The Only Platform That<br><em style="font-style:italic;color:var(--teal-lt)">Does All of This</em></h2>
+  <div class="comp-table-wrap reveal">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="highlight-col">MedPharmRx</th>
+          <th>Helium Health</th>
+          <th>HealthConnect247</th>
+          <th>Traditional Hospital</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>On-Demand Home Dispatch</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> 15 min SLA</td><td><span class="cross">✗</span></td><td><span class="partial">~ Limited</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td>AI Symptom Diagnostics</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> 92% accuracy</td><td><span class="cross">✗</span></td><td><span class="partial">~ Basic</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td>Community Health Fund</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> MedSwift ₦500/wk</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td>Emergency SOS Dispatch</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> Avg 4.1 min</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="partial">~ Slow</span></td></tr>
+        <tr><td>Verified Drug Supply Chain</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> PCN certified</td><td><span class="partial">~ Partial</span></td><td><span class="cross">✗</span></td><td><span class="partial">~ Variable</span></td></tr>
+        <tr><td>Outcome Guarantees (RaaS)</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> 5 guarantees</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td>Professional Income Platform</td><td class="medpharmrx-col highlight-col"><span class="check">✓</span> ₦150–250K/mo</td><td><span class="partial">~ B2B only</span></td><td><span class="cross">✗</span></td><td><span class="partial">~ Fixed salary</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════ ANNOTATED SVG ══════ -->
+<section style="padding-top:1rem">
+  <div class="section-label">Platform Architecture</div>
+  <h2 class="section-title">How the<br><em style="font-style:italic;color:var(--teal-lt)">Ecosystem Connects</em></h2>
+  <div class="svg-annotated reveal">
+    <svg viewBox="0 0 700 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background grid -->
+      <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(14,159,142,0.06)" stroke-width="1"/>
+      </pattern>
+      <rect width="700" height="380" fill="url(#grid)"/>
+      <!-- Central hub -->
+      <circle cx="350" cy="190" r="52" fill="rgba(14,159,142,0.15)" stroke="rgba(14,159,142,0.5)" stroke-width="2"/>
+      <circle cx="350" cy="190" r="38" fill="rgba(14,159,142,0.2)" stroke="rgba(14,159,142,0.7)" stroke-width="1.5"/>
+      <text x="350" y="185" text-anchor="middle" fill="white" font-family="Playfair Display,serif" font-size="12" font-weight="700">MedPharmRx</text>
+      <text x="350" y="201" text-anchor="middle" fill="rgba(20,196,174,0.9)" font-family="DM Sans,sans-serif" font-size="9">Platform Core</text>
+      <!-- Orbit ring -->
+      <circle cx="350" cy="190" r="120" stroke="rgba(14,159,142,0.12)" stroke-width="1" stroke-dasharray="4 6"/>
+      <!-- Node: Patients -->
+      <circle cx="350" cy="55" r="30" fill="rgba(14,159,142,0.12)" stroke="rgba(14,159,142,0.4)" stroke-width="1.5"/>
+      <text x="350" y="50" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">Patients</text>
+      <text x="350" y="65" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">52,847 users</text>
+      <line x1="350" y1="85" x2="350" y2="138" stroke="rgba(14,159,142,0.4)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Node: Professionals -->
+      <circle cx="490" cy="120" r="30" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+      <text x="490" y="115" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">Professionals</text>
+      <text x="490" y="130" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">1,284 verified</text>
+      <line x1="464" y1="143" x2="396" y2="170" stroke="rgba(16,185,129,0.4)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Node: Pharmacies -->
+      <circle cx="490" cy="260" r="30" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.35)" stroke-width="1.5"/>
+      <text x="490" y="255" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">Pharmacies</text>
+      <text x="490" y="270" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">PCN verified</text>
+      <line x1="464" y1="240" x2="396" y2="210" stroke="rgba(245,158,11,0.35)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Node: MedSwift -->
+      <circle cx="350" cy="325" r="30" fill="rgba(109,40,217,0.12)" stroke="rgba(109,40,217,0.4)" stroke-width="1.5"/>
+      <text x="350" y="320" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">MedSwift</text>
+      <text x="350" y="335" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">₦2.4B AUM</text>
+      <line x1="350" y1="295" x2="350" y2="244" stroke="rgba(109,40,217,0.4)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Node: Emergency -->
+      <circle cx="210" cy="260" r="30" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.35)" stroke-width="1.5"/>
+      <text x="210" y="255" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">Emergency</text>
+      <text x="210" y="270" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">SOS · 4.1 min</text>
+      <line x1="237" y1="240" x2="305" y2="210" stroke="rgba(239,68,68,0.35)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Node: AI Oracle -->
+      <circle cx="210" cy="120" r="30" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.35)" stroke-width="1.5"/>
+      <text x="210" y="115" text-anchor="middle" fill="white" font-family="DM Sans,sans-serif" font-size="10" font-weight="600">AI Oracle</text>
+      <text x="210" y="130" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="DM Sans,sans-serif" font-size="8">92% accuracy</text>
+      <line x1="237" y1="143" x2="305" y2="170" stroke="rgba(6,182,212,0.35)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <!-- Annotation arrows -->
+      <path d="M 105 190 L 140 190" stroke="rgba(14,159,142,0.5)" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="102" y="185" text-anchor="end" fill="rgba(148,163,184,0.7)" font-family="DM Sans,sans-serif" font-size="8">E-WIN</text>
+      <text x="102" y="196" text-anchor="end" fill="rgba(148,163,184,0.7)" font-family="DM Sans,sans-serif" font-size="8">Ecosystem</text>
+      <defs>
+        <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M 0 0 L 6 3 L 0 6 Z" fill="rgba(14,159,142,0.5)"/>
+        </marker>
+      </defs>
+      <!-- Pulsing center animation indicator -->
+      <circle cx="350" cy="190" r="55" fill="none" stroke="rgba(14,159,142,0.2)" stroke-width="1">
+        <animate attributeName="r" values="55;70;55" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0;0.4" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══════ BENEFITS ══════ -->
+<section>
+  <div class="section-label">Key Benefits</div>
+  <h2 class="section-title">Built For Everyone.<br><em style="font-style:italic;color:var(--teal-lt)">Designed for Impact.</em></h2>
+  <div class="benefits-grid reveal">
+    <div class="benefit-card">
+      <div class="benefit-icon">⚡</div>
+      <div class="benefit-title">Speed Without Compromise</div>
+      <div class="benefit-desc">15-minute SLA. 4.1-minute emergency average. Healthcare that moves at the speed your life demands — not the speed of hospital bureaucracy.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🔐</div>
+      <div class="benefit-title">Trust You Can Verify</div>
+      <div class="benefit-desc">Every professional is NMCN/PCN/MDCN verified. Every drug is PCN certified. Every rating is from a real patient. You never have to guess who is at your door.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">💰</div>
+      <div class="benefit-title">Affordable for Everyone</div>
+      <div class="benefit-desc">From ₦500/week MedSwift plans to corporate enterprise coverage — the platform is structured so that financial barriers never determine health outcomes.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📱</div>
+      <div class="benefit-title">Digital-First Access</div>
+      <div class="benefit-desc">One app. All services. Healthcare for the patient who cannot travel, the professional who needs flexible income, and the family managing care from abroad.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🤖</div>
+      <div class="benefit-title">AI-Powered Intelligence</div>
+      <div class="benefit-desc">The AI Health Oracle doesn't just match symptoms — it learns your health history, flags risks early, and improves its accuracy with every interaction.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🌍</div>
+      <div class="benefit-title">Built for Nigeria. Built to Scale.</div>
+      <div class="benefit-desc">USSD access for low-connectivity areas. Hausa, Igbo, Yoruba interface options. Designed from the ground up for Nigerian realities — not adapted from foreign models.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ TIMELINE ══════ -->
+<section style="padding-top:1rem">
+  <div class="section-label">Platform Roadmap</div>
+  <h2 class="section-title">Where MedPharmRx<br><em style="font-style:italic;color:var(--teal-lt)">Is Going</em></h2>
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-time">Q1 2025 — COMPLETED ✓</div>
+      <div class="timeline-title">Platform Launch · Lagos</div>
+      <div class="timeline-desc">Core dispatch, AI Oracle, MedSwift, and emergency SOS live in Lagos. First 5,000 users onboarded within 30 days.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">Q3 2025 — COMPLETED ✓</div>
+      <div class="timeline-title">Professional Network Expansion</div>
+      <div class="timeline-desc">1,000+ verified professionals across Lagos, Abuja, Kano, and Enugu. ₦1B MedSwift AUM milestone reached.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">Q1 2026 — CURRENT PHASE</div>
+      <div class="timeline-title">Enterprise & Diaspora Integration</div>
+      <div class="timeline-desc">Corporate wellness plans, diaspora payment gateway, 6-state expansion, and USSD access for rural users actively deploying.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">Q3 2026 — UPCOMING</div>
+      <div class="timeline-title">National Scale · All 36 States</div>
+      <div class="timeline-desc">Full national coverage, MedPharmRx Marketplace for health products, insurance partnership integration, and 500K user target.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-time">2027 — VISION</div>
+      <div class="timeline-title">West Africa Expansion</div>
+      <div class="timeline-desc">Ghana, Kenya, Côte d'Ivoire. The MedPharmRx model exported across Africa — proving that African-built platforms can solve African problems at scale.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ QUOTES ══════ -->
+<section style="padding-top:1rem">
+  <div class="quote-block">
+    <div class="quote-text">"The greatest wealth is health. MedPharmRx is not just a business. It is an act of refusing to accept that geography and poverty should determine whether you live or die."</div>
+    <div class="quote-attr">— E-WIN Project Mission Statement</div>
+  </div>
+  <div class="quote-block">
+    <div class="quote-text">"Innovation distinguishes between a leader and a follower. Nigeria's healthcare has been following for too long. MedPharmRx leads."</div>
+    <div class="quote-attr">— Steve Jobs (adapted)</div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══════ CTA ══════ -->
+<div class="cta-section" id="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-content">
+    <div class="pulse-badge" style="margin-bottom:1.5rem"><span class="pulse-dot"></span> Platform Open · Join Now</div>
+    <h2 class="cta-h2">The System Was Not<br>Built for You.<br><em style="font-style:italic;color:var(--teal-lt)">So We Built a New One.</em></h2>
+    <p class="cta-sub">220 million Nigerians. One platform built to reach every one of them. Your health, your income, your community's future — it starts with one download.</p>
+    <div class="cta-actions">
+      <a href="https://medpharmrx.ewinproject.org" target="_blank" class="btn btn-primary" style="font-size:1rem;padding:1rem 2rem">
+        🚀 Download MedPharmRx
+      </a>
+      <a href="https://wa.me/2349025152818" target="_blank" class="btn btn-amber" style="font-size:1rem;padding:1rem 2rem">
+        💬 WhatsApp Us
+      </a>
+      <a href="https://medpharmrx.ewinproject.org/pro" target="_blank" class="btn btn-outline">
+        🩺 Join as a Professional
+      </a>
+    </div>
+    <div class="cta-links">
+      <a href="https://medpharmrx.ewinproject.org" target="_blank" class="cta-link">🌐 medpharmrx.ewinproject.org</a>
+      <a href="https://wa.me/2349025152818" target="_blank" class="cta-link">📱 +234-902-515-2818</a>
+      <a href="#" class="cta-link">📲 iOS App</a>
+      <a href="#" class="cta-link">📲 Android App</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo"><div class="logo-icon">Rx</div>MedPharmRx</div>
+        <p class="footer-desc">Nigeria's first Healthcare Results-as-a-Service platform. A product of the E-WIN Project ecosystem — building the digital infrastructure that empowers Nigerians to access opportunity, deliver services, and live healthier lives.</p>
+        <a href="https://wa.me/2349025152818" target="_blank" class="footer-contact">📱 +234-902-515-2818 (WhatsApp only)</a>
+        <a href="https://medpharmrx.ewinproject.org" target="_blank" class="footer-contact" style="display:block;margin-top:.3rem">🌐 medpharmrx.ewinproject.org</a>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul class="footer-links">
+          <li><a href="#">For Patients</a></li>
+          <li><a href="#">For Professionals</a></li>
+          <li><a href="#">For Pharmacies</a></li>
+          <li><a href="#">MedSwift Fund</a></li>
+          <li><a href="#">Emergency SOS</a></li>
+          <li><a href="#">Enterprise Plans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="#">About E-WIN Project</a></li>
+          <li><a href="#">Our Mission</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press & Media</a></li>
+          <li><a href="#">Investor Relations</a></li>
+          <li><a href="#">Partnerships</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Data Protection</a></li>
+          <li><a href="#">NDPR Compliance</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 MedPharmRx Nigeria Ltd. · E-WIN Project Ecosystem. All rights reserved.</div>
+      <div class="footer-badges">
+        <span class="badge badge-green">NMCN Compliant</span>
+        <span class="badge badge-teal">PCN Certified Network</span>
+        <span class="badge badge-green">NDPR Compliant</span>
+        <span class="badge badge-teal">ISO 27001</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── NAV TOGGLE
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// ── HERO COUNTERS
+function animateCounter(el, target, prefix='', suffix='', duration=2000){
+  const start = performance.now();
+  const isFloat = String(target).includes('.');
+  const step = ts => {
+    const p = Math.min((ts-start)/duration, 1);
+    const ease = 1 - Math.pow(1-p, 3);
+    const val = isFloat ? (target*ease).toFixed(1) : Math.floor(target*ease).toLocaleString();
+    el.textContent = prefix + val + suffix;
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = prefix + (isFloat ? target : Number(target).toLocaleString()) + suffix;
+  };
+  requestAnimationFrame(step);
+}
+
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    animateCounter(document.getElementById('heroCount1'), 52847, '', '', 2500);
+    animateCounter(document.getElementById('heroCount2'), 1284, '', '', 2000);
+    animateCounter(document.getElementById('heroCount3'), 2.4, '₦', 'B', 2200);
+    animateCounter(document.getElementById('appEarn'), 187500, '₦', '', 2800);
+  }, 500);
+});
+
+// ── SCROLL REVEAL + STAT COUNTERS
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      // stat card counters
+      const nums = entry.target.querySelectorAll('.stat-num[data-target]');
+      nums.forEach(n => {
+        const t = parseFloat(n.dataset.target);
+        const pre = n.dataset.prefix || '';
+        const suf = n.dataset.suffix || '';
+        animateCounter(n, t, pre, suf, 1800);
+      });
+      observer.unobserve(entry.target);
+    }
+  });
+}, {threshold: 0.15});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── TABS
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── BAR CHART
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const patientData = [1200,1850,2400,3100,4200,5800,7200,9100,11500,14800,18200,22500];
+const earningsData = [85,92,105,118,128,140,152,161,170,178,185,195];
+const swiftData = [800,1200,1600,2100,2800,3400,4200,5100,6200,7500,9100,11200];
+
+function buildChart(){
+  const chart = document.getElementById('barChart');
+  if(!chart) return;
+  chart.innerHTML = '';
+  const maxP = Math.max(...patientData);
+  patientData.forEach((v,i)=>{
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.background = `linear-gradient(to top, var(--teal), var(--emerald))`;
+    bar.style.height = '0%';
+    bar.dataset.label = months[i];
+    const tip = document.createElement('div');
+    tip.className = 'bar-tooltip';
+    tip.textContent = v.toLocaleString() + ' requests';
+    bar.appendChild(tip);
+    chart.appendChild(bar);
+    setTimeout(()=>{ bar.style.height = (v/maxP*90)+'%'; }, 300 + i*80);
+  });
+}
+
+const chartObs = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){ buildChart(); chartObs.disconnect(); }
+}, {threshold:0.3});
+const chartEl = document.getElementById('barChart');
+if(chartEl) chartObs.observe(chartEl);
+
+// ── MEDSWIFT SIMULATOR
+function calcSwift(){
+  const weekly = parseInt(document.getElementById('simAmount').value);
+  const months = parseInt(document.getElementById('simDur').value);
+  const members = parseInt(document.getElementById('simMembers').value);
+  const topup = parseInt(document.getElementById('simTopup').value)/100;
+  const weeks = months * 4.33;
+  const personal = weekly * weeks;
+  const employer = personal * topup;
+  const total = personal + employer;
+  const coverage = total * 0.95;
+  const perMember = coverage / members;
+  const res = document.getElementById('simResults');
+  res.innerHTML = `
+    <div class="sim-result-card"><div class="sim-result-val">₦${Math.round(personal).toLocaleString()}</div><div class="sim-result-lbl">Your Contributions</div></div>
+    <div class="sim-result-card"><div class="sim-result-val">₦${Math.round(employer).toLocaleString()}</div><div class="sim-result-lbl">Employer Top-Up</div></div>
+    <div class="sim-result-card highlight"><div class="sim-result-val">₦${Math.round(total).toLocaleString()}</div><div class="sim-result-lbl">Total Fund Balance</div></div>
+    <div class="sim-result-card"><div class="sim-result-val">₦${Math.round(coverage).toLocaleString()}</div><div class="sim-result-lbl">Available Coverage</div></div>
+    <div class="sim-result-card"><div class="sim-result-val">₦${Math.round(perMember).toLocaleString()}</div><div class="sim-result-lbl">Per Family Member</div></div>
+    <div class="sim-result-card"><div class="sim-result-val">${members} ${members===1?'person':'people'}</div><div class="sim-result-lbl">Covered by Your Fund</div></div>
+  `;
+}
+calcSwift();
+
+// ── PROGRESS RINGS
+const rings = [
+  {label:'Doctor Arrival',target:95,color:'#0E9F8E',note:'15 min SLA'},
+  {label:'Drug Verification',target:100,color:'#10B981',note:'100% PCN chain'},
+  {label:'MedSwift Payout',target:97,color:'#6D28D9',note:'Within 4 hours'},
+  {label:'Patient Satisfaction',target:98,color:'#F59E0B',note:'Verified reviews'},
+  {label:'SOS Response',target:92,color:'#EF4444',note:'Under 8 minutes'},
+  {label:'Credential Accuracy',target:100,color:'#06B6D4',note:'AI + manual check'},
+];
+function buildRings(){
+  const grid = document.getElementById('ringGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  rings.forEach(r=>{
+    const circ = 2*Math.PI*36;
+    const offset = circ*(1-r.target/100);
+    grid.innerHTML += `
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 88 88">
+          <circle class="ring-bg" cx="44" cy="44" r="36"/>
+          <circle class="ring-prog" cx="44" cy="44" r="36"
+            stroke="${r.color}"
+            stroke-dasharray="${circ}"
+            stroke-dashoffset="${circ}"
+            id="ring-${r.label.replace(/\s/g,'-')}"/>
+          <text x="44" y="48" text-anchor="middle" fill="white" font-family="Playfair Display,serif" font-size="13" font-weight="700" transform="rotate(90,44,44)">${r.target}%</text>
+        </svg>
+        <div class="ring-label">
+          <div class="ring-val" style="color:${r.color}">${r.target}%</div>
+          <div class="ring-name">${r.label}</div>
+          <div style="font-size:.65rem;color:var(--muted)">${r.note}</div>
+        </div>
+      </div>`;
+  });
+  setTimeout(()=>{
+    rings.forEach(r=>{
+      const circ = 2*Math.PI*36;
+      const el = document.getElementById('ring-'+r.label.replace(/\s/g,'-'));
+      if(el) el.style.strokeDashoffset = circ*(1-r.target/100);
+    });
+  }, 100);
+}
+const ringObs = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){ buildRings(); ringObs.disconnect(); }
+},{threshold:0.2});
+const ringGrid = document.getElementById('ringGrid');
+if(ringGrid) ringObs.observe(ringGrid);
+
+// ── SOS SIMULATOR
+let sosActive = false;
+function triggerSOS(){
+  if(sosActive) return;
+  sosActive = true;
+  const status = document.getElementById('sosStatus');
+  const steps = [
+    {t:0,   msg:'🔴 SOS Activated — locating nearest responders...'},
+    {t:1000, msg:'📍 Location confirmed — Surulere, Lagos. H3 grid: A1B2C3'},
+    {t:2000, msg:'🚑 Ambulance dispatched — Dr. Emeka Nwankwo · 2.1 km'},
+    {t:3500, msg:'📱 3 NOK contacts notified with live tracking link'},
+    {t:5000, msg:'⏱️ ETA: 4 minutes 20 seconds · Responder en route'},
+    {t:7000, msg:'✅ Responder arrived! Incident logged to your health profile.'},
+  ];
+  steps.forEach(s=>{
+    setTimeout(()=>{
+      status.innerHTML = `<span style="color:var(--teal-lt);font-weight:600">${s.msg}</span>`;
+      if(s.t===7000) setTimeout(()=>{ sosActive=false; status.textContent='Tap SOS to simulate emergency dispatch'; }, 3000);
+    }, s.t);
+  });
+}
+
+// ── CLOSE NAV ON LINK CLICK (mobile)
+document.querySelectorAll('.nav-links a').forEach(a=>{
+  a.addEventListener('click', ()=>document.getElementById('navLinks').classList.remove('open'));
+});
+</script>
+</body>
+</html>
