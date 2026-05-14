@@ -82,15 +82,20 @@
 		<!-- Search -->
 		<input
 			type="search" bind:value={search}
+			aria-label="Search applications by name, email, or residence"
 			placeholder="Search by name or email..."
 			class="w-full sm:w-72 bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder:text-white/30 focus:border-[#c9a84c]/50 outline-none transition-colors"
 		/>
 	</div>
 
 	<!-- Filter tabs -->
-	<div class="flex gap-2 flex-wrap">
+	<div class="flex gap-2 flex-wrap" role="tablist" aria-label="Application status filters">
 		{#each (['all','pending','approved','declined'] as const) as tab}
-			<button type="button" onclick={() => filter = tab}
+			<button type="button" 
+				onclick={() => filter = tab}
+				role="tab"
+				aria-selected={filter === tab}
+				aria-label="Show {tab} applications ({counts[tab]})"
 				class="px-4 py-2 min-h-[36px] rounded-xl text-[11px] font-['Space_Mono'] uppercase tracking-wider border transition-all active:scale-95
 					{filter === tab
 						? 'bg-[#c9a84c] text-[#0b0a07] border-[#c9a84c]'
@@ -139,12 +144,14 @@
 											<button type="button"
 												disabled={updating === app._id}
 												onclick={() => updateStatus(app._id, 'approved')}
+												aria-label="Approve application for {app.fullName}"
 												class="px-3 py-1.5 min-h-[32px] bg-teal-500/15 text-teal-400 border border-teal-500/30 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-teal-500/25 disabled:opacity-40 transition-all active:scale-95">
 												{updating === app._id ? '...' : 'Approve'}
 											</button>
 											<button type="button"
 												disabled={updating === app._id}
 												onclick={() => updateStatus(app._id, 'declined')}
+												aria-label="Decline application for {app.fullName}"
 												class="px-3 py-1.5 min-h-[32px] bg-red-500/15 text-red-400 border border-red-500/30 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-red-500/25 disabled:opacity-40 transition-all active:scale-95">
 												Decline
 											</button>
@@ -173,6 +180,7 @@
 		<div class="flex items-center justify-between px-6 py-5 border-b border-[#c9a84c]/10 shrink-0">
 			<h2 class="font-['Bebas_Neue'] text-xl tracking-widest text-[#c9a84c]">Application Detail</h2>
 			<button type="button" onclick={() => selected = null}
+				aria-label="Close details"
 				class="w-9 h-9 flex items-center justify-center rounded-xl border border-[#c9a84c]/20 text-white/50 hover:text-white hover:border-[#c9a84c]/40 transition-all">
 				✕
 			</button>

@@ -8,43 +8,34 @@ export interface Toast {
 	duration?: number;
 }
 
-function createUiStore() {
-	const toasts = writable<Toast[]>([]);
+import { toast } from './toast.svelte';
 
-	function addToast(toast: Omit<Toast, 'id'>): string {
-		const id = crypto.randomUUID();
-		const entry: Toast = { id, duration: 4000, ...toast };
-		toasts.update((t) => [...t, entry]);
-		// Auto dismiss
-		if (entry.duration && entry.duration > 0) {
-			setTimeout(() => dismissToast(id), entry.duration);
-		}
-		return id;
+function createUiStore() {
+	function addToast(t: Omit<Toast, 'id'>) {
+		return toast.add(t);
 	}
 
 	function dismissToast(id: string) {
-		toasts.update((t) => t.filter((x) => x.id !== id));
+		toast.remove(id);
 	}
 
 	function success(message: string, title?: string) {
-		return addToast({ type: 'success', message, title });
+		return toast.success(message, title);
 	}
 
 	function error(message: string, title?: string) {
-		return addToast({ type: 'error', message, title, duration: 6000 });
+		return toast.error(message, title);
 	}
 
 	function info(message: string, title?: string) {
-		return addToast({ type: 'info', message, title });
+		return toast.info(message, title);
 	}
 
 	function warning(message: string, title?: string) {
-		return addToast({ type: 'warning', message, title });
+		return toast.warning(message, title);
 	}
 
-	const { subscribe } = derived(toasts, ($t) => ({ toasts: $t }));
-
-	return { subscribe, addToast, dismissToast, success, error, info, warning };
+	return { addToast, dismissToast, success, error, info, warning };
 }
 
 export const ui = createUiStore();

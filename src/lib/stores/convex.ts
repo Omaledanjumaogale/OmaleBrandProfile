@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { convex } from '$lib/convex';
-import { api } from '../../../convex/_generated/api';
+import { api } from '$convex/_generated/api';
 
 export const stats = writable({
     totalUsers: 0,

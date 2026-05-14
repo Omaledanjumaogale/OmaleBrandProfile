@@ -1,108 +1,176 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { convex } from '$lib/convex';
-	import { api } from '../../../../../convex/_generated/api';
-	import { currentUser } from '$lib/stores/auth';
-	import { ui } from '$lib/stores/ui';
+    import { onMount } from 'svelte';
+    import { convex } from '$lib/convex';
+    import { api } from '../../../../convex/_generated/api';
+    import { ui } from '$lib/stores/ui';
+    import { fade, fly } from 'svelte/transition';
+    import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
-	let broadcasts: any[] = $state([]);
-	let loading   = $state(true);
-	let message   = $state('');
-	let sending   = $state(false);
-	const MAX_CHARS = 500;
+    let broadcasts: any[] = $state([]);
+    let loading = $state(true);
+    let sending = $state(false);
 
-	onMount(() => {
-		const unsub = convex.onUpdate(api.functions.getLatestBroadcasts, {}, (data) => {
-			broadcasts = data ?? [];
-			loading = false;
-		});
-		return unsub;
-	});
+    let newBroadcast = $state({
+        title: '',
+        message: '',
+        type: 'info' as 'info' | 'warning' | 'critical' | 'update'
+    });
 
-	async function sendBroadcast() {
-		if (!message.trim() || message.length > MAX_CHARS) return;
-		sending = true;
-		try {
-			await convex.mutation(api.functions.createBroadcast, {
-				message: message.trim(),
-				sender: $currentUser?.email ?? 'admin',
-			});
-			ui.success('Broadcast sent to all ambassadors.');
-			message = '';
-		} catch (e: any) { ui.error(e.message ?? 'Failed to send broadcast.'); }
-		finally { sending = false; }
-	}
+    onMount(() => {
+        const unsubscribe = convex.onUpdate(api.admin.getBroadcasts, {}, (data) => {
+            broadcasts = data ?? [];
+            loading = false;
+        });
+        return unsubscribe;
+    });
 
-	const timeAgo = (ts: number) => {
-		const diff = Date.now() - ts;
-		const m = Math.floor(diff / 60000);
-		if (m < 1)  return 'just now';
-		if (m < 60) return `${m}m ago`;
-		const h = Math.floor(m / 60);
-		if (h < 24) return `${h}h ago`;
-		return `${Math.floor(h / 24)}d ago`;
-	};
+    async function handleSend() {
+        if (!newBroadcast.title || !newBroadcast.message) return;
+        
+        sending = true;
+        try {
+            await convex.mutation(api.admin.sendBroadcast, {
+                title: newBroadcast.title,
+                message: newBroadcast.message,
+                type: newBroadcast.type
+            });
+            ui.success("Broadcast deployed successfully.", "System Updated");
+            newBroadcast = { title: '', message: '', type: 'info' };
+        } catch (e) {
+            ui.error("Failed to transmit broadcast.");
+        } finally {
+            sending = false;
+        }
+    }
+
+    function getTypeColor(type: string) {
+        switch (type) {
+            case 'critical': return 'bg-red-500/10 text-red-500 border-red-500/20';
+            case 'warning': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+            case 'update': return 'bg-teal-500/10 text-teal-500 border-teal-500/20';
+            default: return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+        }
+    }
 </script>
 
-<svelte:head><title>Broadcasts — Admin | E-WIN</title></svelte:head>
+<svelte:head>
+    <title>System Broadcasts — Admin Portal | E-WIN</title>
+</svelte:head>
 
-<div class="space-y-6 max-w-[860px] mx-auto">
-	<div>
-		<h1 class="font-['Bebas_Neue'] text-3xl tracking-widest text-white">Broadcasts</h1>
-		<p class="text-[11px] text-white/40 font-['Space_Mono'] mt-0.5">Send platform-wide announcements to all I-AM ambassadors</p>
-	</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Broadcast Creator -->
+    <div class="lg:col-span-1 space-y-6">
+        <div class="bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-3xl p-8 shadow-2xl sticky top-28">
+            <h2 class="font-['Bebas_Neue'] text-3xl tracking-widest text-white mb-6 flex items-center gap-3">
+                DEPLOY BROADCAST
+                <Tooltip text="Broadcasts are instantly pushed to all active platform sessions via Convex WebSockets." />
+            </h2>
 
-	<!-- Compose panel -->
-	<div class="bg-[#0f0e0b] border border-[#c9a84c]/15 rounded-2xl p-6 space-y-4">
-		<h2 class="font-['Bebas_Neue'] text-xl tracking-widest text-[#c9a84c]">New Broadcast</h2>
-		<div>
-			<textarea bind:value={message} rows="5" maxlength={MAX_CHARS}
-				placeholder="Write your broadcast message to all ambassadors..."
-				class="w-full bg-[#0b0a07] border border-[#c9a84c]/15 rounded-xl px-4 py-3 text-[14px] text-white placeholder:text-white/30 focus:border-[#c9a84c]/40 outline-none resize-none transition-colors leading-relaxed">
-			</textarea>
-			<div class="flex items-center justify-between mt-1.5">
-				<p class="text-[11px] text-white/30 font-['Space_Mono']">
-					Sent from: <span class="text-[#c9a84c]/70">{$currentUser?.email ?? 'admin'}</span>
-				</p>
-				<span class="text-[11px] font-['Space_Mono'] {message.length > MAX_CHARS * 0.9 ? 'text-amber-400' : 'text-white/30'}">
-					{message.length} / {MAX_CHARS}
-				</span>
-			</div>
-		</div>
-		<button type="button" onclick={sendBroadcast} disabled={sending || !message.trim() || message.length > MAX_CHARS}
-			class="px-8 py-3 min-h-[48px] bg-[#c9a84c] text-[#0b0a07] text-[12px] font-bold uppercase tracking-wider rounded-xl
-			       hover:bg-[#a07820] disabled:opacity-40 disabled:cursor-not-allowed
-			       transition-all active:scale-95 flex items-center gap-2">
-			{#if sending}
-				<span class="w-4 h-4 border-2 border-[#0b0a07]/30 border-t-[#0b0a07] rounded-full animate-spin"></span>
-				Sending...
-			{:else}
-				📢 Send Broadcast
-			{/if}
-		</button>
-	</div>
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label for="event-title" class="text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40 ml-1">Event Title</label>
+                    <input 
+                        id="event-title"
+                        type="text" 
+                        bind:value={newBroadcast.title}
+                        placeholder="Maintenance Schedule, Update, etc."
+                        class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] outline-none transition-all"
+                    />
+                </div>
 
-	<!-- Broadcast history -->
-	<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-		<div class="px-5 py-4 border-b border-[#c9a84c]/10">
-			<h2 class="font-['Bebas_Neue'] text-lg tracking-widest text-[#c9a84c]">Recent Broadcasts</h2>
-		</div>
-		{#if loading}
-			<div class="p-8 text-center text-white/30 text-[12px]">Loading...</div>
-		{:else if broadcasts.length === 0}
-			<div class="p-8 text-center text-white/30 text-[12px]">No broadcasts sent yet.</div>
-		{:else}
-			<div class="divide-y divide-[#c9a84c]/5">
-				{#each broadcasts as bc}
-					<div class="px-5 py-4">
-						<div class="flex items-center justify-between mb-2">
-							<span class="text-[11px] font-['Space_Mono'] text-[#c9a84c]/60">{bc.sender}</span>
-							<span class="text-[11px] font-['Space_Mono'] text-white/30">{timeAgo(bc.timestamp)}</span>
-						</div>
-						<p class="text-[14px] text-white/80 leading-relaxed">{bc.message}</p>
-					</div>
-				{/each}
-			</div>
-		{/if}
-	</div>
+                <div class="space-y-2">
+                    <span class="text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40 ml-1 block">Broadcast Type</span>
+                    <div class="grid grid-cols-2 gap-2" role="group" aria-label="Broadcast category selection">
+                        {#each ['info', 'warning', 'critical', 'update'] as type}
+                            <button 
+                                onclick={() => newBroadcast.type = type as any}
+                                aria-label="Select {type} type"
+                                aria-pressed={newBroadcast.type === type}
+                                class="px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider border transition-all
+                                    {newBroadcast.type === type 
+                                        ? 'border-[var(--gold)] bg-[var(--gold)] text-[#0b0a07]' 
+                                        : 'border-white/5 bg-white/5 text-white/40 hover:text-white'}"
+                            >
+                                {type}
+                            </button>
+                        {/each}
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="urgent-message" class="text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40 ml-1">Urgent Message</label>
+                    <textarea 
+                        id="urgent-message"
+                        bind:value={newBroadcast.message}
+                        rows="4"
+                        placeholder="Enter the critical announcement content here..."
+                        class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] outline-none transition-all resize-none"
+                    ></textarea>
+                </div>
+
+                <button 
+                    onclick={handleSend}
+                    disabled={sending || !newBroadcast.title || !newBroadcast.message}
+                    aria-label="Send broadcast message"
+                    class="w-full bg-[var(--gold)] text-[#0b0a07] font-bold py-4 rounded-xl uppercase tracking-[3px] text-[12px] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 mt-4 shadow-lg shadow-[#c9a84c]/20"
+                >
+                    {sending ? 'TRANSMITTING...' : 'INITIATE BROADCAST 🛰️'}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Broadcasts List -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="font-['Bebas_Neue'] text-3xl tracking-widest text-white">Transmission History</h2>
+            <div class="flex items-center gap-2 px-3 py-1 bg-[#22917a]/10 border border-[#22917a]/20 rounded-lg">
+                <div class="w-1.5 h-1.5 rounded-full bg-[#22917a] animate-pulse"></div>
+                <span class="text-[9px] font-bold text-[#22917a] uppercase tracking-wider">WebSocket Active</span>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            {#if loading}
+                <div class="p-20 text-center text-white/10 font-['Space_Mono'] tracking-widest">
+                    SYNCING BROADCAST NODES...
+                </div>
+            {:else if broadcasts.length === 0}
+                <div class="p-20 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-3xl text-white/20 font-['Space_Mono']">
+                    NO BROADCASTS TRANSMITTED YET.
+                </div>
+            {:else}
+                {#each broadcasts as b, i}
+                    <div 
+                        in:fly={{ y: 20, delay: i * 50 }}
+                        class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-6 hover:border-[#c9a84c]/30 transition-all group"
+                    >
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border mb-2 inline-block {getTypeColor(b.type)}">
+                                    {b.type}
+                                </span>
+                                <h3 class="text-lg font-bold text-white group-hover:text-[var(--gold)] transition-colors">{b.title}</h3>
+                            </div>
+                            <span class="text-[11px] text-white/20 font-['Space_Mono']">
+                                {new Date(b.timestamp).toLocaleTimeString()}
+                            </span>
+                        </div>
+                        <p class="text-white/60 text-[14px] leading-relaxed mb-6">
+                            {b.message}
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                            <span class="text-[10px] text-white/20 uppercase tracking-widest">Target: {b.target || 'GLOBAL_ALL'}</span>
+                            <button 
+                                aria-label="Deactivate broadcast transmission"
+                                class="text-[10px] text-red-500/40 hover:text-red-500 font-bold uppercase tracking-widest transition-colors"
+                            >
+                                Deactivate
+                            </button>
+                        </div>
+                    </div>
+                {/each}
+            {/if}
+        </div>
+    </div>
 </div>

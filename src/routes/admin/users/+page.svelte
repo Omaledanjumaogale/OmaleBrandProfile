@@ -1,128 +1,125 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { convex } from '$lib/convex';
-	import { api } from '../../../../../convex/_generated/api';
-	import { currentUser } from '$lib/stores/auth';
-	import { ui } from '$lib/stores/ui';
+    import { onMount } from 'svelte';
+    import { convex } from '$lib/convex';
+    import { api } from '../../../../convex/_generated/api';
+    import { fade, fly } from 'svelte/transition';
+    import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
-	let users: any[]    = $state([]);
-	let loading = $state(true);
-	let search  = $state('');
-	let updating = $state<string | null>(null);
+    let users: any[] = $state([]);
+    let loading = $state(true);
+    let searchTerm = $state('');
 
-	onMount(() => {
-		const unsub = convex.onUpdate(api.functions.getUsers, {}, (data) => {
-			users = data ?? [];
-			loading = false;
-		});
-		return unsub;
-	});
+    onMount(() => {
+        const unsubscribe = convex.onUpdate(api.functions.getUsers, {}, (data) => {
+            users = data ?? [];
+            loading = false;
+        });
+        return unsubscribe;
+    });
 
-	const filtered = $derived(() => {
-		if (!search.trim()) return users;
-		const q = search.toLowerCase();
-		return users.filter(u =>
-			u.email?.toLowerCase().includes(q) ||
-			u.displayName?.toLowerCase().includes(q)
-		);
-	});
+    const filteredUsers = $derived(
+        users.filter(u => 
+            u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            u.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
 
-	async function setRole(id: string, role: 'admin' | 'user') {
-		updating = id;
-		try {
-			await convex.mutation(api.functions.updateUserRole, { id: id as any, role, adminEmail: $currentUser?.email ?? undefined });
-			ui.success(`User role updated to ${role}.`);
-		} catch (e: any) { ui.error(e.message); }
-		finally { updating = null; }
-	}
-
-	async function toggleLock(id: string, isLocked: boolean) {
-		updating = id;
-		try {
-			await convex.mutation(api.functions.toggleUserLock, { id: id as any, isLocked: !isLocked, adminEmail: $currentUser?.email ?? undefined });
-			ui.success(isLocked ? 'User unlocked.' : 'User locked.');
-		} catch (e: any) { ui.error(e.message); }
-		finally { updating = null; }
-	}
-
-	const fmt = (ts?: number) => ts ? new Date(ts).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-	const roleColor = (r: string) => r === 'admin' ? 'bg-[#c9a84c]/15 text-[#c9a84c] border-[#c9a84c]/30' : 'bg-white/5 text-white/50 border-white/10';
+    function getPlanColor(plan: string) {
+        switch (plan) {
+            case 'enterprise': return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
+            case 'pro': return 'text-[var(--gold)] bg-[var(--gold)]/10 border-[var(--gold)]/20';
+            default: return 'text-white/40 bg-white/5 border-white/10';
+        }
+    }
 </script>
 
-<svelte:head><title>Users — Admin | E-WIN</title></svelte:head>
+<svelte:head>
+    <title>User Management — Admin Portal | E-WIN</title>
+</svelte:head>
 
-<div class="space-y-5 max-w-[1200px] mx-auto">
-	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-		<div>
-			<h1 class="font-['Bebas_Neue'] text-3xl tracking-widest text-white">Users</h1>
-			<p class="text-[11px] text-white/40 font-['Space_Mono'] mt-0.5">{users.length} registered</p>
-		</div>
-		<input type="search" bind:value={search} placeholder="Search by name or email..."
-			class="w-full sm:w-72 bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder:text-white/30 focus:border-[#c9a84c]/50 outline-none transition-colors" />
-	</div>
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div>
+            <h1 class="font-['Bebas_Neue'] text-4xl tracking-widest text-white mb-2">Platform Identity Directory</h1>
+            <p class="text-[12px] text-white/40 font-['Space_Mono'] uppercase tracking-widest">
+                Manage accounts, roles, and platform permissions
+            </p>
+        </div>
 
-	<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-		<div class="overflow-x-auto">
-			<table class="w-full text-[13px]">
-				<thead>
-					<tr class="border-b border-[#c9a84c]/10">
-						{#each ['User','Email','Role','Status','Joined','Actions'] as col}
-							<th class="text-left px-5 py-3.5 text-white/30 font-['Space_Mono'] text-[10px] uppercase tracking-wider whitespace-nowrap">{col}</th>
-						{/each}
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-[#c9a84c]/5">
-					{#if loading}
-						<tr><td colspan="6" class="px-5 py-10 text-center text-white/30">Loading...</td></tr>
-					{:else if filtered().length === 0}
-						<tr><td colspan="6" class="px-5 py-10 text-center text-white/30">No users found.</td></tr>
-					{:else}
-						{#each filtered() as user}
-							<tr class="hover:bg-white/2 transition-colors">
-								<td class="px-5 py-3">
-									<div class="flex items-center gap-3">
-										<div class="w-8 h-8 rounded-full bg-[#c9a84c]/15 border border-[#c9a84c]/20 flex items-center justify-center text-[#c9a84c] font-bold text-sm shrink-0">
-											{(user.displayName?.[0] ?? user.email?.[0] ?? '?').toUpperCase()}
-										</div>
-										<span class="text-white font-medium">{user.displayName ?? 'Unknown'}</span>
-									</div>
-								</td>
-								<td class="px-5 py-3 text-white/60">{user.email}</td>
-								<td class="px-5 py-3">
-									<span class="text-[10px] font-['Space_Mono'] uppercase px-2.5 py-1 rounded-full border {roleColor(user.role)}">{user.role ?? 'user'}</span>
-								</td>
-								<td class="px-5 py-3">
-									<span class="flex items-center gap-1.5 text-[11px] {user.isLocked ? 'text-red-400' : 'text-teal-400'}">
-										<span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-										{user.isLocked ? 'Locked' : 'Active'}
-									</span>
-								</td>
-								<td class="px-5 py-3 text-white/40 font-['Space_Mono'] text-[11px]">{fmt(user.createdAt)}</td>
-								<td class="px-5 py-3">
-									<div class="flex gap-2">
-										{#if (user.role ?? 'user') !== 'admin'}
-											<button type="button" disabled={updating === user._id} onclick={() => setRole(user._id, 'admin')}
-												class="px-3 py-1.5 min-h-[32px] bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-[#c9a84c]/20 disabled:opacity-40 transition-all active:scale-95">
-												Make Admin
-											</button>
-										{:else}
-											<button type="button" disabled={updating === user._id} onclick={() => setRole(user._id, 'user')}
-												class="px-3 py-1.5 min-h-[32px] bg-white/5 text-white/50 border border-white/10 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-white/10 disabled:opacity-40 transition-all active:scale-95">
-												Remove Admin
-											</button>
-										{/if}
-										<button type="button" disabled={updating === user._id} onclick={() => toggleLock(user._id, user.isLocked)}
-											class="px-3 py-1.5 min-h-[32px] text-[10px] font-bold uppercase tracking-wider rounded-lg disabled:opacity-40 transition-all active:scale-95 border
-												{user.isLocked ? 'bg-teal-500/15 text-teal-400 border-teal-500/30 hover:bg-teal-500/25' : 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'}">
-											{user.isLocked ? 'Unlock' : 'Lock'}
-										</button>
-									</div>
-								</td>
-							</tr>
-						{/each}
-					{/if}
-				</tbody>
-			</table>
-		</div>
-	</div>
+        <div class="flex items-center gap-3 bg-[#0f0e0b] border border-white/5 rounded-2xl px-4 py-2 w-full sm:w-80">
+            <span class="text-white/20">🔍</span>
+            <input 
+                type="text" 
+                bind:value={searchTerm}
+                placeholder="Search by name or email..." 
+                class="bg-transparent border-none outline-none text-[13px] text-white/80 w-full placeholder:text-white/20"
+            />
+        </div>
+    </div>
+
+    <!-- User Table -->
+    <div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-white/5 bg-white/[0.02]">
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Identity</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Status</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Billing Tier</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Last Activity</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {#if loading}
+                        <tr><td colspan="5" class="px-6 py-20 text-center text-white/20 font-['Space_Mono'] tracking-widest">ESTABLISHING CRYPTOGRAPHIC HANDSHAKE...</td></tr>
+                    {:else if filteredUsers.length === 0}
+                        <tr><td colspan="5" class="px-6 py-20 text-center text-white/20">No matching user records identified.</td></tr>
+                    {:else}
+                        {#each filteredUsers as user, i}
+                            <tr 
+                                in:fly={{ y: 10, delay: i * 30 }}
+                                class="hover:bg-white/[0.02] transition-colors group"
+                            >
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg border border-white/5 group-hover:border-[var(--gold)]/20 transition-all">
+                                            {user.image ? '🖼️' : '👤'}
+                                        </div>
+                                        <div>
+                                            <div class="text-[14px] font-bold text-white leading-none mb-1">{user.name}</div>
+                                            <div class="text-[11px] text-white/30 font-mono">{user.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 rounded-full {user.subscriptionStatus === 'active' ? 'bg-teal-500' : 'bg-red-500'}"></div>
+                                        <span class="text-[11px] font-bold uppercase tracking-widest text-white/70">{user.subscriptionStatus}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border {getPlanColor(user.plan)}">
+                                        {user.plan}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-[11px] text-white/30 font-['Space_Mono']">
+                                        {new Date(user.lastLogin).toLocaleDateString()}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all" title="Edit Permissions">🛠️</button>
+                                        <button class="p-2 rounded-lg bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-500 transition-all" title="Suspend Account">⚠️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

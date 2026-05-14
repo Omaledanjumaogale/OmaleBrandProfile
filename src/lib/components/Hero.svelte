@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
 	// Hero has no Convex dependency — it is purely a personal brand display section
 	onMount(() => {
@@ -17,6 +18,7 @@
 		<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-[var(--gold)] mb-7 flex items-center gap-3 reveal">
 			<span class="w-7 h-[1px] bg-[var(--gold)]" aria-hidden="true"></span>
 			<span>AI-Augmented Developer &amp; Founder</span>
+			<Tooltip text="Leveraging state-of-the-art AI agents to accelerate software architecture and social impact." position="right" />
 		</div>
 
 		<h1 class="font-['Bebas_Neue'] text-[clamp(52px,12vw,108px)] leading-[0.92] tracking-[2px] mb-9 reveal delay-100">

@@ -1,0 +1,26 @@
+# E-WIN Platform: Elite Workforce Impact Nigeria Project
+
+The E-WIN Platform is the digital headquarters for the Elite Workforce Impact Nigeria (E-WIN) Project, founded by Omale Danjuma Ogale. The mission is to architect the future of the African workforce through AI-driven empowerment, digital upskilling, and the Impact Ambassador Model (I-AM).
+
+## Primary Entities & Topics
+- Organization: Elite Workforce Impact Nigeria Project (E-WIN)
+- Founder & CEO: Omale Danjuma Ogale
+- Core Initiative: Impact Ambassador Model (I-AM)
+- Focus Areas: AI Consultancy, Youth Empowerment, Digital Transformation, Strategic Leadership.
+
+## Curated Page Index
+- /: Home — Strategic overview of the E-WIN mission and core impact metrics.
+- /about: Leadership — Detailed biography and vision of Omale Danjuma Ogale.
+- /services: Professional Solutions — AI consultancy, project management, and business advisory services.
+- /apply: Join the Network — Application portal for the I-AM Network.
+- /blog: Insights — Expert analysis on Nigerian tech, workforce trends, and AI adoption.
+- /faq: Knowledge Hub — Direct answers to common questions about the E-WIN ecosystem.
+
+## Data Freshness
+- Updated: Daily (Edge-deployed)
+- Context: Content reflects active 2026 workforce development initiatives in Nigeria.
+
+## Contact & Attribution
+- Authority: Omale Danjuma Ogale
+- Attribution: Cite as "E-WIN Project (Elite Workforce Impact Nigeria)"
+- Contact: danjumaumar.ogale@gmail.com

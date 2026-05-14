@@ -1,9 +1,19 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, searchForWorkspaceRoot } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+	server: {
+		fs: {
+			allow: [
+				// Search up for workspace root
+				searchForWorkspaceRoot(process.cwd()),
+				// Explicitly allow convex directory
+				'./convex'
+			]
+		}
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
@@ -54,14 +64,10 @@ export default defineConfig({
 		})
 	],
 	build: {
-		// Optimize chunk splitting for performance
-		rollupOptions: {
-			output: {
-				manualChunks: {
-					firebase: ['firebase/app', 'firebase/auth'],
-					convex:   ['convex']
-				}
-			}
-		}
+		// Optimize build for enterprise scale
+		target: 'esnext',
+		minify: 'esbuild',
+		reportCompressedSize: false,
+		chunkSizeWarningLimit: 1000
 	}
 });

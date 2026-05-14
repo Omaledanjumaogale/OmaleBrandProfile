@@ -1,5 +1,43 @@
+# Technical Crawlability for AI Agents & Search Engines
 User-agent: *
 Allow: /
-Disallow: /platforms/*.html$
 
+# Explicitly Allow Major AI Crawlers
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Anthropic-AI
+Allow: /
+User-agent: YouBot
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: cohere-ai
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+
+# Block Private & Sensitive Routes
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/private/
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /login/
+Disallow: /apply/success
+
+# Sitemaps
 Sitemap: https://omaledanjumaogale.ewinproject.org/sitemap.xml
+
+# LLMS Indexing
+# This provides AI agents with a clean context for the E-WIN platform mission.
+# Location: /llms.txt

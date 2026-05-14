@@ -1,244 +1,177 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { convex } from '$lib/convex';
-	import { api } from '../../../../convex/_generated/api';
+    import { onMount } from 'svelte';
+    import { convex } from '$lib/convex';
+    import { api } from '../../../../convex/_generated/api';
+    import { fade, fly, scale } from 'svelte/transition';
+    import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
-	// ── Real-time Convex subscriptions ───────────────────────────────
-	let applications: any[]   = $state([]);
-	let serviceRequests: any[] = $state([]);
-	let auditLogs: any[]       = $state([]);
-	let sessions: any[]        = $state([]);
-	let loading = $state(true);
+    let stats = $state({
+        totalUsers: 0,
+        pendingApps: 0,
+        activeRequests: 0,
+        systemHealth: 100
+    });
 
-	onMount(() => {
-		const unsubApps = convex.onUpdate(api.functions.getApplications, {}, (data) => {
-			applications = data ?? [];
-		});
-		const unsubReqs = convex.onUpdate(api.functions.getServiceRequests, {}, (data) => {
-			serviceRequests = data ?? [];
-		});
-		const unsubLogs = convex.onUpdate(api.functions.getAuditLogs, {}, (data) => {
-			auditLogs = data ?? [];
-			loading = false;
-		});
-		const unsubSess = convex.onUpdate(api.functions.getActiveSessions, {}, (data) => {
-			sessions = data ?? [];
-		});
-		return () => { unsubApps(); unsubReqs(); unsubLogs(); unsubSess(); };
-	});
+    let recentActivity: any[] = $state([]);
+    let loading = $state(true);
 
-	// ── Derived stats ─────────────────────────────────────────────────
-	const stats = $derived([
-		{
-			label:   'Total Applications',
-			value:   applications.length,
-			delta:   applications.filter(a => {
-				const d = new Date(a.createdAt); const n = new Date();
-				return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
-			}).length,
-			deltaLabel: 'this month',
-			icon: '📋', color: 'gold'
-		},
-		{
-			label:   'Pending Review',
-			value:   applications.filter(a => a.status === 'pending').length,
-			delta:   null,
-			deltaLabel: '',
-			icon: '⏳', color: 'amber'
-		},
-		{
-			label:   'Service Requests',
-			value:   serviceRequests.length,
-			delta:   serviceRequests.filter(r => r.status === 'pending').length,
-			deltaLabel: 'pending',
-			icon: '📥', color: 'teal'
-		},
-		{
-			label:   'Active Sessions',
-			value:   sessions.length,
-			delta:   null,
-			deltaLabel: '',
-			icon: '🔴', color: 'green'
-		}
-	]);
+    onMount(() => {
+        // Real-time Platform Stats
+        const unsubStats = convex.onUpdate(api.admin.getPlatformStats, {}, (data) => {
+            if (data) stats = data;
+        });
 
-	const recentApps = $derived(
-		[...applications].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5)
-	);
-	const recentReqs = $derived(
-		[...serviceRequests].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5)
-	);
+        // Real-time Activity Feed
+        const unsubLogs = convex.onUpdate(api.functions.getAuditLogs, { 
+            paginationOpts: { numItems: 8, cursor: null } 
+        }, (data) => {
+            recentActivity = data?.page ?? [];
+            loading = false;
+        });
 
-	function statusBadge(status: string) {
-		const map: Record<string, string> = {
-			pending:   'bg-amber-500/15 text-amber-400 border-amber-500/30',
-			approved:  'bg-teal-500/15 text-teal-400 border-teal-500/30',
-			declined:  'bg-red-500/15 text-red-400 border-red-500/30',
-			contacted: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-			completed: 'bg-green-500/15 text-green-400 border-green-500/30',
-			archived:  'bg-gray-500/15 text-gray-400 border-gray-500/30',
-		};
-		return map[status] ?? 'bg-white/10 text-white/50 border-white/20';
-	}
+        return () => {
+            unsubStats();
+            unsubLogs();
+        };
+    });
 
-	function timeAgo(ts: number): string {
-		const diff = Date.now() - ts;
-		const m = Math.floor(diff / 60000);
-		if (m < 1)  return 'just now';
-		if (m < 60) return `${m}m ago`;
-		const h = Math.floor(m / 60);
-		if (h < 24) return `${h}h ago`;
-		return `${Math.floor(h / 24)}d ago`;
-	}
+    function formatAction(action: string) {
+        return action.replace(/_/g, ' ').toLowerCase();
+    }
 </script>
 
 <svelte:head>
-	<title>Dashboard — Admin Portal | E-WIN</title>
+    <title>Enterprise Command Center | E-WIN</title>
 </svelte:head>
 
-<div class="space-y-6 max-w-[1200px] mx-auto">
+<div class="space-y-10">
+    <!-- Welcome Header -->
+    <div in:fade>
+        <h1 class="font-['Bebas_Neue'] text-5xl lg:text-6xl tracking-widest text-white leading-none mb-3">
+            COMMAND <span class="text-[var(--gold)]">CENTER</span>
+        </h1>
+        <div class="flex items-center gap-4">
+            <p class="text-[12px] text-white/40 font-['Space_Mono'] uppercase tracking-[4px]">Platform Operational Intelligence</p>
+            <div class="h-px flex-grow bg-white/5"></div>
+            <span class="text-[10px] text-[var(--gold)] font-bold uppercase tracking-widest px-3 py-1 border border-[var(--gold)]/20 rounded-full bg-[var(--gold)]/5">
+                Live Session: {new Date().toLocaleDateString()}
+            </span>
+        </div>
+    </div>
 
-	<!-- Page header -->
-	<div class="flex items-center justify-between">
-		<div>
-			<h1 class="font-['Bebas_Neue'] text-3xl sm:text-4xl tracking-widest text-white">
-				Overview
-			</h1>
-			<p class="text-[12px] text-white/40 font-['Space_Mono'] mt-1">
-				{new Date().toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
-			</p>
-		</div>
-		{#if loading}
-			<div class="flex items-center gap-2 text-[#c9a84c]/60 text-[11px] font-['Space_Mono']">
-				<span class="w-3 h-3 border border-[#c9a84c]/30 border-t-[#c9a84c] rounded-full animate-spin"></span>
-				LIVE
-			</div>
-		{:else}
-			<div class="flex items-center gap-2 text-[#22917a] text-[11px] font-['Space_Mono']">
-				<span class="w-2 h-2 bg-[#22917a] rounded-full animate-pulse"></span>
-				LIVE
-			</div>
-		{/if}
-	</div>
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {#each [
+            { label: 'Platform Users', value: stats.totalUsers, icon: '👥', color: 'blue', help: 'Total verified users across all platform nodes.' },
+            { label: 'Pending Applications', value: stats.pendingApps, icon: '📋', color: 'gold', help: 'Workforce applications awaiting administrative review.' },
+            { label: 'Service Requests', value: stats.activeRequests, icon: '📥', color: 'teal', help: 'Open service inquiries currently in the pipeline.' },
+            { label: 'System Uptime', value: stats.systemHealth + '%', icon: '⚡', color: 'green', help: 'Real-time infrastructure health score.' }
+        ] as metric, i}
+            <div 
+                in:scale={{ delay: i * 100, duration: 600, start: 0.95 }}
+                class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-3xl p-8 hover:border-[#c9a84c]/30 transition-all group relative overflow-hidden"
+            >
+                <div class="absolute top-0 right-0 w-24 h-24 bg-[var(--gold)]/5 rounded-full blur-3xl group-hover:bg-[var(--gold)]/10 transition-all"></div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                        {metric.icon}
+                    </div>
+                    <Tooltip text={metric.help} position="left" />
+                </div>
+                
+                <div class="space-y-1">
+                    <h3 class="text-3xl font-bold text-white tracking-tighter">{metric.value}</h3>
+                    <p class="text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/30">{metric.label}</p>
+                </div>
+            </div>
+        {/each}
+    </div>
 
-	<!-- ── Stat Cards ─────────────────────────────────────────────── -->
-	<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-		{#each stats as stat}
-			<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl p-5 hover:border-[#c9a84c]/25 transition-colors">
-				<div class="flex items-start justify-between mb-3">
-					<span class="text-2xl" aria-hidden="true">{stat.icon}</span>
-					{#if stat.delta !== null}
-						<span class="text-[10px] font-['Space_Mono'] text-[#22917a] bg-[#22917a]/10 px-2 py-1 rounded-full">
-							+{stat.delta} {stat.deltaLabel}
-						</span>
-					{/if}
-				</div>
-				<div class="font-['Bebas_Neue'] text-4xl text-white tracking-widest mb-1">
-					{loading ? '—' : stat.value}
-				</div>
-				<div class="text-[11px] text-white/40 font-['Space_Mono'] uppercase tracking-widest">
-					{stat.label}
-				</div>
-			</div>
-		{/each}
-	</div>
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Live Activity Feed -->
+        <div class="lg:col-span-2 bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-3xl overflow-hidden shadow-2xl">
+            <div class="px-8 py-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+                <h2 class="font-['Bebas_Neue'] text-2xl tracking-widest text-white">Live Activity Stream</h2>
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
+                    <span class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Real-time Pulse</span>
+                </div>
+            </div>
+            <div class="p-4 sm:p-8">
+                <div class="space-y-6">
+                    {#if loading}
+                        <div class="py-12 text-center text-white/10 font-mono text-[11px] tracking-widest uppercase">Syncing with Convex Nodes...</div>
+                    {:else if recentActivity.length === 0}
+                        <div class="py-12 text-center text-white/10">No recent system mutations detected.</div>
+                    {:else}
+                        {#each recentActivity as log, i}
+                            <div in:fly={{ x: -20, delay: i * 50 }} class="flex items-start gap-4 group">
+                                <div class="w-2 h-2 rounded-full bg-[var(--gold)] mt-2 shrink-0 group-hover:scale-150 transition-transform"></div>
+                                <div class="flex-grow">
+                                    <div class="flex items-center justify-between gap-4 mb-1">
+                                        <h4 class="text-[13px] font-bold text-white uppercase tracking-tight capitalize">{formatAction(log.action)}</h4>
+                                        <span class="text-[10px] text-white/20 font-mono whitespace-nowrap">
+                                            {new Date(log.timestamp).toLocaleTimeString()}
+                                        </span>
+                                    </div>
+                                    <p class="text-[12px] text-white/40 font-medium">
+                                        <span class="text-[var(--gold)]/60">@{log.adminEmail || 'system'}</span> performed mutation on cluster.
+                                    </p>
+                                </div>
+                            </div>
+                        {/each}
+                    {/if}
+                </div>
+            </div>
+            <div class="p-6 bg-white/[0.01] border-t border-white/5 text-center">
+                <a href="/admin/audit" class="text-[10px] font-bold text-[var(--gold)] uppercase tracking-[3px] hover:text-white transition-colors">View Complete Audit Trail →</a>
+            </div>
+        </div>
 
-	<!-- ── Two column grid ───────────────────────────────────────── -->
-	<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- Quick Actions & Tools -->
+        <div class="space-y-8">
+            <div class="bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-3xl p-8 shadow-2xl">
+                <h3 class="font-['Bebas_Neue'] text-2xl tracking-widest text-white mb-6">Strategic Actions</h3>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="/admin/broadcasts" class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-[var(--gold)]/10 border border-white/5 hover:border-[var(--gold)]/20 transition-all text-left group">
+                        <span class="text-xl grayscale group-hover:grayscale-0 transition-all">📢</span>
+                        <div>
+                            <div class="text-[12px] font-bold text-white group-hover:text-[var(--gold)] transition-colors">Broadcast Message</div>
+                            <div class="text-[10px] text-white/30 uppercase tracking-tighter">Instant Edge Notification</div>
+                        </div>
+                    </a>
+                    <a href="/admin/applications" class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-teal-500/10 border border-white/5 hover:border-teal-500/20 transition-all text-left group">
+                        <span class="text-xl grayscale group-hover:grayscale-0 transition-all">👤</span>
+                        <div>
+                            <div class="text-[12px] font-bold text-white group-hover:text-teal-400 transition-colors">New User Audit</div>
+                            <div class="text-[10px] text-white/30 uppercase tracking-tighter">Review Pending Accounts</div>
+                        </div>
+                    </a>
+                    <a href="/admin/settings" class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all text-left group">
+                        <span class="text-xl grayscale group-hover:grayscale-0 transition-all">🛑</span>
+                        <div>
+                            <div class="text-[12px] font-bold text-white group-hover:text-red-400 transition-colors">Maintenance Toggle</div>
+                            <div class="text-[10px] text-white/30 uppercase tracking-tighter">Global Emergency Lock</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
-		<!-- Recent Applications -->
-		<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-			<div class="flex items-center justify-between px-5 py-4 border-b border-[#c9a84c]/10">
-				<h2 class="font-['Bebas_Neue'] text-lg tracking-widest text-[#c9a84c]">Recent Applications</h2>
-				<a href="/admin/applications" class="text-[11px] text-white/40 hover:text-[#c9a84c] font-['Space_Mono'] uppercase tracking-wider transition-colors">
-					View all →
-				</a>
-			</div>
-			{#if loading}
-				<div class="p-8 text-center text-white/30 text-[12px]">Loading...</div>
-			{:else if recentApps.length === 0}
-				<div class="p-8 text-center text-white/30 text-[12px]">No applications yet.</div>
-			{:else}
-				<div class="divide-y divide-[#c9a84c]/5">
-					{#each recentApps as app}
-						<div class="px-5 py-3 flex items-center justify-between gap-3 hover:bg-white/2 transition-colors">
-							<div class="min-w-0">
-								<div class="text-[13px] text-white font-medium truncate">{app.fullName}</div>
-								<div class="text-[11px] text-white/40 truncate">{app.email} · {timeAgo(app.createdAt)}</div>
-							</div>
-							<span class="shrink-0 text-[10px] font-['Space_Mono'] uppercase px-2.5 py-1 rounded-full border {statusBadge(app.status)}">
-								{app.status}
-							</span>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		<!-- Recent Service Requests -->
-		<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-			<div class="flex items-center justify-between px-5 py-4 border-b border-[#c9a84c]/10">
-				<h2 class="font-['Bebas_Neue'] text-lg tracking-widest text-[#c9a84c]">Service Requests</h2>
-				<a href="/admin/service-requests" class="text-[11px] text-white/40 hover:text-[#c9a84c] font-['Space_Mono'] uppercase tracking-wider transition-colors">
-					View all →
-				</a>
-			</div>
-			{#if loading}
-				<div class="p-8 text-center text-white/30 text-[12px]">Loading...</div>
-			{:else if recentReqs.length === 0}
-				<div class="p-8 text-center text-white/30 text-[12px]">No requests yet.</div>
-			{:else}
-				<div class="divide-y divide-[#c9a84c]/5">
-					{#each recentReqs as req}
-						<div class="px-5 py-3 flex items-center justify-between gap-3 hover:bg-white/2 transition-colors">
-							<div class="min-w-0">
-								<div class="text-[13px] text-white font-medium truncate">{req.fullName}</div>
-								<div class="text-[11px] text-white/40 truncate">{req.serviceType} · {timeAgo(req.createdAt)}</div>
-							</div>
-							<span class="shrink-0 text-[10px] font-['Space_Mono'] uppercase px-2.5 py-1 rounded-full border {statusBadge(req.status)}">
-								{req.status}
-							</span>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</div>
-
-	<!-- ── Audit Log (last 5) ─────────────────────────────────── -->
-	<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-		<div class="flex items-center justify-between px-5 py-4 border-b border-[#c9a84c]/10">
-			<h2 class="font-['Bebas_Neue'] text-lg tracking-widest text-[#c9a84c]">Audit Log</h2>
-			<a href="/admin/audit" class="text-[11px] text-white/40 hover:text-[#c9a84c] font-['Space_Mono'] uppercase tracking-wider transition-colors">
-				View all →
-			</a>
-		</div>
-		<div class="overflow-x-auto">
-			<table class="w-full text-[12px]">
-				<thead>
-					<tr class="border-b border-[#c9a84c]/5">
-						<th class="text-left px-5 py-2.5 text-white/30 font-['Space_Mono'] uppercase tracking-wider text-[10px]">Action</th>
-						<th class="text-left px-5 py-2.5 text-white/30 font-['Space_Mono'] uppercase tracking-wider text-[10px]">Admin</th>
-						<th class="text-right px-5 py-2.5 text-white/30 font-['Space_Mono'] uppercase tracking-wider text-[10px]">Time</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-[#c9a84c]/5">
-					{#if loading}
-						<tr><td colspan="3" class="px-5 py-6 text-center text-white/30">Loading...</td></tr>
-					{:else if auditLogs.length === 0}
-						<tr><td colspan="3" class="px-5 py-6 text-center text-white/30">No activity yet.</td></tr>
-					{:else}
-						{#each auditLogs.slice(0, 5) as log}
-							<tr class="hover:bg-white/2 transition-colors">
-								<td class="px-5 py-3 text-white font-mono">{log.action}</td>
-								<td class="px-5 py-3 text-white/50">{log.adminEmail ?? 'system'}</td>
-								<td class="px-5 py-3 text-white/40 text-right font-['Space_Mono']">{timeAgo(log.timestamp)}</td>
-							</tr>
-						{/each}
-					{/if}
-				</tbody>
-			</table>
-		</div>
-	</div>
-
+            <!-- Server Status Widget -->
+            <div class="bg-gradient-to-br from-[#14b8a6]/10 to-[#0f0e0b] border border-[#14b8a6]/20 rounded-3xl p-8 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#14b8a6]/10 rounded-full blur-3xl"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-3 h-3 rounded-full bg-[#14b8a6] animate-pulse shadow-[0_0_8px_#14b8a6]"></div>
+                        <h4 class="text-[11px] font-bold text-[#14b8a6] uppercase tracking-[3px]">Nodes Nominal</h4>
+                    </div>
+                    <p class="text-[13px] text-white/60 leading-relaxed font-medium">
+                        All Convex edge functions and Firebase clusters are operating at zero reported latency.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

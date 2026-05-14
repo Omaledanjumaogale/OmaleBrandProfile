@@ -2,6 +2,7 @@
 	import { convex, getSessionId } from '$lib/convex';
 	import { api } from '../../../convex/_generated/api';
 	import { ui } from '$lib/stores/ui';
+	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
 	// ── Form state ───────────────────────────────────────────────────
 	let step = $state(1);
@@ -100,6 +101,8 @@
 		step = Math.max(step - 1, 1);
 	}
 
+	import { currentUser } from '$lib/stores/auth';
+
 	// ── Sanitize ─────────────────────────────────────────────────────
 	const sanitize = (str: string) => str.replace(/<[^>]*>?/gm, '').trim();
 
@@ -117,7 +120,8 @@
 			);
 			await convex.mutation(api.functions.submitApplicationWorkflow, {
 				...clean as any,
-				sessionId: getSessionId()
+				sessionId: getSessionId(),
+				firebaseUid: $currentUser?.uid
 			});
 			submitted = true;
 			ui.success('Your application was submitted! We\'ll contact you within 3–5 business days.');
@@ -161,8 +165,9 @@
 		{:else}
 			<!-- ── Header ────────────────────────────────────────── -->
 			<div class="mb-10 text-center">
-				<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-[var(--gold)] mb-4">
+				<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-[var(--gold)] mb-4 flex items-center justify-center gap-2">
 					I-AM Network — Application Form
+					<Tooltip text="The Impact Ambassador Model (I-AM) is a strategic initiative to empower 10 million Nigerian youths through technology." position="right" />
 				</div>
 				<h2 class="font-['Bebas_Neue'] text-[clamp(32px,6vw,72px)] tracking-[2px] text-[var(--text)] leading-[0.9] mb-4">
 					Join the <span class="text-[var(--gold)]">Elite Network</span>

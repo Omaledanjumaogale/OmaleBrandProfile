@@ -6,13 +6,17 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import BottomNav from '$lib/components/BottomNav.svelte';
 	import ServiceRequestModal from '$lib/components/ServiceRequestModal.svelte';
-	import Toast from '$lib/components/ui/Toast.svelte';
+	import ToastProvider from '$lib/components/ui/ToastProvider.svelte';
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
 	import PageLoader from '$lib/components/ui/PageLoader.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import { theme } from '$lib/stores/ui';
 	import { initAuth } from '$lib/stores/auth';
 
-	let { children } = $props();
+	let { data, children } = $props();
+
+	// Derived SEO data from page data — allows child pages to override layout metadata
+	const seo = $derived(data.seo);
 
 	// ── Scroll-reveal observer ──────────────────────────────────────
 	let revealObserver: IntersectionObserver | null = null;
@@ -37,13 +41,26 @@
 		);
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		// Initialise theme from localStorage / system preference
 		theme.init();
 		setupRevealObserver();
 		// Initialise Firebase Auth — subscribes to auth state changes
 		// and syncs ID token to Convex for authenticated backend calls
 		const unsubscribeAuth = initAuth();
+
+		// ── Progressive Web Push Hooks ──────────────────────────────
+		if ('serviceWorker' in navigator && 'PushManager' in window) {
+			try {
+				const registration = await navigator.serviceWorker.register('/service-worker.js', {
+					type: 'module',
+					scope: '/'
+				});
+				console.log('[PWA] Service Worker registered:', registration);
+			} catch (err) {
+				console.error('[PWA] Service Worker registration failed:', err);
+			}
+		}
 
 		// Catch dynamically added .reveal elements
 		const mutObs = new MutationObserver(() => setupRevealObserver());
@@ -73,6 +90,9 @@
 	});
 </script>
 
+<!-- AEO/GEO Optimized Metadata -->
+<SEO meta={seo} />
+
 <div class="min-h-screen flex flex-col bg-[var(--bg)] selection:bg-[var(--gold)] selection:text-[var(--bg)]">
 	<!-- Page transition loader -->
 	<PageLoader />
@@ -96,6 +116,6 @@
 
 	<!-- Service request modal — visitors can request Omale's services -->
 	<ServiceRequestModal />
-	<Toast />
+	<ToastProvider />
 	<BackToTop />
 </div>

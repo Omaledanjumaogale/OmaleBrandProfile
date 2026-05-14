@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { openServiceModal } from '$lib/stores/ui';
+	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
 	const services = [
 		{
@@ -48,8 +49,9 @@
 
 	<div class="max-w-[1200px] mx-auto relative z-10">
 		<div class="text-center mb-16 reveal">
-			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold mb-4">
+			<div class="font-['Space_Mono'] text-[10px] tracking-[4px] uppercase text-gold mb-4 flex items-center justify-center gap-2">
 				Professional Services 🛠️
+				<Tooltip text="Our services bridge the gap between high-level strategy and technical execution." position="right" />
 			</div>
 			<h2 class="font-['Bebas_Neue'] text-[clamp(40px,6vw,84px)] tracking-[2px] leading-[0.9] mb-6">
 				Strategic Solutions.<br /><span class="text-gold">Expert Implementation.</span>

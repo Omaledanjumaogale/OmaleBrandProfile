@@ -1,27 +1,13 @@
 <script lang="ts">
-	const thoughts = [
-		{
-			slug: 'the-agentic-shift',
-			tag: 'Featured Essay ✍️',
-			title: 'The Agentic Shift: Why the Next Decade Belongs to AI-Augmented Founders 🤖',
-			body: 'We are entering the most significant redistribution of productive capacity in human history. AI agents are not tools — they are leverage. And founders who learn to orchestrate them will operate at the velocity of entire teams.',
-			featured: true
-		},
-		{
-			slug: 'emerging-markets-ai-gap',
-			tag: 'Analysis 📊',
-			title: 'Emerging Markets & The AI Access Gap 🌍',
-			body: 'The democratisation of AI is uneven. Without intentional infrastructure investment and localised model training, the gap between AI-enabled and AI-excluded economies will widen dramatically by 2030.',
-			featured: false
-		},
-		{
-			slug: 'building-for-dignity',
-			tag: 'Framework 🏗️',
-			title: 'Building for Dignity: A Sociological Framework for Ethical AI Product Design ⚖️',
-			body: 'Ethical AI is not about compliance checklists. It is about designing systems that preserve human dignity, expand agency, and distribute value fairly across all users — not just the most profitable segment.',
-			featured: false
-		}
-	];
+	import { insights } from '$lib/data/insights';
+	
+	// Display the 3 most recent/significant insights
+	const thoughts = insights.slice(0, 3).map(i => ({
+		slug: i.slug,
+		tag: i.tag,
+		title: i.title,
+		body: i.excerpt
+	}));
 </script>
 
 <section id="thought" class="bg-bg border-t border-border px-6 lg:px-12 py-20">

@@ -71,14 +71,34 @@ export function initAuth(): () => void {
 		await syncConvexToken(firebaseUser);
 
 		if (firebaseUser) {
-			const authUser: AuthUser = {
-				uid:         firebaseUser.uid,
-				email:       firebaseUser.email,
-				displayName: firebaseUser.displayName,
-				photoURL:    firebaseUser.photoURL,
-				role:        undefined // role resolved from Convex
-			};
-			_auth.set({ user: authUser, loading: false, error: null, ready: true });
+			try {
+				// ── Sync with Convex ──
+				// This ensures the Firebase identity exists in the platform database
+				const userData = await (convex as any).mutation("functions:syncUser", {
+					firebaseUid: firebaseUser.uid,
+					email: firebaseUser.email ?? "",
+					name: firebaseUser.displayName ?? "User",
+					image: firebaseUser.photoURL ?? undefined,
+					sessionId: (window as any).omale_session_id
+				});
+
+				// Fetch full user record from Convex for roles/subscription
+				const platformUser = await (convex as any).query("functions:getUserByFirebaseUid", {
+					firebaseUid: firebaseUser.uid
+				});
+
+				const authUser: AuthUser = {
+					uid:         firebaseUser.uid,
+					email:       firebaseUser.email,
+					displayName: firebaseUser.displayName,
+					photoURL:    firebaseUser.photoURL,
+					role:        platformUser?.role ?? 'user'
+				};
+				_auth.set({ user: authUser, loading: false, error: null, ready: true });
+			} catch (err) {
+				console.error('[auth] Sync failed:', err);
+				_auth.update((s) => ({ ...s, loading: false, ready: true }));
+			}
 		} else {
 			_auth.set({ user: null, loading: false, error: null, ready: true });
 		}

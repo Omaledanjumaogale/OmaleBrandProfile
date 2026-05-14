@@ -14,11 +14,12 @@
 	// ── Navigation links ─────────────────────────────────────────────
 	const navLinks = [
 		{ name: 'About',      href: '/#about',        icon: '👤', section: 'about' },
-		{ name: 'Services',   href: '/#services',     icon: '🛠️',  section: 'services' },
+		{ name: 'Services',   href: '/services',      icon: '🛠️',  section: null },
 		{ name: 'Expertise',  href: '/#expertise',    icon: '🧠', section: 'expertise' },
 		{ name: 'Career',     href: '/#career',       icon: '💼', section: 'career' },
 		{ name: 'E-WIN',      href: '/#ecosystem',    icon: '🌍', section: 'ecosystem' },
 		{ name: 'Blog',       href: '/blog',           icon: '✍️',  section: null },
+		{ name: 'Login',      href: '/login',          icon: '🔑', section: null },
 		{ name: 'Apply',      href: '/apply',          icon: '🚀', section: null, cta: true },
 	];
 

@@ -12,7 +12,7 @@
 
 		<!-- Nav links -->
 		<nav aria-label="Footer navigation" class="flex flex-wrap justify-center gap-x-6 gap-y-2">
-			{#each [['/#about','About'],['/#services','Services'],['/#expertise','Expertise'],['/#contact','Contact']] as [href, label]}
+			{#each [['/#about','About'],['/services','Services'],['/#expertise','Expertise'],['/#contact','Contact']] as [href, label]}
 				<a
 					{href}
 					class="text-[10px] tracking-[1.5px] uppercase text-[var(--muted)] hover:text-[var(--gold)] transition-colors duration-200 font-medium min-h-[44px] flex items-center"

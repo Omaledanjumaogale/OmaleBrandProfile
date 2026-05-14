@@ -26,6 +26,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Resolve request
 	const response = await resolve(event);
 
+	// Technical SEO Headers (AEO/GEO Integration)
+	if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard') || pathname.startsWith('/auth')) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+	} else {
+		response.headers.set('X-Robots-Tag', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+	}
+
+	// Detect AI Agent User Agents (Observability)
+	const userAgent = event.request.headers.get('user-agent')?.toLowerCase() || '';
+	const isAIBot = /gptbot|claudebot|perplexitybot|google-extended|anthropic-ai|cohere-ai|applebot-extended/i.test(userAgent);
+	if (isAIBot) {
+		// Potential: Log AI bot access to Convex analytics
+		response.headers.set('X-AI-Bot-Detected', 'true');
+	}
+
 	// Security Headers
 	const secHeaders: Record<string, string> = {
 		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',

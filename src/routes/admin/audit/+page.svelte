@@ -1,141 +1,157 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { convex } from '$lib/convex';
-	import { api } from '../../../../../convex/_generated/api';
+    import { onMount } from 'svelte';
+    import { convex } from '$lib/convex';
+    import { api } from '../../../../convex/_generated/api';
+    import { fade, fly } from 'svelte/transition';
+    import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
-	let logs: any[]  = $state([]);
-	let loading = $state(true);
-	let search  = $state('');
-	let page    = $state(0);
-	const PER_PAGE = 25;
+    let logs: any[] = $state([]);
+    let loading = $state(true);
+    let searchTerm = $state('');
+    let filterAction = $state('all');
 
-	onMount(() => {
-		const unsub = convex.onUpdate(api.functions.getAuditLogs, {}, (data) => {
-			logs = data ?? [];
-			loading = false;
-		});
-		return unsub;
-	});
+    onMount(() => {
+        const unsubscribe = convex.onUpdate(api.functions.getAuditLogs, {}, (data) => {
+            logs = data ?? [];
+            loading = false;
+        });
+        return unsubscribe;
+    });
 
-	const filtered = $derived(() => {
-		if (!search.trim()) return logs;
-		const q = search.toLowerCase();
-		return logs.filter(l =>
-			l.action?.toLowerCase().includes(q) ||
-			l.adminEmail?.toLowerCase().includes(q)
-		);
-	});
+    const filteredLogs = $derived(
+        logs.filter(log => {
+            const matchesSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                 (log.adminEmail && log.adminEmail.toLowerCase().includes(searchTerm.toLowerCase()));
+            const matchesAction = filterAction === 'all' || log.action.startsWith(filterAction);
+            return matchesSearch && matchesAction;
+        })
+    );
 
-	const paginated  = $derived(() => filtered().slice(page * PER_PAGE, (page + 1) * PER_PAGE));
-	const totalPages = $derived(() => Math.ceil(filtered().length / PER_PAGE));
+    function formatTime(ts: number) {
+        return new Date(ts).toLocaleString('en-GB', {
+            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+    }
 
-	const actionColor = (action: string) => {
-		if (action.includes('APPROVED') || action.includes('COMPLETED') || action.includes('UNLOCKED'))
-			return 'text-teal-400';
-		if (action.includes('DECLINED') || action.includes('LOCKED') || action.includes('ARCHIVED'))
-			return 'text-red-400';
-		if (action.includes('SUBMITTED') || action.includes('CONTACTED'))
-			return 'text-blue-400';
-		if (action.includes('ADMIN') || action.includes('ROLE'))
-			return 'text-[#c9a84c]';
-		return 'text-white/60';
-	};
-
-	const actionIcon = (action: string) => {
-		if (action.includes('APPLICATION')) return '📋';
-		if (action.includes('REQUEST'))     return '📥';
-		if (action.includes('USER'))        return '👤';
-		if (action.includes('TASK'))        return '✅';
-		if (action.includes('BROADCAST'))   return '📢';
-		if (action.includes('SETTING'))     return '⚙️';
-		return '🔍';
-	};
-
-	const fmt = (ts: number) => new Date(ts).toLocaleString('en-GB', {
-		day: '2-digit', month: 'short', year: 'numeric',
-		hour: '2-digit', minute: '2-digit'
-	});
-
-	$effect(() => { search; page = 0; });
+    function getActionColor(action: string) {
+        if (action.includes('FAILED')) return 'text-red-500';
+        if (action.includes('SUBMIT')) return 'text-teal-400';
+        if (action.includes('BROADCAST')) return 'text-amber-400';
+        return 'text-white/70';
+    }
 </script>
 
-<svelte:head><title>Audit Log — Admin | E-WIN</title></svelte:head>
+<svelte:head>
+    <title>Audit Logs — Admin Portal | E-WIN</title>
+</svelte:head>
 
-<div class="space-y-5 max-w-[1100px] mx-auto">
-	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-		<div>
-			<h1 class="font-['Bebas_Neue'] text-3xl tracking-widest text-white">Audit Log</h1>
-			<p class="text-[11px] text-white/40 font-['Space_Mono'] mt-0.5">
-				{logs.length} events recorded · showing last 100
-			</p>
-		</div>
-		<input type="search" bind:value={search} placeholder="Filter by action or admin..."
-			class="w-full sm:w-72 bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-xl px-4 py-2.5
-			       text-[13px] text-white placeholder:text-white/30 focus:border-[#c9a84c]/50 outline-none transition-colors" />
-	</div>
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <h1 class="font-['Bebas_Neue'] text-4xl tracking-widest text-white">System Audit Trail</h1>
+                <Tooltip text="Immutable, real-time record of every significant administrative action and system mutation." position="right" />
+            </div>
+            <p class="text-[12px] text-white/40 font-['Space_Mono'] uppercase tracking-widest">
+                Forensic visibility into platform operations
+            </p>
+        </div>
 
-	<!-- Legend -->
-	<div class="flex flex-wrap gap-3 text-[11px] font-['Space_Mono']">
-		{#each [['teal-400','Approved / Completed'],['red-400','Declined / Locked'],['blue-400','Submitted / Contacted'],['[#c9a84c]','Role / Admin'],['white/40','System']] as [col, label]}
-			<span class="flex items-center gap-1.5 text-{col}">
-				<span class="w-2 h-2 rounded-full bg-{col}"></span>{label}
-			</span>
-		{/each}
-	</div>
+        <div class="flex items-center gap-4">
+            <button 
+                aria-label="Export audit logs as CSV"
+                class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
+            >
+                Export CSV
+            </button>
+        </div>
+    </div>
 
-	<div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-2xl overflow-hidden">
-		<div class="overflow-x-auto">
-			<table class="w-full text-[12px]">
-				<thead>
-					<tr class="border-b border-[#c9a84c]/10">
-						{#each ['','Action','Admin','Details','Timestamp'] as col}
-							<th class="text-left px-4 py-3 text-white/30 font-['Space_Mono'] text-[10px] uppercase tracking-wider whitespace-nowrap">
-								{col}
-							</th>
-						{/each}
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-[#c9a84c]/5">
-					{#if loading}
-						<tr><td colspan="5" class="px-4 py-10 text-center text-white/30">Loading audit log...</td></tr>
-					{:else if paginated().length === 0}
-						<tr><td colspan="5" class="px-4 py-10 text-center text-white/30">No matching events.</td></tr>
-					{:else}
-						{#each paginated() as log}
-							<tr class="hover:bg-white/2 transition-colors">
-								<td class="px-4 py-3 text-lg w-8">{actionIcon(log.action)}</td>
-								<td class="px-4 py-3 font-mono font-medium {actionColor(log.action)}">{log.action}</td>
-								<td class="px-4 py-3 text-white/50">{log.adminEmail ?? 'system'}</td>
-								<td class="px-4 py-3 text-white/30 max-w-[200px] truncate">
-									{#if log.payload && typeof log.payload === 'object'}
-										{JSON.stringify(log.payload).slice(0, 60)}{JSON.stringify(log.payload).length > 60 ? '…' : ''}
-									{:else}
-										—
-									{/if}
-								</td>
-								<td class="px-4 py-3 text-white/30 font-['Space_Mono'] whitespace-nowrap">{fmt(log.timestamp)}</td>
-							</tr>
-						{/each}
-					{/if}
-				</tbody>
-			</table>
-		</div>
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl px-4 py-2 flex items-center gap-3">
+            <span aria-hidden="true" class="text-white/20">🔍</span>
+            <input 
+                type="text" 
+                bind:value={searchTerm}
+                aria-label="Search audit actions or administrators"
+                placeholder="Search action or admin..." 
+                class="bg-transparent border-none outline-none text-[13px] text-white/80 w-full placeholder:text-white/20"
+            />
+        </div>
 
-		<!-- Pagination -->
-		{#if totalPages() > 1}
-			<div class="flex items-center justify-between px-5 py-3 border-t border-[#c9a84c]/10">
-				<button type="button" onclick={() => page = Math.max(0, page - 1)} disabled={page === 0}
-					class="px-4 py-2 min-h-[36px] text-[11px] font-['Space_Mono'] uppercase tracking-wider border border-[#c9a84c]/15 text-white/50 rounded-xl hover:border-[#c9a84c]/30 disabled:opacity-30 transition-all active:scale-95">
-					← Prev
-				</button>
-				<span class="text-[11px] font-['Space_Mono'] text-white/30">
-					Page {page + 1} of {totalPages()}
-				</span>
-				<button type="button" onclick={() => page = Math.min(totalPages() - 1, page + 1)} disabled={page >= totalPages() - 1}
-					class="px-4 py-2 min-h-[36px] text-[11px] font-['Space_Mono'] uppercase tracking-wider border border-[#c9a84c]/15 text-white/50 rounded-xl hover:border-[#c9a84c]/30 disabled:opacity-30 transition-all active:scale-95">
-					Next →
-				</button>
-			</div>
-		{/if}
-	</div>
+        <select 
+            bind:value={filterAction}
+            aria-label="Filter audit logs by action category"
+            class="bg-[#0f0e0b] border border-white/5 rounded-2xl px-4 py-3 text-[13px] text-white/80 outline-none focus:border-[#c9a84c]/40 transition-all appearance-none cursor-pointer"
+        >
+            <option value="all">All Actions</option>
+            <option value="SYSTEM">System Events</option>
+            <option value="APPLICATION">Application Events</option>
+            <option value="SERVICE">Service Events</option>
+            <option value="BROADCAST">Broadcast Events</option>
+        </select>
+    </div>
+
+    <!-- Log Table -->
+    <div class="bg-[#0f0e0b] border border-[#c9a84c]/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-white/5 bg-white/[0.02]">
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Timestamp</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Action Event</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Initiator</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Payload Snippet</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {#if loading}
+                        <tr><td colspan="4" class="px-6 py-20 text-center text-white/20">Establishing secure connection to Convex...</td></tr>
+                    {:else if filteredLogs.length === 0}
+                        <tr><td colspan="4" class="px-6 py-20 text-center text-white/20">No matching logs found in the current audit window.</td></tr>
+                    {:else}
+                        {#each filteredLogs as log, i}
+                            <tr 
+                                in:fly={{ x: -10, delay: i * 30, duration: 300 }}
+                                class="hover:bg-white/[0.02] transition-colors group"
+                            >
+                                <td class="px-6 py-4 text-[12px] text-white/40 font-['Space_Mono']">
+                                    {formatTime(log.timestamp)}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-[13px] font-bold font-mono tracking-tight {getActionColor(log.action)}">
+                                        {log.action}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center text-[10px]">👤</div>
+                                        <span class="text-[13px] text-white/70">{log.adminEmail || 'System'}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="max-w-[300px] truncate text-[11px] text-white/30 font-mono bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
+                                        {JSON.stringify(log.payload)}
+                                    </div>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer Stats -->
+    <div class="flex items-center justify-between px-6 py-4 bg-white/2 rounded-2xl border border-white/5">
+        <p class="text-[11px] text-white/30">
+            Showing <strong class="text-white/60">{filteredLogs.length}</strong> entries from the last 30 days.
+        </p>
+        <div class="flex gap-2">
+            <button class="p-2 text-white/20 hover:text-white transition-colors" disabled>←</button>
+            <button class="p-2 text-white/20 hover:text-white transition-colors" disabled>→</button>
+        </div>
+    </div>
 </div>

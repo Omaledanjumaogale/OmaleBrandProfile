@@ -4,20 +4,36 @@ Enterprise-grade personal branding and workforce innovation platform for **Danju
 
 ## Tech Stack 🚀
 
-- **Framework**: SvelteKit 5 (Svelte 5)
+- **Framework**: SvelteKit 5 (Svelte 5) with Runes
 - **Styling**: Tailwind CSS v4
-- **Backend**: Convex (Real-time DB & Functions)
-- **Auth**: Firebase Authentication
+- **Backend**: Hardened Convex Infrastructure
+- **Auth**: Firebase Authentication with ACID-compliant session tracking
+- **Push**: Real-time Web Push Notifications via Service Worker
 - **Deployment**: Cloudflare Pages
-- **Icons**: Colorful Emoji-based Icons ✨
 
-## Features 🛠️
+## Core Infrastructure Hardening (Convex) 🛡️
 
-- **Elite Landing Page**: High-performance, SEO-optimized personal brand portal.
-- **E-WIN Ecosystem**: Integration with 6 core platforms (E-Deals, AkademyX, DealxHire, etc.).
-- **User Dashboard**: Secure portal for workforce participants to track earnings and projects.
-- **Admin Command Center**: Advanced infrastructure management and system audit tools.
-- **Mobile Responsive**: 100% responsive design with global anti-overflow protection.
+- **Token-Bucket Rate Limiter**: Sophisticated ACID-compliant logic gating generic reads and critical writes to prevent API abuse.
+- **Distributed Session Bindings**: Robust tracking logic tying heartbeat signals to client lifecycles mapping closely against Firebase UIDs.
+- **Continuous Zod Validation**: 100% type-safe edge validators guaranteeing schema enforcement prior to database modification.
+- **Zero-Latency Lifecycle Triggers**: Emulated SQL row-level auditing triggers for high-sensitivity operations tracking.
+- **Autonomous Garbage Collection**: Auto-purging mechanics rigorously deleting obsolete sessions to prevent DB bloat.
+
+## UI/UX Upgrades (Svelte 5) ✨
+
+- **Global Reactive Toasts**: Unified notification system using Svelte 5 Runes, replacing redundant HTML blocks for clean user feedback.
+- **Informational Tooltips**: Premium trailing tooltip mechanic with knowledge icons systematically injected across the Dashboard.
+- **Progressive Web Push**: Fully functional PWA hooks linking navigator.serviceWorker to PushManager for real-time market resolution deliveries.
+- **AEO/GEO Optimization**: Advanced metadata architecture with JSON-LD @graph schemas, `llms.txt` indexing, and dynamic sitemap generation for AI search discovery.
+
+## Super Admin Command Center (v2.0) 🕹️
+
+- **Real-Time System Broadcasts**: Instant global notification deployment via Convex WebSockets, enabling emergency alerts and maintenance schedules.
+- **Enterprise Audit Logging**: High-fidelity forensic trail of all administrative actions, from credential verification to system-wide transmissions.
+- **Advanced Data Management**: Modular dashboards for managing I-AM applications, service requests, and task boards with zero-latency updates.
+- **Secure Session Gating**: Triple-layer authentication combining Firebase, Convex environment secrets, and cryptographic session signing.
+- **WCAG 2.2 AA+ Compliance**: Systematically remediated all administrative routes for perfect accessibility, including ARIA semantic roles, keyboard-navigable tooltips, and screen-reader optimized interfaces.
+- **Enterprise Build Hardening**: Optimized Vite/SvelteKit compilation pipeline for Cloudflare Edge, resolving complex module resolution issues and ensuring 100% build reliability.
 
 ## Getting Started 🏗️
 
@@ -38,15 +54,6 @@ Enterprise-grade personal branding and workforce innovation platform for **Danju
    ```bash
    pnpm build
    ```
-
-## Architecture 🏗️
-
-The application follows a modular architecture:
-- `src/lib/components`: Reusable UI components (Hero, Ticker, etc.)
-- `src/lib/components/dashboard`: Dashboard-specific layouts and cards
-- `src/lib/stores`: Svelte stores for Auth and Global State
-- `convex/`: Backend schema and serverless functions
-- `src/routes/`: File-based routing for Landing, Dashboards, and Portals
 
 ---
 © 2026 Danjuma Omale-Ogale · E-WIN Project. Built for Impact. 🌍
