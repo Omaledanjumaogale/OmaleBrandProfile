@@ -47,10 +47,10 @@
 
 			{#if registrationOpen}
 				<a
-					href="#contact"
+					href="/apply"
 					class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 bg-[var(--gold)] text-[var(--bg)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold2)] hover:translate-x-1 transition-all shadow-[var(--shadow-gold)] group min-h-[48px]"
 				>
-					Submit Application
+					Apply Now
 					<span class="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
 				</a>
 			{:else}
@@ -61,7 +61,7 @@
 					<p class="text-[13px] text-[var(--muted2)] leading-relaxed mb-4">
 						We are processing the current intake. Your application will be placed in our priority queue.
 					</p>
-					<a href="#contact" class="inline-flex items-center gap-2 px-8 py-3 border border-[var(--gold)] text-[var(--gold)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold)] hover:text-[var(--bg)] transition-all min-h-[44px]">
+					<a href="/apply" class="inline-flex items-center gap-2 px-8 py-3 border border-[var(--gold)] text-[var(--gold)] text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-[var(--gold)] hover:text-[var(--bg)] transition-all min-h-[44px]">
 						Join the Queue
 					</a>
 				</div>

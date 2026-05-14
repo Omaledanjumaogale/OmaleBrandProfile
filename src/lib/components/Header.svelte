@@ -19,7 +19,9 @@
 		{ name: 'Career',     href: '/#career',       icon: '💼', section: 'career' },
 		{ name: 'E-WIN',      href: '/#ecosystem',    icon: '🌍', section: 'ecosystem' },
 		{ name: 'Blog',       href: '/blog',           icon: '✍️',  section: null },
+		{ name: 'Apply',      href: '/apply',          icon: '🚀', section: null, cta: true },
 	];
+
 
 	// ── Open / close helpers ─────────────────────────────────────────
 	function openMenu() {
@@ -233,24 +235,43 @@
 			Sections
 		</p>
 		{#each navLinks as link}
-			<a
-				href={link.href}
-				onclick={(e) => handleNavClick(e, link.href, link.section)}
-				class="font-['Bebas_Neue'] text-xl tracking-[2px]
-				       text-[var(--text)] hover:text-[var(--gold)]
-				       transition-all duration-200
-				       flex items-center gap-3 group
-				       px-3 py-2 rounded-xl
-				       hover:bg-[var(--gold)]/5
-				       min-h-[48px]
-				       active:scale-[0.98] active:bg-[var(--gold)]/10"
-			>
-				<span class="text-xl group-hover:scale-110 transition-transform duration-200 w-8 text-center" aria-hidden="true">
-					{link.icon}
-				</span>
-				{link.name}
-			</a>
+			{#if link.cta}
+				<a
+					href={link.href}
+					onclick={(e) => handleNavClick(e, link.href, link.section)}
+					class="font-['Bebas_Neue'] text-xl tracking-[2px]
+					       bg-[var(--gold)] text-[var(--bg)]
+					       transition-all duration-200
+					       flex items-center justify-center gap-3
+					       px-3 py-2 rounded-xl
+					       hover:bg-[var(--gold2)]
+					       min-h-[48px] mt-2
+					       active:scale-[0.98] shadow-lg shadow-[var(--gold)]/20"
+				>
+					<span class="text-xl w-8 text-center" aria-hidden="true">{link.icon}</span>
+					{link.name}
+				</a>
+			{:else}
+				<a
+					href={link.href}
+					onclick={(e) => handleNavClick(e, link.href, link.section)}
+					class="font-['Bebas_Neue'] text-xl tracking-[2px]
+					       text-[var(--text)] hover:text-[var(--gold)]
+					       transition-all duration-200
+					       flex items-center gap-3 group
+					       px-3 py-2 rounded-xl
+					       hover:bg-[var(--gold)]/5
+					       min-h-[48px]
+					       active:scale-[0.98] active:bg-[var(--gold)]/10"
+				>
+					<span class="text-xl group-hover:scale-110 transition-transform duration-200 w-8 text-center" aria-hidden="true">
+						{link.icon}
+					</span>
+					{link.name}
+				</a>
+			{/if}
 		{/each}
+
 	</nav>
 
 	<!-- Connect CTA -->

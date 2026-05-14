@@ -10,6 +10,7 @@
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
 	import PageLoader from '$lib/components/ui/PageLoader.svelte';
 	import { theme } from '$lib/stores/ui';
+	import { initAuth } from '$lib/stores/auth';
 
 	let { children } = $props();
 
@@ -40,6 +41,9 @@
 		// Initialise theme from localStorage / system preference
 		theme.init();
 		setupRevealObserver();
+		// Initialise Firebase Auth — subscribes to auth state changes
+		// and syncs ID token to Convex for authenticated backend calls
+		const unsubscribeAuth = initAuth();
 
 		// Catch dynamically added .reveal elements
 		const mutObs = new MutationObserver(() => setupRevealObserver());
@@ -53,6 +57,7 @@
 		}, 3000);
 
 		return () => {
+			unsubscribeAuth();
 			revealObserver?.disconnect();
 			mutObs.disconnect();
 			clearTimeout(fallback);
