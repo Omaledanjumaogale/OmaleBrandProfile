@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { user } from '$lib/stores/auth';
-	import { auth } from '$lib/services/firebase';
+	import { currentUser, logout } from '$lib/stores/auth';
 	import { goto } from '$app/navigation';
 
 	let { title = 'Dashboard 📊', isAdmin = false, children } = $props();
@@ -21,9 +19,8 @@
 	]);
 
 	const handleLogout = async () => {
-		if (!auth) return;
 		try {
-			await auth.signOut();
+			await logout();
 			goto('/');
 		} catch (e) {
 			console.error('Logout failed:', e);
@@ -77,7 +74,7 @@
 			<div class="flex items-center gap-6">
 				<div class="hidden sm:flex flex-col items-end">
 					<span class="text-xs font-bold text-text uppercase tracking-widest">Danjuma O.</span>
-					<span class="text-[10px] text-gold font-['Space_Mono']">{isAdmin ? 'ADMIN PORTAL' : 'ELITE MEMBER'}</span>
+					<span class="text-[10px] text-gold font-['Space_Mono']">{$currentUser?.email ?? (isAdmin ? 'ADMIN PORTAL' : 'ELITE MEMBER')}</span>
 				</div>
 				<div class="w-10 h-10 rounded-full bg-gold-dim border border-gold-line flex items-center justify-center text-xl shadow-lg shadow-gold/10">
 					👤

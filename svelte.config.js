@@ -13,7 +13,12 @@ const config = {
 			return isExternalLibrary ? undefined : true;
 		}
 	},
-	kit: { adapter: adapter() }
+	kit: { 
+		adapter: adapter(),
+		alias: {
+			$convex: './convex'
+		}
+	}
 };
 
 export default config;

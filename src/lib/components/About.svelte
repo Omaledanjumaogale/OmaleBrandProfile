@@ -1,8 +1,9 @@
 <script lang="ts">
+	import Counter from './ui/Counter.svelte';
 	const stats = [
-		{ num: '10M+', label: 'Youth Targeted 🎯' },
-		{ num: '25+', label: 'Platforms Live & Coming Soon 💻' },
-		{ num: '∞', label: 'Impact Potential 🚀' }
+		{ num: 10, suffix: 'M+', label: 'Youth Targeted 🎯' },
+		{ num: 25, suffix: '+', label: 'Platforms Live & Coming Soon 💻' },
+		{ num: 0, suffix: '∞', label: 'Impact Potential 🚀' }
 	];
 
 	const creds = [
@@ -39,7 +40,7 @@
 				{#each stats as stat}
 					<div class="bg-bg p-6 text-center border-b sm:border-b-0 border-border last:border-b-0">
 						<div class="font-['Bebas_Neue'] text-[36px] sm:text-[44px] text-gold tracking-widest leading-none">
-							{stat.num}
+							<Counter target={stat.num} suffix={stat.suffix} />
 						</div>
 						<div class="text-sm md:text-[9px] tracking-[2px] uppercase text-muted mt-[6px]">
 							{stat.label}
@@ -50,13 +51,13 @@
 		</div>
 
 		<div class="reveal delay-200">
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				I am <strong>Danjuma Umar Omale Ogale</strong> — a sociologist turned AI developer, business strategist, and serial founder operating from Abuja, Nigeria. My academic foundation at Ahmadu Bello University Zaria in Sociology and Law Enforcement gave me a deep lens through which I read systems, power, and human behaviour. 🇳🇬
 			</p>
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				That lens became the blueprint for the <strong>E-WIN Project</strong> — Elite Workforce Impact Nigeria — a decentralised ecosystem designed to upskill unemployed youth, create sustainable earning pathways, and disrupt the traditional service sector through technology, AI, and collaborative networking. 🚀
 			</p>
-			<p class="text-sm md:text-[15px] leading-[1.85] text-muted2 font-light mb-5">
+			<p class="text-sm md:text-[15px] leading-[1.85] text-text font-normal mb-5">
 				From aviation management to radio administration, from community liaison to prompt engineering, I have operated at the intersection of institutions and innovation — always with one guiding north star: <strong>empower people from within the system, not from outside it.</strong> 🏗️
 			</p>
 			<div class="flex flex-col gap-3 mt-8">

@@ -1,163 +1,139 @@
 <script lang="ts">
-	import { auth } from '$lib/services/firebase';
-	import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-	import { goto } from '$app/navigation';
-	import { user } from '$lib/stores/auth';
-	import { onMount } from 'svelte';
-	import { env } from '$env/dynamic/public';
+    import { convex } from '$lib/convex';
+    import { api } from '$convex/_generated/api';
+    import { goto } from '$app/navigation';
+    import { ui } from '$lib/stores/ui';
+    import { fade, fly } from 'svelte/transition';
 
-	let email = $state('');
-	let password = $state('');
-	let loading = $state(false);
-	let error = $state('');
-	let showReset = $state(false);
-	let resetSuccess = $state(false);
+    let email = $state('');
+    let password = $state('');
+    let loading = $state(false);
+    let error = $state('');
 
-	// Super Admin Hardlocked Credentials from Dynamic Env to prevent build failure
-	const SUPER_ADMIN_EMAIL = env.PUBLIC_SUPER_ADMIN_EMAIL;
-	const SUPER_ADMIN_PASSWORD = env.PUBLIC_SUPER_ADMIN_PASSWORD;
+    async function handleLogin(e: Event) {
+        e.preventDefault();
+        if (loading) return;
 
-	async function handleLogin() {
-		loading = true;
-		error = '';
-		
-		try {
-			// Hardlocked Super Admin check
-			if (email.toLowerCase() === SUPER_ADMIN_EMAIL?.toLowerCase() && password === SUPER_ADMIN_PASSWORD) {
-				// In a real enterprise app, you'd set a secure cookie/session here
-				// For now, we'll leverage the existing auth state or a local override
-				localStorage.setItem('is_super_admin', 'true');
-				goto('/admin');
-				return;
-			}
+        loading = true;
+        error = '';
 
-			if (!auth) throw new Error("Auth service unavailable");
-			await signInWithEmailAndPassword(auth, email, password);
-		} catch (e: any) {
-			console.error('Login error:', e);
-			error = e.message || 'Invalid credentials or access denied.';
-		} finally {
-			loading = false;
-		}
-	}
+        try {
+            const result = await convex.mutation(api.admin.verifyAdminCredentials, {
+                email,
+                password
+            });
 
-	async function handleReset() {
-		if (!auth || !email) return;
-		loading = true;
-		error = '';
-		try {
-			await sendPasswordResetEmail(auth, email);
-			resetSuccess = true;
-			showReset = false;
-		} catch (e: any) {
-			error = e.message || 'Failed to send reset email.';
-		} finally {
-			loading = false;
-		}
-	}
+            if (result.success && result.token) {
+                // Set the session cookie via a client-side trick or a simple fetch to an internal API
+                // For simplicity and to follow the user request of "redirection if incorrect", 
+                // we'll use document.cookie for this session-based auth.
+                document.cookie = `admin_session=${result.token}; path=/; max-age=86400; SameSite=Strict`;
+                
+                ui.success("Welcome back, Super Admin.", "Access Granted");
+                goto('/admin');
+            } else {
+                error = result.message || "Invalid credentials.";
+                ui.error(error, "Access Denied");
+                // User request: "only when the user doesnt have the correct admin login details that they will be redirected to the homepage"
+                setTimeout(() => {
+                    goto('/');
+                }, 2000);
+            }
+        } catch (e: any) {
+            error = "System error during authentication.";
+            ui.error(error);
+        } finally {
+            loading = false;
+        }
+    }
 </script>
 
 <svelte:head>
-	<title>Admin Portal - Secure E-WIN Project Management | Omale Ogale ProfileX</title>
-	<meta name="description" content="Access the E-WIN Project administrative portal to manage ecosystem operations, verify participants, and oversee workforce distribution. Secure login for authorized staff." />
-	
-	<!-- JSON-LD Schema Markup -->
-	<script type="application/ld+json">
-	{
-		"@context": "https://schema.org",
-		"@type": "WebApplication",
-		"name": "E-WIN Admin Portal",
-		"url": "https://danjumaomaleogale.ewinproject.org/admin/login",
-		"description": "Secure administrative access for the E-WIN Project ecosystem management.",
-		"applicationCategory": "BusinessApplication",
-		"operatingSystem": "All",
-		"offers": {
-			"@type": "Offer",
-			"price": "0",
-			"priceCurrency": "USD"
-		}
-	}
-	</script>
+    <title>Super Admin Login | E-WIN Platform</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-bg px-6 py-12 relative overflow-hidden">
-	<!-- Background grid -->
-	<div class="absolute inset-0 bg-[linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] bg-[size:64px_64px] opacity-20 pointer-events-none"></div>
-	
-	<div class="w-full max-w-[450px] relative z-10">
-		<div class="text-center mb-10">
-			<a href="/" class="text-3xl sm:text-4xl font-['Bebas_Neue'] tracking-[4px] text-text mb-4 inline-block">
-				<span class="text-gold italic font-normal">O</span>MALE OGALE
-			</a>
-			<div class="font-['Space_Mono'] text-sm md:text-[10px] tracking-[4px] uppercase text-gold">Admin Portal Access 🛡️</div>
-		</div>
+<div class="min-h-screen bg-[#0b0a07] flex items-center justify-center px-6 py-12 relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--gold)] rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--gold)] rounded-full blur-[120px]"></div>
+    </div>
 
-		<div class="bg-surface border border-border p-6 sm:p-10 rounded-3xl shadow-2xl backdrop-blur-xl">
-			{#if error}
-				<div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 text-sm md:text-[11px] mb-6 flex items-center gap-3">
-					<span>⚠️</span> {error}
-				</div>
-			{/if}
+    <div 
+        in:fly={{ y: 20, duration: 800 }}
+        class="w-full max-w-[440px] bg-[#0f0e0b] border border-[#c9a84c]/20 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10"
+    >
+        <!-- Logo/Header -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#c9a84c]/10 border border-[#c9a84c]/20 mb-6">
+                <span class="text-3xl">🔑</span>
+            </div>
+            <h1 class="font-['Bebas_Neue'] text-4xl tracking-[3px] text-white leading-none mb-2">
+                ADMIN <span class="text-[var(--gold)]">PORTAL</span>
+            </h1>
+            <p class="text-[11px] font-['Space_Mono'] uppercase tracking-[4px] text-white/40">
+                Super Admin Authentication
+            </p>
+        </div>
 
-			{#if resetSuccess}
-				<div class="p-4 bg-teal2/10 border border-teal2/30 rounded-xl text-teal2 text-sm md:text-[11px] mb-6 flex items-center gap-3">
-					<span>📧</span> Reset link sent to your email.
-				</div>
-			{/if}
+        <!-- Login Form -->
+        <form onsubmit={handleLogin} class="space-y-6">
+            <div class="space-y-2">
+                <label for="email" class="block text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[2px] text-white/60 ml-1">
+                    Email Address
+                </label>
+                <input 
+                    id="email" 
+                    type="email" 
+                    bind:value={email}
+                    required
+                    placeholder="admin@ewinproject.org"
+                    class="w-full bg-[#0b0a07] border border-[#c9a84c]/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 outline-none transition-all"
+                />
+            </div>
 
-			<form onsubmit={(e) => { e.preventDefault(); showReset ? handleReset() : handleLogin(); }} class="space-y-6">
-				<div class="space-y-2">
-					<label for="email" class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Administrative Email</label>
-					<input
-						type="email"
-						id="email"
-						bind:value={email}
-						required
-						placeholder="admin@ewinproject.com"
-						class="w-full bg-bg border border-border rounded-xl px-5 py-4 min-h-[44px] text-sm md:text-[13px] focus:border-gold outline-none transition-all"
-					/>
-				</div>
+            <div class="space-y-2">
+                <label for="password" class="block text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[2px] text-white/60 ml-1">
+                    Security Password
+                </label>
+                <input 
+                    id="password" 
+                    type="password" 
+                    bind:value={password}
+                    required
+                    placeholder="••••••••••••"
+                    class="w-full bg-[#0b0a07] border border-[#c9a84c]/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 outline-none transition-all"
+                />
+            </div>
 
-				{#if !showReset}
-					<div class="space-y-2">
-						<div class="flex justify-between items-center">
-							<label for="password" class="text-sm md:text-[10px] font-['Space_Mono'] uppercase tracking-widest text-muted">Security Key</label>
-							<button type="button" onclick={() => showReset = true} class="text-sm md:text-[9px] uppercase tracking-widest text-gold hover:text-gold2 font-bold min-h-[44px] flex items-center">Forgot? 🔑</button>
-						</div>
-						<input
-							type="password"
-							id="password"
-							bind:value={password}
-							required
-							placeholder="••••••••••••"
-							class="w-full bg-bg border border-border rounded-xl px-5 py-4 min-h-[44px] text-sm md:text-[13px] focus:border-gold outline-none transition-all"
-						/>
-					</div>
-				{/if}
+            {#if error}
+                <div 
+                    transition:fade
+                    class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[12px] text-center font-medium"
+                >
+                    {error}
+                </div>
+            {/if}
 
-				<button
-					type="submit"
-					disabled={loading}
-					class="w-full py-4 min-h-[44px] bg-gold text-bg text-sm md:text-[12px] font-bold tracking-[3px] uppercase rounded-xl hover:bg-gold2 transition-all shadow-xl shadow-gold/30 flex items-center justify-center gap-3"
-				>
-					{loading ? (showReset ? 'Sending Reset...' : 'Authenticating...') : (showReset ? 'Send Reset Link 📧' : 'Access Portal 🛡️')}
-					{#if !loading}
-						<span class="text-xl">→</span>
-					{/if}
-				</button>
+            <button 
+                type="submit" 
+                disabled={loading}
+                class="w-full bg-[var(--gold)] text-[#0b0a07] font-bold py-4 rounded-xl uppercase tracking-[3px] text-[12px] hover:bg-[#b89844] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(201,168,76,0.2)] flex items-center justify-center gap-3"
+            >
+                {#if loading}
+                    <span class="w-4 h-4 border-2 border-[#0b0a07]/30 border-t-[#0b0a07] rounded-full animate-spin"></span>
+                    VERIFYING...
+                {:else}
+                    AUTHORIZE ACCESS 🛡️
+                {/if}
+            </button>
+        </form>
 
-				{#if showReset}
-					<button type="button" onclick={() => showReset = false} class="w-full text-sm md:text-[10px] uppercase tracking-[2px] text-muted hover:text-text font-bold py-2 min-h-[44px]">Back to Login 🔙</button>
-				{/if}
-			</form>
-		</div>
-
-		<div class="mt-10 text-center">
-			<p class="text-[11px] text-muted leading-relaxed">
-				Authorized access only. All sessions are logged and monitored.<br />
-				© 2026 Danjuma Omale-Ogale · E-WIN Project.
-			</p>
-		</div>
-	</div>
+        <!-- Footer Note -->
+        <div class="mt-10 pt-8 border-t border-white/5 text-center">
+            <p class="text-[10px] text-white/30 font-['Space_Mono'] leading-relaxed uppercase tracking-wider">
+                Unauthorized access attempts are logged <br /> and monitored via enterprise audit systems.
+            </p>
+        </div>
+    </div>
 </div>
-

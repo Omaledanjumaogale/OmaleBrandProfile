@@ -1,313 +1,360 @@
 import { mutation, query, internalMutation, action } from "./_generated/server";
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { internal } from "./_generated/api";
+import { rateLimitMutation } from "./rateLimit";
+import { sessionTrackingMutation } from "./sessions";
+import { withAuditLog } from "./triggers";
 
-// --- VALIDATION & SANITIZATION HELPERS ---
-const validateEmail = (email: string) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
+// ── Multi-Platform Identity Sync ──────────────────────────────────
+// Ensures that every Firebase user has a local platform record
+// with independent subscription management and roles.
 
-const sanitizeInput = (str: string) => {
-  if (!str) return "";
-  // Basic XSS prevention: remove HTML tags and trim whitespace
-  return str.replace(/<[^>]*>?/gm, '').trim();
-};
+export const syncUser = mutation({
+  args: {
+    firebaseUid: v.string(),
+    email: v.string(),
+    name: v.string(),
+    image: v.optional(v.string()),
+    sessionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_firebaseUid", (q) => q.eq("firebaseUid", args.firebaseUid))
+      .unique();
 
-const sanitizeObject = (obj: any) => {
-  const sanitized: any = {};
-  for (const key in obj) {
-    if (typeof obj[key] === 'string') {
-      sanitized[key] = sanitizeInput(obj[key]);
+    const userData = {
+      firebaseUid: args.firebaseUid,
+      email: args.email,
+      name: args.name,
+      image: args.image,
+      lastLogin: Date.now(),
+    };
+
+    let userId;
+    if (existing) {
+      userId = existing._id;
+      await ctx.db.patch(existing._id, userData);
     } else {
-      sanitized[key] = obj[key];
+      userId = await ctx.db.insert("users", {
+        ...userData,
+        role: "user",
+        plan: "free",
+        subscriptionStatus: "active", // Default access for E-WIN platform
+      });
+      
+      // Log new platform user
+      await ctx.db.insert("auditLogs", {
+        action: "USER_REGISTERED",
+        payload: { firebaseUid: args.firebaseUid, email: args.email },
+        timestamp: Date.now(),
+      });
     }
-  }
-  return sanitized;
-};
 
-// --- ORCHESTRATION WORKFLOWS ---
+    // Track session
+    if (args.sessionId) {
+      await sessionTrackingMutation(ctx, { 
+        sessionId: args.sessionId, 
+        firebaseUid: args.firebaseUid 
+      });
+    }
+
+    return userId;
+  },
+});
+
+export const getUserByFirebaseUid = query({
+  args: { firebaseUid: v.string() },
+  handler: async (ctx, { firebaseUid }) => {
+    return ctx.db
+      .query("users")
+      .withIndex("by_firebaseUid", (q) => q.eq("firebaseUid", firebaseUid))
+      .unique();
+  },
+});
+
+// ── Enterprise Authorization Middleware ───────────────────────────
+
+async function checkPlatformAccess(ctx: any, firebaseUid: string) {
+    const user = await ctx.db
+        .query("users")
+        .withIndex("by_firebaseUid", (q: any) => q.eq("firebaseUid", firebaseUid))
+        .unique();
+    
+    if (!user) throw new Error("Unauthorized: User not found in this platform.");
+    if (user.isLocked) throw new Error("Unauthorized: Account is locked.");
+    if (user.subscriptionStatus !== "active") throw new Error("Unauthorized: Subscription required.");
+    
+    return user;
+}
+
+// ── Refactored Mutations with Enterprise Safeguards ───────────────
 
 export const submitServiceRequest = mutation({
   args: {
-    fullName: v.string(),
-    email: v.string(),
+    fullName: v.string(), 
+    email: v.string(), 
     whatsappNumber: v.string(),
     mobileNumber: v.string(),
     address: v.string(),
     stateOfResidence: v.string(),
     lgaOfResidence: v.string(),
-    serviceType: v.string(),
+    company: v.optional(v.string()),
+    serviceType: v.string(), 
     budget: v.string(),
     description: v.string(),
-    company: v.optional(v.string()),
     bestTimeToReach: v.string(),
     urgency: v.string(),
     preferredCommunication: v.string(),
     needType: v.string(),
+    sessionId: v.optional(v.string()),
+    firebaseUid: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Enterprise-Grade Sanitization
-    const sanitizedArgs = sanitizeObject(args);
-    
-    // Validation
-    if (!validateEmail(sanitizedArgs.email)) throw new Error("Invalid email format.");
-    if (sanitizedArgs.fullName.length < 2) throw new Error("Name is too short.");
+    // 1. Rate Limiting
+    const ok = await rateLimitMutation(ctx, { 
+        key: `service:${args.email}`, 
+        max: 5, 
+        window: 60 * 60 * 1000 // 5 per hour
+    });
+    if (!ok.allowed) throw new Error("Rate limit exceeded. Please try again later.");
 
-    return await ctx.db.insert("serviceRequests", {
-      ...sanitizedArgs,
-      status: "pending",
-      createdAt: Date.now(),
+    // 2. Session Tracking
+    if (args.sessionId) {
+        await sessionTrackingMutation(ctx, { 
+            sessionId: args.sessionId, 
+            firebaseUid: args.firebaseUid 
+        });
+    }
+
+    // 3. Execution with Audit Trigger
+    return await withAuditLog(ctx, "SERVICE_REQUEST_SUBMITTED", args, async () => {
+        const id = await ctx.db.insert("serviceRequests", {
+            fullName: args.fullName,
+            email: args.email,
+            whatsappNumber: args.whatsappNumber,
+            mobileNumber: args.mobileNumber,
+            address: args.address,
+            stateOfResidence: args.stateOfResidence,
+            lgaOfResidence: args.lgaOfResidence,
+            company: args.company,
+            serviceType: args.serviceType,
+            budget: args.budget,
+            description: args.description,
+            bestTimeToReach: args.bestTimeToReach,
+            urgency: args.urgency,
+            preferredCommunication: args.preferredCommunication,
+            needType: args.needType,
+            status: "pending",
+            createdAt: Date.now(),
+        });
+
+        // Async Email Notification
+        await ctx.scheduler.runAfter(0, internal.functions.dispatchEmail, {
+            to: "danjumaumar.ogale@gmail.com",
+            subject: `New Service Request: ${args.serviceType}`,
+            body: `New request from ${args.fullName} (${args.email})\n\nDescription: ${args.description}`,
+            replyTo: args.email,
+        });
+
+        return id;
     });
   },
 });
 
-/**
- * Orchestration Workflow: Submit IAM Application
- */
 export const submitApplicationWorkflow = mutation({
   args: {
-    fullName: v.string(),
-    email: v.string(),
+    fullName: v.string(), 
+    email: v.string(), 
     mobileNumber: v.string(),
-    whatsappNumber: v.string(),
-    stateOfOrigin: v.string(),
+    whatsappNumber: v.string(), 
+    stateOfOrigin: v.string(), 
     lgaOfOrigin: v.string(),
-    stateOfResidence: v.string(),
-    lgaOfResidence: v.string(),
+    stateOfResidence: v.string(), 
+    lgaOfResidence: v.string(), 
     nin: v.string(),
-    academicBackground: v.string(),
-    workingExperience: v.string(),
+    academicBackground: v.string(), 
+    workingExperience: v.string(), 
     skills: v.string(),
-    motivationalStatement: v.string(),
+    motivationalStatement: v.string(), 
     monthlyEarningsTarget: v.string(),
     sessionId: v.optional(v.string()),
+    firebaseUid: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Enterprise-Grade Sanitization
-    const sanitizedArgs = sanitizeObject(args);
-
-    // Validation
-    if (!validateEmail(sanitizedArgs.email)) throw new Error("Invalid email.");
-    if (sanitizedArgs.nin.length < 10) throw new Error("Invalid NIN format.");
-
-    const applicationId = await ctx.db.insert("applications", {
-      ...sanitizedArgs,
-      status: "pending",
-      createdAt: Date.now(),
+    const ok = await rateLimitMutation(ctx, { 
+        key: `apply:${args.email}`, 
+        max: 2, 
+        window: 24 * 60 * 60 * 1000 // 2 per day
     });
+    if (!ok.allowed) throw new Error("You have already submitted an application recently.");
 
-    await ctx.scheduler.runAfter(0, internal.functions.orchestrateBackgroundTasks, {
-      type: "IAM_APPLICATION_SUBMITTED",
-      payload: { 
-        applicationId, 
-        email: args.email, 
-        fullName: args.fullName,
-        sessionId: args.sessionId 
-      }
+    const existing = await ctx.db
+      .query("applications")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .unique();
+    if (existing) throw new Error("An application already exists for this email.");
+
+    return await withAuditLog(ctx, "IAM_APPLICATION_SUBMITTED", { email: args.email }, async () => {
+        const id = await ctx.db.insert("applications", {
+            ...args,
+            status: "pending",
+            createdAt: Date.now(),
+        });
+
+        await ctx.scheduler.runAfter(0, internal.functions.dispatchEmail, {
+            to: args.email,
+            subject: "Application Received — I-AM Network",
+            body: `Hello ${args.fullName}, your application is now under review.`,
+        });
+
+        return id;
     });
-
-    return applicationId;
   },
 });
 
-/**
- * Internal Orchestrator for Background Jobs & Audit Logs
- */
-export const orchestrateBackgroundTasks = internalMutation({
+// ── Email Action (Resend) ─────────────────────────────────────────
+
+export const dispatchEmail = action({
   args: {
-    type: v.string(),
-    payload: v.any(),
+    to: v.string(),
+    subject: v.string(),
+    body: v.string(),
+    replyTo: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { type, payload } = args;
+    const key = process.env.RESEND_API_KEY;
+    if (!key) return;
     
-    // 1. Audit Logging
-    await ctx.db.insert("auditLogs", {
-      action: type,
-      payload,
-      timestamp: Date.now(),
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "E-WIN Platform <noreply@ewinproject.org>",
+        to: [args.to],
+        subject: args.subject,
+        text: args.body,
+        reply_to: args.replyTo,
+      }),
     });
+  },
+});
 
-    // 2. Handle Session Tracking Logic
-    if (payload.sessionId) {
-      const existingSession = await ctx.db
-        .query("sessions")
-        .withIndex("by_sessionId", (q) => q.eq("sessionId", payload.sessionId))
-        .unique();
-      
-      if (existingSession) {
-        await ctx.db.patch(existingSession._id, {
-          lastActivity: Date.now(),
-          actionsCount: existingSession.actionsCount + 1
-        });
-      } else {
-        await ctx.db.insert("sessions", {
-          sessionId: payload.sessionId,
-          startTime: Date.now(),
-          lastActivity: Date.now(),
-          actionsCount: 1,
-          email: payload.email
-        });
-      }
+// ── Admin Queries (Paginated) ─────────────────────────────────────
+
+export const getApplicationsPaginated = query({
+  args: { paginationOpts: paginationOptsValidator, status: v.optional(v.string()) },
+  handler: async (ctx, { paginationOpts, status }) => {
+    if (status) {
+      return ctx.db.query("applications")
+        .withIndex("by_status", (q) => q.eq("status", status as any))
+        .order("desc").paginate(paginationOpts);
     }
+    return ctx.db.query("applications").order("desc").paginate(paginationOpts);
   },
 });
 
-// --- CRON JOBS / SCHEDULED TASKS ---
-
-/**
- * Cleanup function for old sessions (to be run via Cron)
- */
-export const cleanupOldSessions = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-    const oldSessions = await ctx.db
-      .query("sessions")
-      .filter((q) => q.lt(q.field("lastActivity"), thirtyDaysAgo))
-      .collect();
-    
-    for (const session of oldSessions) {
-      await ctx.db.delete(session._id);
-    }
-  },
-});
-
-// --- QUERIES (STABLE & CACHED) ---
-
-export const getApplications = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("applications").order("desc").collect();
-  },
-});
-
-export const getServiceRequests = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("serviceRequests").order("desc").collect();
-  },
+export const getUsers = query({
+  handler: async (ctx) => ctx.db.query("users").order("desc").collect(),
 });
 
 export const getAuditLogs = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("auditLogs").order("desc").take(100);
-  },
-});
-
-export const getActiveSessions = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("sessions").order("desc").collect();
-  },
-});
-
-// --- ADMIN SETTINGS & MANAGEMENT ---
-
-export const getSetting = query({
-  args: { key: v.string() },
-  handler: async (ctx, args) => {
-    const setting = await ctx.db
-      .query("settings")
-      .withIndex("by_key", (q) => q.eq("key", args.key))
-      .unique();
-    return setting?.value ?? true; // Default to true if not set
-  },
-});
-
-export const updateSetting = mutation({
-  args: { key: v.string(), value: v.any() },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("settings")
-      .withIndex("by_key", (q) => q.eq("key", args.key))
-      .unique();
-    if (existing) {
-      await ctx.db.patch(existing._id, { value: args.value, updatedAt: Date.now() });
-    } else {
-      await ctx.db.insert("settings", { key: args.key, value: args.value, updatedAt: Date.now() });
+  args: { paginationOpts: v.optional(paginationOptsValidator) },
+  handler: async (ctx, { paginationOpts }) => {
+    if (paginationOpts) {
+      return ctx.db.query("auditLogs").order("desc").paginate(paginationOpts);
     }
+    return ctx.db.query("auditLogs").order("desc").take(100);
   },
 });
 
-// --- TASKS MANAGEMENT ---
+export const getApplications = query({
+  args: {},
+  handler: async (ctx) => ctx.db.query("applications").order("desc").collect(),
+});
 
-export const createTask = mutation({
-  args: { assigneeId: v.id("applications"), title: v.string(), description: v.string(), deadline: v.number() },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("tasks", {
-      ...args,
-      status: "pending",
-      createdAt: Date.now(),
-    });
-  },
+export const getApplicationByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) =>
+    ctx.db.query("applications").withIndex("by_email", (q) => q.eq("email", email)).unique(),
+});
+
+export const getServiceRequests = query({
+  args: {},
+  handler: async (ctx) => ctx.db.query("serviceRequests").order("desc").collect(),
+});
+
+export const getTasksForAdmin = query({
+  args: {},
+  handler: async (ctx) => ctx.db.query("tasks").order("desc").collect(),
 });
 
 export const getTasksForUser = query({
   args: { email: v.string() },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
+  handler: async (ctx, { email }) => {
+    const application = await ctx.db
       .query("applications")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .withIndex("by_email", (q) => q.eq("email", email))
       .unique();
-    if (!user) return [];
-    return await ctx.db
+
+    if (!application) return [];
+
+    return ctx.db
       .query("tasks")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", user._id))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", application._id))
       .order("desc")
       .collect();
   },
 });
 
-export const getTasksForAdmin = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("tasks").order("desc").collect();
+export const createTask = mutation({
+  args: {
+    assigneeId: v.id("applications"),
+    title: v.string(),
+    description: v.string(),
+    deadline: v.number(),
   },
+  handler: async (ctx, args) =>
+    ctx.db.insert("tasks", {
+      ...args,
+      status: "pending",
+      createdAt: Date.now(),
+    }),
 });
 
 export const updateTaskStatus = mutation({
-  args: { taskId: v.id("tasks"), status: v.string(), report: v.optional(v.string()) },
-  handler: async (ctx, args) => {
-    const { taskId, ...updates } = args;
+  args: {
+    taskId: v.id("tasks"),
+    status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("submitted"), v.literal("completed")),
+    report: v.optional(v.string()),
+  },
+  handler: async (ctx, { taskId, ...updates }) => {
     await ctx.db.patch(taskId, updates);
   },
 });
 
-// --- BROADCASTS ---
-
-export const createBroadcast = mutation({
-  args: { message: v.string(), sender: v.string() },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("broadcasts", { ...args, timestamp: Date.now() });
-  },
-});
-
 export const getLatestBroadcasts = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("broadcasts").order("desc").take(10);
-  },
+  args: {},
+  handler: async (ctx) =>
+    ctx.db
+      .query("broadcasts")
+      .withIndex("by_active", (q) => q.eq("active", true))
+      .order("desc")
+      .take(10),
 });
 
-export const getHistory = query({
-  handler: async (ctx) => {
-    const requests = await ctx.db
-      .query("serviceRequests")
-      .filter((q) => q.or(q.eq(q.field("status"), "archived"), q.eq(q.field("status"), "completed")))
-      .collect();
-    const apps = await ctx.db
-      .query("applications")
-      .filter((q) => q.or(q.eq(q.field("status"), "approved"), q.eq(q.field("status"), "declined")))
-      .collect();
-    return [...requests, ...apps].sort((a, b) => b.createdAt - a.createdAt);
-  },
-});
-
-// --- BACKWARD COMPATIBILITY & PATCHING ---
+// ── Admin Actions ──────────────────────────────────────────────────
 
 export const updateApplicationStatus = mutation({
-  args: {
-    id: v.id("applications"),
-    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("declined")),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { status: args.status });
+  args: { id: v.id("applications"), status: v.string(), adminEmail: v.optional(v.string()) },
+  handler: async (ctx, { id, status, adminEmail }) => {
+    await withAuditLog(ctx, "ADMIN_APP_STATUS_UPDATE", { id, status, adminEmail }, async () => {
+        await ctx.db.patch(id, { status: status as any, updatedAt: Date.now() });
+    });
   },
 });
 
@@ -315,8 +362,33 @@ export const updateServiceRequestStatus = mutation({
   args: {
     id: v.id("serviceRequests"),
     status: v.union(v.literal("pending"), v.literal("contacted"), v.literal("completed"), v.literal("archived")),
+    adminEmail: v.optional(v.string()),
   },
+  handler: async (ctx, { id, status, adminEmail }) => {
+    await withAuditLog(ctx, "ADMIN_SERVICE_REQUEST_UPDATE", { id, status, adminEmail }, async () => {
+      await ctx.db.patch(id, { status, updatedAt: Date.now() });
+    });
+  },
+});
+
+export const updateSetting = mutation({
+  args: { key: v.string(), value: v.any(), adminEmail: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { status: args.status });
+    return await withAuditLog(ctx, "ADMIN_SETTING_UPDATE", args, async () => {
+        const existing = await ctx.db.query("settings").withIndex("by_key", (q) => q.eq("key", args.key)).unique();
+        if (existing) {
+          await ctx.db.patch(existing._id, { value: args.value, updatedAt: Date.now() });
+        } else {
+          await ctx.db.insert("settings", { key: args.key, value: args.value, updatedAt: Date.now() });
+        }
+    });
+  },
+});
+
+export const getSetting = query({
+  args: { key: v.string() },
+  handler: async (ctx, { key }) => {
+    const s = await ctx.db.query("settings").withIndex("by_key", (q) => q.eq("key", key)).unique();
+    return s?.value ?? true;
   },
 });

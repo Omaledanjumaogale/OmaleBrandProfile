@@ -47,7 +47,7 @@
 						Professional Service Inquiry 🛠️
 					</div>
 					<h2 class="font-['Bebas_Neue'] text-3xl sm:text-4xl tracking-widest text-text">Ready to Collaborate? 🤝</h2>
-					<p class="text-sm md:text-[13px] text-muted2 font-light mt-2 max-w-[400px] mx-auto">
+					<p class="text-sm md:text-[13px] text-muted2 font-normal mt-2 max-w-[400px] mx-auto">
 						Fill out the form below, and I will get back to you with a comprehensive proposal for your project.
 					</p>
 				</div>

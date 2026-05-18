@@ -43,9 +43,22 @@
 		<h2 class="font-['Bebas_Neue'] text-[clamp(36px,5vw,72px)] tracking-[1px] leading-[0.95] mb-6">
 			Twelve years.<br />Multiple sectors.
 		</h2>
-		<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-light max-w-[540px]">
-			From legislative chambers to aviation operations to radio broadcasting — a career defined by range, resilience, and relentless forward motion. 🚀
-		</p>
+		<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+			<p class="text-sm md:text-[15px] text-muted2 leading-[1.8] font-normal max-w-[540px]">
+				From legislative chambers to aviation operations to radio broadcasting — a career defined by range, resilience, and relentless forward motion. 🚀
+			</p>
+			
+			<a 
+				href="/documents/Omale_Danjuma_Ogale_CV.pdf" 
+				download
+				class="flex items-center gap-3 px-6 py-3 border border-gold/30 rounded-xl font-['Bebas_Neue'] text-lg tracking-[1px] text-gold hover:bg-gold hover:text-bg transition-all duration-300 group"
+			>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+				</svg>
+				Download Curriculum Vitae
+			</a>
+		</div>
 	</div>
 
 	<div class="relative pl-8 border-l border-gold/20 ml-4 space-y-10">
@@ -60,10 +73,10 @@
 				<div class="font-['Bebas_Neue'] text-xl sm:text-2xl tracking-[1px] text-text mb-1">
 					{item.role}
 				</div>
-				<div class="text-sm md:text-[13px] text-muted2 font-light italic">
+				<div class="text-sm md:text-[13px] text-muted2 font-normal italic">
 					{item.org}
 				</div>
-				<div class="text-sm md:text-[12px] text-muted leading-[1.7] mt-2 font-light max-w-2xl">
+				<div class="text-sm md:text-[12px] text-muted leading-[1.7] mt-2 font-normal max-w-2xl">
 					{item.desc}
 				</div>
 			</div>

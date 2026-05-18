@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { convex, getSessionId } from '$lib/convex';
-	import { api } from '../../../../convex/_generated/api';
+	import { api } from '$convex/_generated/api';
 
 	let form = $state({
 		fullName: '',

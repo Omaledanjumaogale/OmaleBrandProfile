@@ -1,67 +1,85 @@
-import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
+import { type Handle, type HandleServerError } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
+// ── Main Handle hook ───────────────────────────────────────────────
 export const handle: Handle = async ({ event, resolve }) => {
 	const pathname = event.url.pathname;
 
-	// 1. URL Normalization
-	// Redirect singular /platform/ to plural /platforms/ (Fix for old links)
+	// URL Normalization — /platform/ → /platforms/ (SEO redirect)
 	if (pathname.startsWith('/platform/') && !pathname.startsWith('/platforms/')) {
-		const newPathname = pathname.replace('/platform/', '/platforms/');
-		throw redirect(301, newPathname.endsWith('/') ? newPathname.slice(0, -1) : newPathname);
+		const newPath = pathname.replace('/platform/', '/platforms/');
+		throw redirect(301, newPath.endsWith('/') ? newPath.slice(0, -1) : newPath);
 	}
 
-	// 2. Domain Standardization (SEO Best Practice)
-	// Redirect www to non-www and enforce correct production domain
-	const targetDomain = 'danjumaomaleogale.ewinproject.org';
-	if (event.url.hostname.startsWith('www.') || (event.url.hostname !== targetDomain && !event.url.hostname.includes('localhost') && !event.url.hostname.includes('convex.site') && !event.url.hostname.includes('pages.dev'))) {
+	// Domain Standardization (SEO — canonical domain)
+	const targetDomain = 'danjumaomaleogale.dev';
+	if (
+		event.url.hostname.startsWith('www.') &&
+		!event.url.hostname.includes('localhost') &&
+		!event.url.hostname.includes('pages.dev')
+	) {
 		const newUrl = new URL(event.url.href);
 		newUrl.hostname = targetDomain;
 		throw redirect(301, newUrl.toString());
 	}
 
-	// 3. Enterprise-Grade Security Headers
+	// Resolve request
 	const response = await resolve(event);
-	
-	// Security Header Implementation
-	const securityHeaders = {
-		'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.convex.cloud https://*.gstatic.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.convex.cloud https://*.convex.site wss://*.convex.cloud; frame-ancestors 'none'; upgrade-insecure-requests;",
+
+	// Technical SEO Headers (AEO/GEO Integration)
+	if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard') || pathname.startsWith('/auth')) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+	} else {
+		response.headers.set('X-Robots-Tag', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+	}
+
+	// Detect AI Agent User Agents (Observability)
+	const userAgent = event.request.headers.get('user-agent')?.toLowerCase() || '';
+	const isAIBot = /gptbot|claudebot|perplexitybot|google-extended|anthropic-ai|cohere-ai|applebot-extended/i.test(userAgent);
+	if (isAIBot) {
+		// Potential: Log AI bot access to Convex analytics
+		response.headers.set('X-AI-Bot-Detected', 'true');
+	}
+
+	// Security Headers
+	const secHeaders: Record<string, string> = {
 		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-		'X-Frame-Options': 'DENY',
+		'X-Frame-Options': 'SAMEORIGIN',
 		'X-Content-Type-Options': 'nosniff',
 		'Referrer-Policy': 'strict-origin-when-cross-origin',
-		'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-		'X-XSS-Protection': '1; mode=block'
+		'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
 	};
 
-	Object.entries(securityHeaders).forEach(([header, value]) => {
-		response.headers.set(header, value);
-	});
+	for (const [k, v] of Object.entries(secHeaders)) {
+		response.headers.set(k, v);
+	}
 
-	// 4. Cache Control for Static Assets
-	if (pathname.startsWith('/platforms/') || pathname.endsWith('.jpg') || pathname.endsWith('.svg')) {
+	// Cache static assets
+	if (
+		pathname.endsWith('.jpg') ||
+		pathname.endsWith('.png') ||
+		pathname.endsWith('.svg') ||
+		pathname.endsWith('.webp')
+	) {
 		response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
 	}
 
 	return response;
 };
 
-/**
- * Enterprise-Grade Error Handling
- * Logs errors to console (can be extended to Sentry/LogRocket)
- */
+// ── Error Handler ──────────────────────────────────────────────────
 export const handleError: HandleServerError = ({ error, event }) => {
 	const errorId = crypto.randomUUID();
-	
-	// Structured logging for production observability
-	console.error('--- PRODUCTION ERROR REPORT ---');
-	console.error(`ID: ${errorId}`);
+
+	console.error('─── SERVER ERROR ───────────────────────────────');
+	console.error(`ID:        ${errorId}`);
 	console.error(`Timestamp: ${new Date().toISOString()}`);
-	console.error(`Path: ${event.url.pathname}`);
-	console.error(`Error:`, error);
-	console.error('-------------------------------');
+	console.error(`Path:      ${event.url.pathname}`);
+	console.error(`Error:     `, error);
+	console.error('────────────────────────────────────────────────');
 
 	return {
-		message: 'An unexpected error occurred. Our engineers have been notified.',
+		message: 'An unexpected error occurred. Please try again.',
 		errorId
 	};
 };

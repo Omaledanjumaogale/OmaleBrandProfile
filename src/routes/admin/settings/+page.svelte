@@ -1,103 +1,163 @@
 <script lang="ts">
-	import DashboardLayout from '$lib/components/dashboard/DashboardLayout.svelte';
-	import { convex } from '$lib/convex';
-	import { api } from '../../../../convex/_generated/api';
-	import { onMount } from 'svelte';
+    import { onMount } from 'svelte';
+    import { convex } from '$lib/convex';
+    import { api } from '$convex/_generated/api';
+    import { ui } from '$lib/stores/ui';
+    import { fade, fly } from 'svelte/transition';
+    import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
-	let settings = $state([]);
-	let loading = $state(true);
-	let saving = $state(false);
+    let settings = $state({
+        registrationOpen: true,
+        maintenanceMode: false,
+        emailNotifications: true,
+        smsGateways: false,
+        apiKey: 'sk_live_••••••••••••••••••••'
+    });
 
-	async function fetchSettings() {
-		try {
-			const data = await convex.query(api.functions.getSettings);
-			settings = data || [];
-		} catch (e) {
-			console.error('Error fetching settings:', e);
-		} finally {
-			loading = false;
-		}
-	}
+    let loading = $state(true);
 
-	async function updateSetting(key: string, value: any) {
-		saving = true;
-		try {
-			await convex.mutation(api.functions.updateAdminSettings, { key, value });
-			await fetchSettings();
-		} catch (e) {
-			console.error('Error updating setting:', e);
-		} finally {
-			saving = false;
-		}
-	}
+    onMount(() => {
+        // Load initial settings from Convex
+        const loadSettings = async () => {
+            const keys = ['registrationOpen', 'maintenanceMode', 'emailNotifications'];
+            for (const key of keys) {
+                const val = await convex.query(api.functions.getSetting, { key });
+                if (val !== null) {
+                    // @ts-ignore
+                    settings[key] = val;
+                }
+            }
+            loading = false;
+        };
+        loadSettings();
+    });
 
-	onMount(fetchSettings);
-
-	const defaultSettings = [
-		{ key: 'maintenance_mode', label: 'Maintenance Mode 🛠️', type: 'toggle', description: 'Enable to restrict public access.' },
-		{ key: 'registration_open', label: 'IAM Registration 🌍', type: 'toggle', description: 'Allow new Impact Ambassador applications.' },
-		{ key: 'notifications_email', label: 'Admin Notifications 📧', type: 'text', description: 'Email for system alerts.' }
-	];
-
-	function getSettingValue(key: string) {
-		const s = settings.find(s => s.key === key);
-		return s ? s.value : (key === 'notifications_email' ? '' : false);
-	}
+    async function handleToggle(key: string) {
+        // @ts-ignore
+        const newValue = !settings[key];
+        
+        try {
+            await convex.mutation(api.functions.updateSetting, {
+                key,
+                value: newValue,
+                adminEmail: 'super-admin'
+            });
+            // @ts-ignore
+            settings[key] = newValue;
+            ui.success(`Global setting "${key}" updated.`, "System Configured");
+        } catch (e: any) {
+            ui.error(e.message || "Failed to update setting");
+        }
+    }
 </script>
 
-<DashboardLayout title="System Settings ⚙️" isAdmin={true}>
-	<div class="max-w-3xl space-y-8">
-		<div class="bg-surface border border-border rounded-[var(--radius)] overflow-hidden shadow-2xl">
-			<div class="p-8 border-b border-border bg-surface2/50">
-				<h3 class="font-['Bebas_Neue'] text-2xl tracking-widest text-text">Global Infrastructure 🏗️</h3>
-				<p class="text-[11px] text-muted uppercase tracking-widest mt-1">Configure platform-wide behaviors.</p>
-			</div>
+<svelte:head>
+    <title>Platform Settings — Admin Portal | E-WIN</title>
+</svelte:head>
 
-			<div class="p-8 space-y-10">
-				{#if loading}
-					<div class="py-10 text-center text-muted uppercase tracking-widest text-sm md:text-[10px]">Loading Settings...</div>
-				{:else}
-					{#each defaultSettings as item}
-						<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
-							<div class="flex-grow">
-								<h4 class="font-['Bebas_Neue'] text-xl tracking-widest text-text mb-1">{item.label}</h4>
-								<p class="text-sm md:text-[12px] text-muted font-light">{item.description}</p>
-							</div>
-							
-							{#if item.type === 'toggle'}
-								<button 
-									onclick={() => updateSetting(item.key, !getSettingValue(item.key))}
-									disabled={saving}
-									aria-label="Toggle {item.label}"
-									class="relative w-14 h-7 rounded-full transition-colors {getSettingValue(item.key) ? 'bg-gold' : 'bg-border'} {saving ? 'opacity-50' : ''} shrink-0"
-								>
-									<div class="absolute top-1 left-1 w-5 h-5 bg-bg rounded-full transition-transform {getSettingValue(item.key) ? 'translate-x-7' : ''}"></div>
-								</button>
-							{:else}
-								<div class="flex gap-2 w-full sm:w-auto">
-									<input 
-										type="text" 
-										value={getSettingValue(item.key)} 
-										onchange={(e) => updateSetting(item.key, e.target.value)}
-										disabled={saving}
-										class="bg-bg border border-border rounded-lg px-4 py-3 min-h-[44px] text-sm md:text-[12px] text-text focus:border-gold outline-none transition-all w-full sm:w-64"
-									/>
-								</div>
-							{/if}
-						</div>
-					{/each}
-				{/if}
-			</div>
-		</div>
+<div class="max-w-4xl space-y-12">
+    <!-- Header -->
+    <div>
+        <h1 class="font-['Bebas_Neue'] text-4xl tracking-widest text-white mb-2">Platform Configuration</h1>
+        <p class="text-[12px] text-white/40 font-['Space_Mono'] uppercase tracking-widest">
+            Manage global feature flags and infrastructure policies
+        </p>
+    </div>
 
-		<div class="p-6 bg-gold/5 border border-gold/20 rounded-2xl flex items-start gap-4">
-			<span class="text-2xl">🛡️</span>
-			<div>
-				<h4 class="font-bold text-gold text-xs uppercase tracking-widest mb-1">Security Protocol</h4>
-				<p class="text-[11px] text-muted leading-relaxed">
-					All changes to system settings are logged in the audit trail. Critical modifications may require multi-factor authentication in future updates.
-				</p>
-			</div>
-		</div>
-	</div>
-</DashboardLayout>
+    <!-- Setting Groups -->
+    <div class="space-y-8">
+        <!-- Access Control -->
+        <section class="space-y-4">
+            <h2 class="text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[3px] text-[var(--gold)] ml-1">Access Control</h2>
+            <div class="grid gap-4">
+                <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-6 flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-xl">🚪</div>
+                        <div>
+                            <h3 class="text-[15px] font-bold text-white mb-1">Public Registration</h3>
+                            <p class="text-[12px] text-white/30">Allow new users to create accounts on the I-AM platform.</p>
+                        </div>
+                    </div>
+                    <button 
+                        onclick={() => handleToggle('registrationOpen')}
+                        disabled={loading}
+                        aria-label="Toggle Public Registration"
+                        class="w-14 h-7 rounded-full transition-all relative {settings.registrationOpen ? 'bg-[var(--gold)]' : 'bg-white/10'} {loading ? 'opacity-50 cursor-not-allowed' : ''}"
+                    >
+                        <div class="absolute top-1 left-1 w-5 h-5 bg-[#0b0a07] rounded-full transition-all {settings.registrationOpen ? 'translate-x-7' : 'translate-x-0'}"></div>
+                    </button>
+                </div>
+
+                <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-6 flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-xl">🛠️</div>
+                        <div>
+                            <h3 class="text-[15px] font-bold text-white mb-1">Maintenance Mode</h3>
+                            <p class="text-[12px] text-white/30">Display a "Under Construction" overlay to all non-admin users.</p>
+                        </div>
+                    </div>
+                    <button 
+                        onclick={() => handleToggle('maintenanceMode')}
+                        disabled={loading}
+                        aria-label="Toggle Maintenance Mode"
+                        class="w-14 h-7 rounded-full transition-all relative {settings.maintenanceMode ? 'bg-red-500' : 'bg-white/10'} {loading ? 'opacity-50 cursor-not-allowed' : ''}"
+                    >
+                        <div class="absolute top-1 left-1 w-5 h-5 bg-[#0b0a07] rounded-full transition-all {settings.maintenanceMode ? 'translate-x-7' : 'translate-x-0'}"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Communication Protocols -->
+        <section class="space-y-4">
+            <h2 class="text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[3px] text-[var(--gold)] ml-1">Communication Protocols</h2>
+            <div class="grid gap-4">
+                <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-6 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-xl">📧</div>
+                        <div>
+                            <h3 class="text-[15px] font-bold text-white mb-1">Automated Email Notifications</h3>
+                            <p class="text-[12px] text-white/30">Enable system-triggered transactional emails via SendGrid.</p>
+                        </div>
+                    </div>
+                    <button 
+                        onclick={() => handleToggle('emailNotifications')}
+                        disabled={loading}
+                        aria-label="Toggle Email Notifications"
+                        class="w-14 h-7 rounded-full transition-all relative {settings.emailNotifications ? 'bg-[var(--gold)]' : 'bg-white/10'} {loading ? 'opacity-50 cursor-not-allowed' : ''}"
+                    >
+                        <div class="absolute top-1 left-1 w-5 h-5 bg-[#0b0a07] rounded-full transition-all {settings.emailNotifications ? 'translate-x-7' : 'translate-x-0'}"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- API & Security -->
+        <section class="space-y-4">
+            <h2 class="text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[3px] text-[var(--gold)] ml-1">Infrastructure Secrets</h2>
+            <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-8 space-y-6">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label for="convex-key" class="text-[10px] font-bold font-['Space_Mono'] uppercase tracking-widest text-white/40">Convex Management Key</label>
+                        <Tooltip text="This key grants full programmatic access to your database. Never share it." />
+                    </div>
+                    <div class="flex gap-2">
+                        <input 
+                            id="convex-key"
+                            type="password" 
+                            readonly 
+                            value={settings.apiKey}
+                            class="flex-grow bg-[#0b0a07] border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white/60 font-mono outline-none"
+                        />
+                        <button 
+                            aria-label="Rotate Convex Management Key"
+                            class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
+                        >
+                            Rotate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

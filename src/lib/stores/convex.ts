@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { convex } from '$lib/convex';
-import { api } from '../../../convex/_generated/api';
+import { api } from '$convex/_generated/api';
 
 export const stats = writable({
     totalUsers: 0,
@@ -17,8 +17,8 @@ export async function refreshStats() {
             console.warn("Convex API functions not yet generated.");
             return;
         }
-        const apps = await convex.query(api.functions.getApplications);
-        const requests = await convex.query(api.functions.getServiceRequests);
+        const apps = await convex.query(api.functions.getApplications, {});
+        const requests = await convex.query(api.functions.getServiceRequests, {});
         
         stats.set({
             totalUsers: (apps?.length || 0) + 1284,

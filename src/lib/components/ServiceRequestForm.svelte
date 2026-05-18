@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { convex, getSessionId } from '$lib/convex';
-	import { api } from '../../../convex/_generated/api';
+	import { api } from '$convex/_generated/api';
 
 	let formData = $state({
 		fullName: '',
@@ -50,6 +50,8 @@
 	// Client-side sanitization
 	const sanitize = (str: string) => str.replace(/<[^>]*>?/gm, '').trim();
 
+	import { currentUser } from '$lib/stores/auth';
+
 	async function handleSubmit() {
 		if (loading) return;
 		if (honeypot) {
@@ -66,7 +68,11 @@
 				Object.entries(formData).map(([k, v]) => [k, typeof v === 'string' ? sanitize(v) : v])
 			);
 
-			await convex.mutation(api.functions.submitServiceRequest, sanitizedData as any);
+			await convex.mutation(api.functions.submitServiceRequest, {
+				...sanitizedData as any,
+				sessionId: getSessionId(),
+				firebaseUid: $currentUser?.uid
+			});
 			success = true;
 			// Reset form data except for status flags
 			formData = {

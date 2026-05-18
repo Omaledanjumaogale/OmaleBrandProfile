@@ -2,26 +2,44 @@
 	import DashboardLayout from '$lib/components/dashboard/DashboardLayout.svelte';
 	import StatCard from '$lib/components/dashboard/StatCard.svelte';
 	import { convex } from '$lib/convex';
-	import { api } from '../../../convex/_generated/api';
-	import { user } from '$lib/stores/auth';
+	import { api } from '$convex/_generated/api';
+	import { currentUser } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
-	let tasks = $state([]);
-	let broadcasts = $state([]);
+	type DashboardTask = {
+		_id: string;
+		title: string;
+		description: string;
+		deadline: number;
+		status: 'pending' | 'in_progress' | 'submitted' | 'completed';
+		report?: string;
+	};
+
+	type DashboardBroadcast = {
+		_id: string;
+		title?: string;
+		message: string;
+		sender?: string;
+		timestamp: number;
+		type?: string;
+	};
+
+	let tasks = $state<DashboardTask[]>([]);
+	let broadcasts = $state<DashboardBroadcast[]>([]);
 	let loading = $state(true);
 	let reportText = $state('');
-	let selectedTask = $state(null);
+	let selectedTask = $state<DashboardTask | null>(null);
 	let showReportModal = $state(false);
 
 	async function fetchData() {
-		if (!$user?.email) return;
+		if (!$currentUser?.email) return;
 		try {
 			const [tks, bcasts] = await Promise.all([
-				convex.query(api.functions.getTasksForUser, { email: $user.email }),
-				convex.query(api.functions.getLatestBroadcasts)
+				convex.query(api.functions.getTasksForUser, { email: $currentUser.email }),
+				convex.query(api.functions.getLatestBroadcasts, {})
 			]);
-			tasks = tks || [];
-			broadcasts = bcasts || [];
+			tasks = (tks as DashboardTask[]) || [];
+			broadcasts = (bcasts as DashboardBroadcast[]) || [];
 		} catch (e) {
 			console.error('Error fetching dashboard data:', e);
 		} finally {
@@ -45,7 +63,7 @@
 		fetchData();
 	}
 
-	async function updateStatus(taskId, status) {
+	async function updateStatus(taskId: string, status: DashboardTask['status']) {
 		await convex.mutation(api.functions.updateTaskStatus, { taskId, status });
 		fetchData();
 	}
