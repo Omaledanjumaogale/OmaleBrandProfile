@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as cache from "../cache.js";
 import type * as crons from "../crons.js";
 import type * as functions from "../functions.js";
+import type * as ops from "../ops.js";
 import type * as rateLimit from "../rateLimit.js";
 import type * as sessions from "../sessions.js";
 import type * as triggers from "../triggers.js";
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   cache: typeof cache;
   crons: typeof crons;
   functions: typeof functions;
+  ops: typeof ops;
   rateLimit: typeof rateLimit;
   sessions: typeof sessions;
   triggers: typeof triggers;

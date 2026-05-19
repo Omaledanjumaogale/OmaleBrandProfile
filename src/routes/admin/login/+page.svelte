@@ -17,9 +17,12 @@
 	let error = $state('');
 	let loading = $state(false);
 
-	async function handleAdminLogin(event: SubmitEvent) {
-		event.preventDefault();
+	async function handleAdminLogin() {
 		if (loading) return;
+		if (!email || !password) {
+			error = 'Email and password are required.';
+			return;
+		}
 
 		loading = true;
 		error = '';
@@ -90,7 +93,7 @@
         {/if}
 
         <!-- Login Form -->
-        <form onsubmit={handleAdminLogin} class="space-y-6">
+        <form class="space-y-6">
             <div class="space-y-2">
                 <label for="email" class="block text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[2px] text-white/60 ml-1">
                     Email Address
@@ -129,7 +132,8 @@
             {/if}
 
             <button 
-                type="submit" 
+                type="button" 
+                onclick={handleAdminLogin}
                 disabled={!data.adminRuntime.configured}
                 class="w-full bg-[var(--gold)] text-[#0b0a07] font-bold py-4 rounded-xl uppercase tracking-[3px] text-[12px] hover:bg-[#b89844] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(201,168,76,0.2)] flex items-center justify-center gap-3"
             >
