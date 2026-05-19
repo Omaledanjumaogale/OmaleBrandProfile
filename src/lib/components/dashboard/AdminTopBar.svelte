@@ -1,9 +1,24 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
     import { toast } from '$lib/stores/toast.svelte';
     import Tooltip from '$lib/components/ui/Tooltip.svelte';
     import { subscribeToPush } from '$lib/push';
     
     let { sidebarOpen = $bindable() } = $props<{ sidebarOpen: boolean }>();
+    let searchTerm = $state('');
+
+    const adminDestinations = [
+        { label: 'Overview', href: '/admin' },
+        { label: 'Applications', href: '/admin/applications' },
+        { label: 'Service Requests', href: '/admin/service-requests' },
+        { label: 'User Directory', href: '/admin/users' },
+        { label: 'Task Board', href: '/admin/tasks' },
+        { label: 'Broadcasts', href: '/admin/broadcasts' },
+        { label: 'Monitoring', href: '/admin/monitoring' },
+        { label: 'Audit Logs', href: '/admin/audit' },
+        { label: 'Settings', href: '/admin/settings' }
+    ];
 
     async function handleActivatePush() {
         const sub = await subscribeToPush();
@@ -12,6 +27,24 @@
         } else {
             toast.info("Push subscription pending VAPID configuration.", "Push Protocol Status");
         }
+    }
+
+    function handleRouteSearch(event: SubmitEvent) {
+        event.preventDefault();
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) return;
+
+        const match = adminDestinations.find((item) =>
+            item.label.toLowerCase().includes(query) || item.href.toLowerCase().includes(query)
+        );
+
+        if (!match) {
+            toast.info(`No admin route matched "${searchTerm}".`, 'Route Search');
+            return;
+        }
+
+        goto(match.href);
+        searchTerm = '';
     }
 </script>
 
@@ -29,22 +62,23 @@
             </svg>
         </button>
 
-        <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/5 rounded-xl">
+        <form onsubmit={handleRouteSearch} class="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/5 rounded-xl">
             <span class="text-sm">🔍</span>
             <input 
                 type="text" 
-                placeholder="Global Search (Ctrl + K)" 
+                bind:value={searchTerm}
+                placeholder="Jump to routes, tools, or logs" 
                 class="bg-transparent border-none outline-none text-[13px] text-white/60 w-64 placeholder:text-white/20"
             />
-        </div>
+        </form>
     </div>
 
     <div class="flex items-center gap-4">
         <!-- System Health -->
         <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#22917a]/10 border border-[#22917a]/20 rounded-lg">
             <div class="w-2 h-2 rounded-full bg-[#22917a] animate-pulse"></div>
-            <span class="text-[10px] font-['Space_Mono'] text-[#22917a] uppercase tracking-wider font-bold">Systems Nominal</span>
-            <Tooltip text="All edge functions and database clusters are operating at zero latency." position="bottom" />
+            <span class="text-[10px] font-['Space_Mono'] text-[#22917a] uppercase tracking-wider font-bold">Live Admin Telemetry</span>
+            <Tooltip text="Operational state is derived from live Convex activity, queue pressure, and environment readiness." position="bottom" />
         </div>
 
         <div class="h-8 w-px bg-white/10 mx-2"></div>
@@ -63,8 +97,8 @@
         <!-- User Profile -->
         <div class="flex items-center gap-3 pl-2">
             <div class="text-right hidden sm:block">
-                <div class="text-[12px] font-bold text-white leading-none mb-1">Super Admin</div>
-                <div class="text-[10px] text-[var(--gold)] font-medium uppercase tracking-tighter">Root Authority</div>
+                <div class="text-[12px] font-bold text-white leading-none mb-1">{$page.data.adminEmail ?? 'Admin Session'}</div>
+                <div class="text-[10px] text-[var(--gold)] font-medium uppercase tracking-tighter">Protected Control Plane</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#b89844] flex items-center justify-center text-xl shadow-lg shadow-[#c9a84c]/20">
                 👨‍💻

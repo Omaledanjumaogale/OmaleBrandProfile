@@ -6,6 +6,12 @@ import { rateLimitMutation } from "./rateLimit";
 import { sessionTrackingMutation } from "./sessions";
 import { withAuditLog } from "./triggers";
 
+const DEFAULT_SETTINGS = {
+  registration_open: true,
+  maintenance_mode: false,
+  email_notifications: true,
+};
+
 // ── Multi-Platform Identity Sync ──────────────────────────────────
 // Ensures that every Firebase user has a local platform record
 // with independent subscription management and roles.
@@ -389,6 +395,49 @@ export const getSetting = query({
   args: { key: v.string() },
   handler: async (ctx, { key }) => {
     const s = await ctx.db.query("settings").withIndex("by_key", (q) => q.eq("key", key)).unique();
-    return s?.value ?? true;
+    if (s) {
+      return s.value;
+    }
+    return DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS] ?? null;
+  },
+});
+
+export const getAdminSettingsSnapshot = query({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db.query("settings").collect();
+    const map = new Map(settings.map((setting) => [setting.key, setting]));
+
+    return {
+      registration_open:
+        map.get("registration_open")?.value ?? DEFAULT_SETTINGS.registration_open,
+      maintenance_mode:
+        map.get("maintenance_mode")?.value ?? DEFAULT_SETTINGS.maintenance_mode,
+      email_notifications:
+        map.get("email_notifications")?.value ?? DEFAULT_SETTINGS.email_notifications,
+      updatedAt:
+        settings.reduce((latest, setting) => Math.max(latest, setting.updatedAt), 0) || null,
+    };
+  },
+});
+
+export const updateUserAdminState = mutation({
+  args: {
+    userId: v.id("users"),
+    role: v.union(v.literal("user"), v.literal("admin")),
+    plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
+    subscriptionStatus: v.union(v.literal("active"), v.literal("inactive"), v.literal("pending")),
+    isLocked: v.boolean(),
+    adminEmail: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await withAuditLog(ctx, "ADMIN_USER_STATE_UPDATE", args, async () => {
+      await ctx.db.patch(args.userId, {
+        role: args.role,
+        plan: args.plan,
+        subscriptionStatus: args.subscriptionStatus,
+        isLocked: args.isLocked,
+      });
+    });
   },
 });

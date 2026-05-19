@@ -1,36 +1,77 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { convex } from '$lib/convex';
-    import { api } from '$convex/_generated/api';
-    import { fade, fly } from 'svelte/transition';
-    import Tooltip from '$lib/components/ui/Tooltip.svelte';
+	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { page } from '$app/stores';
+	import { convex } from '$lib/convex';
+	import { api } from '$convex/_generated/api';
+	import { ui } from '$lib/stores/ui';
 
-    let users: any[] = $state([]);
-    let loading = $state(true);
-    let searchTerm = $state('');
+	type Role = 'user' | 'admin';
+	type Plan = 'free' | 'pro' | 'enterprise';
+	type SubscriptionStatus = 'active' | 'inactive' | 'pending';
 
-    onMount(() => {
-        const unsubscribe = convex.onUpdate(api.functions.getUsers, {}, (data) => {
-            users = data ?? [];
-            loading = false;
-        });
-        return unsubscribe;
-    });
+	type AdminUser = {
+		_id: string;
+		name: string;
+		email: string;
+		image?: string;
+		role: Role;
+		plan: Plan;
+		subscriptionStatus: SubscriptionStatus;
+		lastLogin: number;
+		isLocked?: boolean;
+	};
 
-    const filteredUsers = $derived(
-        users.filter(u => 
-            u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            u.email.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+	let users = $state<AdminUser[]>([]);
+	let loading = $state(true);
+	let savingUserId = $state<string | null>(null);
+	let searchTerm = $state('');
 
-    function getPlanColor(plan: string) {
-        switch (plan) {
-            case 'enterprise': return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
-            case 'pro': return 'text-[var(--gold)] bg-[var(--gold)]/10 border-[var(--gold)]/20';
-            default: return 'text-white/40 bg-white/5 border-white/10';
-        }
-    }
+	onMount(() => {
+		const unsubscribe = convex.onUpdate(api.functions.getUsers, {}, (data) => {
+			users = (data ?? []) as AdminUser[];
+			loading = false;
+		});
+		return unsubscribe;
+	});
+
+	const filteredUsers = $derived(
+		users.filter(
+			(u) =>
+				u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				u.email.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+	);
+
+	function getPlanColor(plan: Plan) {
+		switch (plan) {
+			case 'enterprise':
+				return 'text-purple-300 bg-purple-400/10 border-purple-400/20';
+			case 'pro':
+				return 'text-[var(--gold)] bg-[var(--gold)]/10 border-[var(--gold)]/20';
+			default:
+				return 'text-white/40 bg-white/5 border-white/10';
+		}
+	}
+
+	async function persistUser(user: AdminUser, message: string) {
+		savingUserId = String(user._id);
+		try {
+			await convex.mutation(api.functions.updateUserAdminState, {
+				userId: user._id as any,
+				role: user.role,
+				plan: user.plan,
+				subscriptionStatus: user.subscriptionStatus,
+				isLocked: Boolean(user.isLocked),
+				adminEmail: $page.data.adminEmail
+			});
+			ui.success(message, 'User Updated');
+		} catch (e: any) {
+			ui.error(e.message || 'Failed to update user.');
+		} finally {
+			savingUserId = null;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -65,7 +106,7 @@
                 <thead>
                     <tr class="border-b border-white/5 bg-white/[0.02]">
                         <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Identity</th>
-                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Status</th>
+                        <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Access</th>
                         <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Billing Tier</th>
                         <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Last Activity</th>
                         <th class="px-6 py-4 text-[10px] font-['Space_Mono'] uppercase tracking-[2px] text-white/40">Actions</th>
@@ -94,15 +135,29 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-1.5 h-1.5 rounded-full {user.subscriptionStatus === 'active' ? 'bg-teal-500' : 'bg-red-500'}"></div>
-                                        <span class="text-[11px] font-bold uppercase tracking-widest text-white/70">{user.subscriptionStatus}</span>
+                                    <div class="space-y-2 min-w-[180px]">
+                                        <select bind:value={user.role} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                            <option value="user">User</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                        <select bind:value={user.subscriptionStatus} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                            <option value="active">Active</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border {getPlanColor(user.plan)}">
-                                        {user.plan}
-                                    </span>
+                                    <div class="space-y-2 min-w-[150px]">
+                                        <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border {getPlanColor(user.plan)}">
+                                            {user.plan}
+                                        </span>
+                                        <select bind:value={user.plan} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                            <option value="free">Free</option>
+                                            <option value="pro">Pro</option>
+                                            <option value="enterprise">Enterprise</option>
+                                        </select>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-[11px] text-white/30 font-['Space_Mono']">
@@ -110,9 +165,29 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all" title="Edit Permissions">🛠️</button>
-                                        <button class="p-2 rounded-lg bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-500 transition-all" title="Suspend Account">⚠️</button>
+                                    <div class="flex flex-col sm:flex-row gap-2 min-w-[220px]">
+                                        <button
+                                            onclick={() => persistUser(user, `Saved access profile for ${user.name}.`)}
+                                            disabled={savingUserId === String(user._id)}
+                                            class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-[11px] uppercase tracking-[2px] font-bold disabled:opacity-50"
+                                            title="Save User Access"
+                                        >
+                                            {savingUserId === String(user._id) ? 'Saving...' : 'Save'}
+                                        </button>
+                                        <button
+                                            onclick={() => {
+                                                user.isLocked = !user.isLocked;
+                                                persistUser(
+                                                    user,
+                                                    `${user.isLocked ? 'Locked' : 'Unlocked'} ${user.name}'s account.`
+                                                );
+                                            }}
+                                            disabled={savingUserId === String(user._id)}
+                                            class="px-4 py-2 rounded-xl {user.isLocked ? 'bg-teal-500/10 text-teal-200 border border-teal-500/20' : 'bg-red-500/10 text-red-200 border border-red-500/20'} transition-all text-[11px] uppercase tracking-[2px] font-bold disabled:opacity-50"
+                                            title={user.isLocked ? 'Unlock Account' : 'Lock Account'}
+                                        >
+                                            {user.isLocked ? 'Unlock' : 'Lock'}
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
