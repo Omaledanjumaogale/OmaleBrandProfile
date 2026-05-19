@@ -1,13 +1,16 @@
 import { json } from '@sveltejs/kit';
+import { api } from '$convex/_generated/api';
 import {
 	ADMIN_SESSION_COOKIE,
 	createAdminSessionFromFirebase,
 	getAdminRuntimeStatus,
 	getAdminSessionCookieOptions
 } from '$lib/server/adminAuth';
+import { createServerConvexClient } from '$lib/server/convexServer';
+import { buildAdminLoginRateLimitKey } from '$lib/server/authRateLimit';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies, getClientAddress }) => {
 	if (!getAdminRuntimeStatus().configured) {
 		return json(
 			{ error: 'Admin authentication is not configured in the deployment environment.' },
@@ -16,6 +19,24 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	try {
+		const limiterClient = createServerConvexClient();
+		const rateLimitKey = buildAdminLoginRateLimitKey(
+			getClientAddress(),
+			request.headers.get('user-agent')
+		);
+		const limiter = await limiterClient.mutation(api.functions.consumeAdminLoginRateLimit, {
+			key: rateLimitKey
+		});
+		if (!limiter.allowed) {
+			return json(
+				{
+					error: 'Too many admin login attempts. Please wait a few minutes and try again.',
+					resetAt: limiter.resetAt
+				},
+				{ status: 429 }
+			);
+		}
+
 		const body = (await request.json()) as { idToken?: string };
 		if (!body.idToken) {
 			return json({ error: 'Missing Firebase ID token.' }, { status: 400 });

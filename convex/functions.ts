@@ -85,6 +85,28 @@ async function getSettingValue(ctx: Parameters<typeof query>[0] extends never ? 
 	return DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS] ?? null;
 }
 
+async function getRuntimeFlags(ctx: Parameters<typeof query>[0] extends never ? never : any) {
+	return {
+		registration_open: Boolean(await getSettingValue(ctx, "registration_open")),
+		maintenance_mode: Boolean(await getSettingValue(ctx, "maintenance_mode")),
+		email_notifications: Boolean(await getSettingValue(ctx, "email_notifications")),
+	};
+}
+
+async function assertPlatformOperationAllowed(
+	ctx: Parameters<typeof query>[0] extends never ? never : any,
+	options: { allowDuringMaintenance?: boolean; requiresRegistrationOpen?: boolean } = {},
+) {
+	const flags = await getRuntimeFlags(ctx);
+	if (flags.maintenance_mode && !options.allowDuringMaintenance) {
+		throw new Error("The platform is currently in maintenance mode. Please try again later.");
+	}
+	if (options.requiresRegistrationOpen && !flags.registration_open) {
+		throw new Error("Registration is currently closed.");
+	}
+	return flags;
+}
+
 export const syncUser = mutation({
 	args: {
 		email: v.string(),
@@ -211,6 +233,7 @@ export const submitServiceRequest = mutation({
 	},
 	handler: async (ctx, rawArgs) => {
 		const actor = await getOptionalActor(ctx);
+		await assertPlatformOperationAllowed(ctx);
 		const args = serviceRequestSchema.parse(normalizeObject(rawArgs));
 		const limiter = await rateLimitMutation(ctx, {
 			key: `service:${actor?.firebaseUid ?? args.email}:${args.sessionId ?? "anonymous"}`,
@@ -288,6 +311,7 @@ export const submitApplicationWorkflow = mutation({
 	},
 	handler: async (ctx, rawArgs) => {
 		const actor = await getOptionalActor(ctx);
+		await assertPlatformOperationAllowed(ctx, { requiresRegistrationOpen: true });
 		const args = applicationSchema.parse(normalizeObject(rawArgs));
 		const limiter = await rateLimitMutation(ctx, {
 			key: `apply:${actor?.firebaseUid ?? args.email}:${args.sessionId ?? "anonymous"}`,
@@ -595,6 +619,32 @@ export const updateSetting = mutation({
 export const getSetting = query({
 	args: { key: v.string() },
 	handler: async (ctx, { key }) => await getSettingValue(ctx, key),
+});
+
+export const getPublicRuntimeFlags = query({
+	args: {},
+	handler: async (ctx) => {
+		const flags = await getRuntimeFlags(ctx);
+		const settings = await ctx.db.query("settings").collect();
+		return {
+			...flags,
+			updatedAt: settings.reduce((latest, setting) => Math.max(latest, setting.updatedAt), 0) || null,
+		};
+	},
+});
+
+export const consumeAdminLoginRateLimit = mutation({
+	args: {
+		key: v.string(),
+	},
+	handler: async (ctx, { key }) => {
+		const limiter = await rateLimitMutation(ctx, {
+			key: `admin-login:${cleanString(key)}`,
+			max: 5,
+			window: 15 * 60 * 1000,
+		});
+		return limiter;
+	},
 });
 
 export const getAdminSettingsSnapshot = query({
