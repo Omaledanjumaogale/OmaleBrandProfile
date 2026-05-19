@@ -1,19 +1,55 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { loginWithEmail, logout } from '$lib/stores/auth';
+	import { getIdToken } from '$lib/firebase';
 	import { fade, fly } from 'svelte/transition';
 
-	let { form, data } = $props<{
-		form?: {
-			email?: string;
-			error?: string;
-		};
+	let { data } = $props<{
 		data: {
 			adminRuntime: {
 				configured: boolean;
-				email: string | null;
-				source: 'private' | 'legacy-public';
 			};
 		};
 	}>();
+
+	let email = $state('');
+	let password = $state('');
+	let error = $state('');
+	let loading = $state(false);
+
+	async function handleAdminLogin(event: SubmitEvent) {
+		event.preventDefault();
+		if (loading) return;
+
+		loading = true;
+		error = '';
+
+		try {
+			await loginWithEmail(email, password);
+			const idToken = await getIdToken();
+			if (!idToken) {
+				throw new Error('Unable to retrieve Firebase session token.');
+			}
+
+			const response = await fetch('/admin/login/session', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken })
+			});
+
+			if (!response.ok) {
+				const payload = await response.json().catch(() => ({ error: 'Admin login failed.' }));
+				throw new Error(payload.error || 'Admin login failed.');
+			}
+
+			await goto('/admin');
+		} catch (err) {
+			await logout();
+			error = err instanceof Error ? err.message : 'Admin login failed.';
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -47,28 +83,22 @@
         {#if !data.adminRuntime.configured}
             <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-[12px] text-center font-medium">
                 Admin authentication is not configured in this deployment yet. Set
-                <code class="font-mono text-red-200">SUPER_ADMIN_EMAIL</code>,
-                <code class="font-mono text-red-200">SUPER_ADMIN_PASSWORD</code>, and
+                <code class="font-mono text-red-200">PUBLIC_FIREBASE_API_KEY</code>,
+                <code class="font-mono text-red-200">PUBLIC_CONVEX_URL</code>, and
                 <code class="font-mono text-red-200">ADMIN_SESSION_SECRET</code>.
-            </div>
-        {:else if data.adminRuntime.source === 'legacy-public'}
-            <div class="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-100 text-[12px] text-center font-medium">
-                Admin access is running on legacy public environment keys. Migrate the deployment to
-                private <code class="font-mono text-amber-50">SUPER_ADMIN_*</code> variables before production cutover.
             </div>
         {/if}
 
         <!-- Login Form -->
-        <form method="POST" class="space-y-6">
+        <form onsubmit={handleAdminLogin} class="space-y-6">
             <div class="space-y-2">
                 <label for="email" class="block text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[2px] text-white/60 ml-1">
                     Email Address
                 </label>
                 <input 
                     id="email" 
-                    name="email"
                     type="email" 
-                    value={form?.email ?? ''}
+                    bind:value={email}
                     required
                     placeholder="admin@ewinproject.org"
                     class="w-full bg-[#0b0a07] border border-[#c9a84c]/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 outline-none transition-all"
@@ -81,20 +111,20 @@
                 </label>
                 <input 
                     id="password" 
-                    name="password"
                     type="password" 
+                    bind:value={password}
                     required
                     placeholder="••••••••••••"
                     class="w-full bg-[#0b0a07] border border-[#c9a84c]/10 rounded-xl px-4 py-3 text-[14px] text-white focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 outline-none transition-all"
                 />
             </div>
 
-            {#if form?.error}
+            {#if error}
                 <div 
                     transition:fade
                     class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[12px] text-center font-medium"
                 >
-                    {form.error}
+                    {error}
                 </div>
             {/if}
 
@@ -103,7 +133,7 @@
                 disabled={!data.adminRuntime.configured}
                 class="w-full bg-[var(--gold)] text-[#0b0a07] font-bold py-4 rounded-xl uppercase tracking-[3px] text-[12px] hover:bg-[#b89844] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(201,168,76,0.2)] flex items-center justify-center gap-3"
             >
-                AUTHORIZE ACCESS 🛡️
+                {loading ? 'VERIFYING...' : 'AUTHORIZE ACCESS 🛡️'}
             </button>
         </form>
 

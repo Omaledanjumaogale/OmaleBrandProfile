@@ -3,7 +3,7 @@
 // for authenticated backend queries/mutations.
 
 import { writable, derived, get } from 'svelte/store';
-import { convex } from '$lib/convex';
+import { convex, getClientSessionContext } from '$lib/convex';
 import { onAuthChange, signInEmail, signInGoogle, signOutUser, getIdToken } from '$lib/firebase';
 import type { User } from 'firebase/auth';
 
@@ -16,6 +16,9 @@ export interface AuthUser {
 	photoURL: string | null;
 	/** Role resolved from Convex — undefined while loading */
 	role?: 'admin' | 'user';
+	plan?: 'free' | 'pro' | 'enterprise';
+	subscriptionStatus?: 'active' | 'inactive' | 'pending';
+	isLocked?: boolean;
 }
 
 interface AuthState {
@@ -74,25 +77,26 @@ export function initAuth(): () => void {
 			try {
 				// ── Sync with Convex ──
 				// This ensures the Firebase identity exists in the platform database
-				const userData = await (convex as any).mutation("functions:syncUser", {
-					firebaseUid: firebaseUser.uid,
+				const session = getClientSessionContext();
+				await (convex as any).mutation("functions:syncUser", {
 					email: firebaseUser.email ?? "",
 					name: firebaseUser.displayName ?? "User",
 					image: firebaseUser.photoURL ?? undefined,
-					sessionId: (window as any).omale_session_id
+					...session
 				});
 
 				// Fetch full user record from Convex for roles/subscription
-				const platformUser = await (convex as any).query("functions:getUserByFirebaseUid", {
-					firebaseUid: firebaseUser.uid
-				});
+				const platformUser = await (convex as any).query("functions:getCurrentUser", {});
 
 				const authUser: AuthUser = {
 					uid:         firebaseUser.uid,
 					email:       firebaseUser.email,
 					displayName: firebaseUser.displayName,
 					photoURL:    firebaseUser.photoURL,
-					role:        platformUser?.role ?? 'user'
+					role:        platformUser?.role ?? 'user',
+					plan:        platformUser?.plan,
+					subscriptionStatus: platformUser?.subscriptionStatus,
+					isLocked:    platformUser?.isLocked
 				};
 				_auth.set({ user: authUser, loading: false, error: null, ready: true });
 			} catch (err) {

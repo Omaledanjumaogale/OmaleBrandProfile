@@ -32,10 +32,10 @@
 	let showReportModal = $state(false);
 
 	async function fetchData() {
-		if (!$currentUser?.email) return;
+		if (!$currentUser?.uid) return;
 		try {
 			const [tks, bcasts] = await Promise.all([
-				convex.query(api.functions.getTasksForUser, { email: $currentUser.email }),
+				convex.query(api.functions.getTasksForUser, {}),
 				convex.query(api.functions.getLatestBroadcasts, {})
 			]);
 			tasks = (tks as DashboardTask[]) || [];
@@ -54,7 +54,7 @@
 	async function submitReport() {
 		if (!selectedTask || !reportText) return;
 		await convex.mutation(api.functions.updateTaskStatus, {
-			taskId: selectedTask._id,
+			taskId: selectedTask._id as any,
 			status: 'submitted',
 			report: reportText
 		});
@@ -64,15 +64,15 @@
 	}
 
 	async function updateStatus(taskId: string, status: DashboardTask['status']) {
-		await convex.mutation(api.functions.updateTaskStatus, { taskId, status });
+		await convex.mutation(api.functions.updateTaskStatus, { taskId: taskId as any, status });
 		fetchData();
 	}
 
 	let metrics = $derived([
 		{ label: 'Active Tasks 🎯', value: tasks.filter(t => t.status !== 'completed').length.toString(), trend: 'ASSIGNED', icon: '🎯', color: 'gold' },
 		{ label: 'Completed 🏆', value: tasks.filter(t => t.status === 'completed').length.toString(), trend: 'TOTAL', icon: '🏆', color: 'teal' },
-		{ label: 'Trust Score 🛡️', value: '98%', trend: 'ELITE', icon: '🛡️', color: 'blue' },
-		{ label: 'Earnings 💰', value: '₦0.00', trend: 'PENDING', icon: '💰', color: 'gold' }
+		{ label: 'Access Plan 🛡️', value: $currentUser?.plan?.toUpperCase() ?? 'FREE', trend: $currentUser?.subscriptionStatus?.toUpperCase() ?? 'ACTIVE', icon: '🛡️', color: 'blue' },
+		{ label: 'Earnings 💰', value: '₦0.00', trend: $currentUser?.role?.toUpperCase() ?? 'MEMBER', icon: '💰', color: 'gold' }
 	]);
 </script>
 

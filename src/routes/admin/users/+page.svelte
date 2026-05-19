@@ -62,8 +62,7 @@
 				role: user.role,
 				plan: user.plan,
 				subscriptionStatus: user.subscriptionStatus,
-				isLocked: Boolean(user.isLocked),
-				adminEmail: $page.data.adminEmail
+				isLocked: Boolean(user.isLocked)
 			});
 			ui.success(message, 'User Updated');
 		} catch (e: any) {

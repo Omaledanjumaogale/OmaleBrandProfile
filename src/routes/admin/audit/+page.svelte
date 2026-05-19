@@ -12,7 +12,7 @@
 
     onMount(() => {
         const unsubscribe = convex.onUpdate(api.functions.getAuditLogs, {}, (data) => {
-            logs = data ?? [];
+            logs = Array.isArray(data) ? data : data?.page ?? [];
             loading = false;
         });
         return unsubscribe;

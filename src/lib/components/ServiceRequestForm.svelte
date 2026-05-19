@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { convex, getSessionId } from '$lib/convex';
+	import { convex, getClientSessionContext } from '$lib/convex';
 	import { api } from '$convex/_generated/api';
 
 	let formData = $state({
@@ -70,8 +70,7 @@
 
 			await convex.mutation(api.functions.submitServiceRequest, {
 				...sanitizedData as any,
-				sessionId: getSessionId(),
-				firebaseUid: $currentUser?.uid
+				...getClientSessionContext()
 			});
 			success = true;
 			// Reset form data except for status flags

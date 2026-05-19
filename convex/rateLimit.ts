@@ -24,7 +24,7 @@ export const rateLimitMutation = async (
             count: 1,
             windowStart: now
         });
-        return { allowed: true, remaining: opts.max - 1 };
+        return { allowed: true, remaining: opts.max - 1, resetAt: now + opts.window };
     }
 
     // Check if the current window has expired; if so, reset the bucket.
@@ -33,7 +33,7 @@ export const rateLimitMutation = async (
             count: 1,
             windowStart: now
         });
-        return { allowed: true, remaining: opts.max - 1 };
+        return { allowed: true, remaining: opts.max - 1, resetAt: now + opts.window };
     }
 
     // If still in the same window, check if the limit is reached.
@@ -42,11 +42,11 @@ export const rateLimitMutation = async (
         await ctx.db.patch(limit._id, {
             count: newCount
         });
-        return { allowed: true, remaining: opts.max - newCount };
+        return { allowed: true, remaining: opts.max - newCount, resetAt: limit.windowStart + opts.window };
     }
 
     // Rate limited - 0 tokens remaining in bucket.
-    return { allowed: false, remaining: 0 };
+    return { allowed: false, remaining: 0, resetAt: limit.windowStart + opts.window };
 };
 
 export const rateLimitQuery = async (

@@ -19,6 +19,7 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 
 	return {
 		isAdmin: true,
-		adminEmail: session.email
+		adminEmail: session.email,
+		adminUid: session.uid
 	};
 };

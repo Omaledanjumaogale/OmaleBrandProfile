@@ -1,70 +1,21 @@
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { api } from '$convex/_generated/api';
+import { createServerConvexClient } from './convexServer';
+import {
+	resolvePlatformAccess,
+	verifyFirebaseIdentityToken,
+	type VerifiedFirebaseIdentity
+} from './firebaseIdentity';
+import {
+	createSignedSessionPayload,
+	verifySignedSessionPayload,
+	type SignedSessionPayload
+} from './sessionToken';
 
 export const ADMIN_SESSION_COOKIE = 'admin_session';
-const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 12;
-
-type AdminConfig = {
-	email: string;
-	password: string;
-	secret: string;
-	source: 'private' | 'legacy-public';
-};
-
-function toBase64Url(input: Uint8Array | string) {
-	const bytes = typeof input === 'string' ? new TextEncoder().encode(input) : input;
-	let binary = '';
-
-	for (const byte of bytes) {
-		binary += String.fromCharCode(byte);
-	}
-
-	return btoa(binary)
-		.replace(/\+/g, '-')
-		.replace(/\//g, '_')
-		.replace(/=+$/g, '');
-}
-
-function getAdminConfig(): AdminConfig | null {
-	const secret = env.ADMIN_SESSION_SECRET?.trim();
-	const privateEmail = env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-	const privatePassword = env.SUPER_ADMIN_PASSWORD?.trim();
-	const publicEmail = publicEnv.PUBLIC_SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-	const publicPassword = publicEnv.PUBLIC_SUPER_ADMIN_PASSWORD?.trim();
-
-	if (privateEmail && privatePassword && secret) {
-		return {
-			email: privateEmail,
-			password: privatePassword,
-			secret,
-			source: 'private'
-		};
-	}
-
-	if (publicEmail && publicPassword && secret) {
-		return {
-			email: publicEmail,
-			password: publicPassword,
-			secret,
-			source: 'legacy-public'
-		};
-	}
-
-	return null;
-}
-
-async function signPayload(payload: string, secret: string) {
-	const key = await crypto.subtle.importKey(
-		'raw',
-		new TextEncoder().encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
-	const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
-	return toBase64Url(new Uint8Array(signature));
-}
+const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 6;
 
 export function getAdminSessionCookieOptions() {
 	return {
@@ -77,73 +28,78 @@ export function getAdminSessionCookieOptions() {
 }
 
 export function getAdminRuntimeStatus() {
-	const config = getAdminConfig();
 	return {
-		configured: Boolean(config),
-		email: config?.email ?? null,
-		source: config?.source ?? 'private'
+		configured: Boolean(
+			env.ADMIN_SESSION_SECRET?.trim() &&
+				publicEnv.PUBLIC_FIREBASE_API_KEY?.trim() &&
+				publicEnv.PUBLIC_CONVEX_URL?.trim()
+		)
 	};
 }
 
-export async function validateAdminCredentials(email: string, password: string) {
-	const config = getAdminConfig();
-	if (!config) {
-		return { ok: false as const, reason: 'missing_config' as const };
+async function getSecret() {
+	const secret = env.ADMIN_SESSION_SECRET?.trim();
+	if (!secret) {
+		throw new Error('ADMIN_SESSION_SECRET is not configured.');
 	}
-
-	if (email.trim().toLowerCase() !== config.email || password !== config.password) {
-		return { ok: false as const, reason: 'invalid_credentials' as const };
-	}
-
-	return { ok: true as const, email: config.email };
+	return secret;
 }
 
-export async function createAdminSessionToken(email: string) {
-	const config = getAdminConfig();
-	if (!config) {
-		throw new Error('Admin authentication environment is not configured.');
-	}
-
-	const payload = JSON.stringify({
-		email,
-		exp: Date.now() + ADMIN_SESSION_TTL_SECONDS * 1000
-	});
-	const signature = await signPayload(payload, config.secret);
-	return `${encodeURIComponent(payload)}.${signature}`;
+export async function createAdminSessionToken(payload: Omit<SignedSessionPayload, 'exp'>) {
+	return createSignedSessionPayload(
+		payload,
+		await getSecret(),
+		ADMIN_SESSION_TTL_SECONDS * 1000
+	);
 }
 
 export async function verifyAdminSessionToken(token: string | undefined) {
-	const config = getAdminConfig();
-	if (!config || !token) {
+	if (!token) {
 		return null;
 	}
-
-	const dotIndex = token.lastIndexOf('.');
-	if (dotIndex === -1) {
-		return null;
-	}
-
-	const encodedPayload = token.slice(0, dotIndex);
-	const signature = token.slice(dotIndex + 1);
-	const payload = decodeURIComponent(encodedPayload);
-	const expectedSignature = await signPayload(payload, config.secret);
-
-	if (signature !== expectedSignature) {
-		return null;
-	}
-
-	try {
-		const data = JSON.parse(payload) as { email?: string; exp?: number };
-		if (!data.email || !data.exp || data.exp < Date.now()) {
-			return null;
-		}
-
-		if (data.email.toLowerCase() !== config.email) {
-			return null;
-		}
-
-		return { email: data.email };
-	} catch {
-		return null;
-	}
+	return verifySignedSessionPayload(token, await getSecret());
 }
+
+export async function verifyAdminLogin(idToken: string) {
+	const apiKey = publicEnv.PUBLIC_FIREBASE_API_KEY?.trim();
+	if (!apiKey) {
+		throw new Error('PUBLIC_FIREBASE_API_KEY is not configured.');
+	}
+
+	const identity = await verifyFirebaseIdentityToken(idToken, apiKey);
+	const convex = createServerConvexClient(idToken);
+	const platformUser = await convex.query(api.functions.getCurrentUser, {});
+	const access = resolvePlatformAccess({
+		role: platformUser?.role,
+		subscriptionStatus: platformUser?.subscriptionStatus,
+		isLocked: platformUser?.isLocked
+	});
+
+	if (!platformUser || !access.allowed) {
+		throw new Error(
+			access.reason === 'inactive_subscription'
+				? 'Your platform subscription is not active for admin access.'
+				: access.reason === 'locked'
+					? 'This account is locked.'
+					: 'This Firebase account is not authorized for admin access.'
+		);
+	}
+
+	return {
+		identity,
+		platformUser
+	};
+}
+
+export async function createAdminSessionFromFirebase(idToken: string) {
+	const { identity, platformUser } = await verifyAdminLogin(idToken);
+
+	return createAdminSessionToken({
+		uid: identity.uid,
+		email: platformUser.email,
+		role: 'admin'
+	});
+}
+
+export type AdminSession = Awaited<ReturnType<typeof verifyAdminSessionToken>>;
+export type FirebaseAdminIdentity = VerifiedFirebaseIdentity;

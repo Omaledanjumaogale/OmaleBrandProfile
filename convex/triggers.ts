@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { mutation, type MutationCtx } from "./_generated/server";
+import type { MutationCtx } from "./_generated/server";
+import { buildAuditActor } from "./auth";
 
 /**
  * Zero-Latency Lifecycle Triggers (triggers.ts)
@@ -11,11 +11,12 @@ export async function withAuditLog(
     ctx: MutationCtx, 
     action: string, 
     payload: any, 
-    handler: () => Promise<any>
+    handler: () => Promise<any>,
+    actor?: Parameters<typeof buildAuditActor>[0]
 ) {
     const timestamp = Date.now();
-    // Safely extract metadata from payload if it exists
-    const adminEmail = payload?.adminEmail || payload?.firebaseUid || "system";
+    const auditActor = buildAuditActor(actor);
+    const adminEmail = auditActor.adminEmail;
     const sessionId = payload?.sessionId || "platform";
 
     try {
@@ -26,6 +27,9 @@ export async function withAuditLog(
             payload,
             timestamp,
             adminEmail,
+            actorUid: auditActor.actorUid,
+            actorRole: auditActor.actorRole,
+            platformKey: auditActor.platformKey,
             sessionId
         });
 
@@ -36,6 +40,9 @@ export async function withAuditLog(
             payload: { ...payload, error: String(error) },
             timestamp,
             adminEmail,
+            actorUid: auditActor.actorUid,
+            actorRole: auditActor.actorRole,
+            platformKey: auditActor.platformKey,
             sessionId
         });
         throw error;

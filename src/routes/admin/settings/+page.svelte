@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { convex } from '$lib/convex';
 	import { api } from '$convex/_generated/api';
 	import { ui } from '$lib/stores/ui';
@@ -17,7 +16,6 @@
 		data: {
 			runtimeStatus: {
 				adminAuth: boolean;
-				adminAuthSource: 'private' | 'legacy-public';
 				convex: boolean;
 				firebase: boolean;
 				email: boolean;
@@ -52,8 +50,7 @@
 		try {
 			await convex.mutation(api.functions.updateSetting, {
 				key,
-				value: newValue,
-				adminEmail: $page.data.adminEmail
+				value: newValue
 			});
 			ui.success(`Global setting "${key}" updated.`, 'System Configured');
 		} catch (e: any) {
@@ -83,7 +80,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {#each [
-            { label: 'Admin Auth', value: data.runtimeStatus.adminAuth, detail: data.runtimeStatus.adminAuthSource === 'legacy-public' ? 'Legacy public env fallback detected' : 'Signed admin session cookies' },
+            { label: 'Admin Auth', value: data.runtimeStatus.adminAuth, detail: 'Signed Firebase-derived admin sessions' },
             { label: 'Convex', value: data.runtimeStatus.convex, detail: 'Realtime data backend URL detected' },
             { label: 'Firebase', value: data.runtimeStatus.firebase, detail: 'Public auth environment configured' },
             { label: 'Email', value: data.runtimeStatus.email, detail: 'Transactional delivery configured' }

@@ -26,7 +26,7 @@
         const unsubLogs = convex.onUpdate(api.functions.getAuditLogs, { 
             paginationOpts: { numItems: 8, cursor: null } 
         }, (data) => {
-            recentActivity = data?.page ?? [];
+            recentActivity = Array.isArray(data) ? data : data?.page ?? [];
             loading = false;
         });
 

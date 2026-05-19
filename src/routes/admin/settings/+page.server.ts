@@ -9,7 +9,6 @@ export const load: PageServerLoad = async () => {
 	return {
 		runtimeStatus: {
 			adminAuth: adminRuntime.configured,
-			adminAuthSource: adminRuntime.source,
 			convex: Boolean(publicEnv.PUBLIC_CONVEX_URL),
 			firebase: Boolean(publicEnv.PUBLIC_FIREBASE_API_KEY && publicEnv.PUBLIC_FIREBASE_PROJECT_ID),
 			email: Boolean(privateEnv.RESEND_API_KEY)

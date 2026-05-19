@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { convex, getSessionId } from '$lib/convex';
+	import { convex, getClientSessionContext } from '$lib/convex';
 	import { api } from '$convex/_generated/api';
 
 	let form = $state({
@@ -17,8 +17,7 @@
 		workingExperience: '',
 		skills: '',
 		motivationalStatement: '',
-		monthlyEarningsTarget: '',
-		sessionId: getSessionId()
+		monthlyEarningsTarget: ''
 	});
 
 	let loading = $state(false);
@@ -30,7 +29,7 @@
 		error = '';
 
 		try {
-			await convex.mutation(api.functions.submitApplicationWorkflow, form);
+			await convex.mutation(api.functions.submitApplicationWorkflow, { ...form, ...getClientSessionContext() });
 			goto('/register/success');
 		} catch (err: any) {
 			error = err.message || 'An error occurred while submitting your application.';
