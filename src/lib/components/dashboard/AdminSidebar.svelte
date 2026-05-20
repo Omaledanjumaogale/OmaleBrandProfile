@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
+    import { logout } from '$lib/stores/auth';
     import { fade, slide } from 'svelte/transition';
 
     let { isOpen = true } = $props<{ isOpen?: boolean }>();
@@ -23,6 +25,11 @@
     ];
 
     const isActive = (href: string) => $page.url.pathname === href;
+
+    async function handleLogout() {
+        await logout();
+        await goto('/admin/logout');
+    }
 </script>
 
 <aside 
@@ -79,15 +86,16 @@
 
     <!-- Bottom Action -->
     <div class="absolute bottom-6 left-0 w-full px-4">
-        <a 
-            href="/admin/logout"
+        <button 
+            type="button"
+            onclick={handleLogout}
             class="flex items-center gap-4 px-3 py-3 rounded-xl text-red-500/60 hover:bg-red-500/10 hover:text-red-500 transition-all"
         >
             <span class="text-lg shrink-0">🚪</span>
             {#if isOpen}
                 <span in:fade class="text-[13px] font-bold uppercase tracking-[2px]">Logout</span>
             {/if}
-        </a>
+        </button>
     </div>
 </aside>
 

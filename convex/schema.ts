@@ -7,6 +7,7 @@ export default defineSchema({
   // Each platform (this Convex instance) manages its own roles and status.
   users: defineTable({
     firebaseUid: v.string(), // The global identity key from Firebase
+    platformKey: v.string(),
     name: v.string(),
     email: v.string(),
     image: v.optional(v.string()),
@@ -15,6 +16,8 @@ export default defineSchema({
     subscriptionStatus: v.union(v.literal("active"), v.literal("inactive"), v.literal("pending")),
     lastLogin: v.number(),
     isLocked: v.optional(v.boolean()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_firebaseUid", ["firebaseUid"])
     .index("by_email", ["email"]),
@@ -50,12 +53,23 @@ export default defineSchema({
     userId: v.optional(v.id("users")),
     fullName: v.string(),
     email: v.string(),
+    whatsappNumber: v.string(),
+    mobileNumber: v.string(),
+    address: v.string(),
+    stateOfResidence: v.string(),
+    lgaOfResidence: v.string(),
+    company: v.optional(v.string()),
     serviceType: v.string(),
     budget: v.string(),
     description: v.string(),
+    bestTimeToReach: v.string(),
+    urgency: v.string(),
+    preferredCommunication: v.string(),
+    needType: v.string(),
     status: v.union(v.literal("pending"), v.literal("contacted"), v.literal("completed"), v.literal("archived")),
     createdAt: v.number(),
-  }).index("by_status", ["status"]),
+    updatedAt: v.optional(v.number()),
+  }).index("by_status", ["status"]).index("by_email", ["email"]),
 
   // ── Enterprise Infrastructure Tables ─────────────────────────────
   
@@ -64,12 +78,20 @@ export default defineSchema({
     payload: v.any(),
     timestamp: v.number(),
     adminEmail: v.optional(v.string()),
+    actorUid: v.optional(v.string()),
+    actorRole: v.optional(v.string()),
+    platformKey: v.optional(v.string()),
     sessionId: v.optional(v.string()),
   }).index("by_timestamp", ["timestamp"]),
 
   sessions: defineTable({
     sessionId: v.string(),
     email: v.optional(v.string()), // Stores firebaseUid or email
+    firebaseUid: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
+    ipAddress: v.optional(v.string()),
+    platformKey: v.optional(v.string()),
+    isAuthenticated: v.optional(v.boolean()),
     startTime: v.number(),
     lastActivity: v.number(),
     actionsCount: v.number(),
@@ -93,15 +115,27 @@ export default defineSchema({
     description: v.string(),
     deadline: v.number(),
     status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("submitted"), v.literal("completed")),
+    report: v.optional(v.string()),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdByUserId: v.optional(v.id("users")),
   }).index("by_assignee", ["assigneeId"]),
 
   broadcasts: defineTable({
     title: v.string(),
     message: v.string(),
     type: v.union(v.literal("info"), v.literal("warning"), v.literal("critical"), v.literal("update")),
+    sender: v.optional(v.string()),
+    createdByUserId: v.optional(v.id("users")),
     target: v.optional(v.string()),
     timestamp: v.number(),
     active: v.boolean(),
   }).index("by_active", ["active"]),
+
+  apiCache: defineTable({
+    key: v.string(),
+    value: v.any(),
+    expiresAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_key", ["key"]).index("by_expiresAt", ["expiresAt"]),
 });

@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentListingX — Interactive Platform Lesson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#0A6E4A;--g2:#17A878;--g3:#0D8A5C;--gl:#edfaf3;
+  --gold:#C9A227;--gf:#F0C040;--gold-l:#fef3c7;
+  --teal:#0ECAD4;--red:#E63946;
+  --bg:#031208;--bg2:#061810;--bg3:#0A2915;
+  --card:rgba(10,41,21,0.88);
+  --br:rgba(23,168,120,0.18);--br2:rgba(201,162,39,0.22);
+  --tw:#F0FFF4;--tm:rgba(240,255,244,0.62);--td:rgba(240,255,244,0.35);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--tw);overflow-x:hidden;line-height:1.65}
+h1,h2,h3,h4{font-family:var(--serif);letter-spacing:-.02em}
+::selection{background:rgba(23,168,120,.22);color:#fff}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--g1);border-radius:9999px}
+
+/* BG LAYERS */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 15% 10%,rgba(23,168,120,.1) 0,transparent 60%),
+    radial-gradient(ellipse 45% 40% at 85% 85%,rgba(201,162,39,.07) 0,transparent 55%),
+    radial-gradient(ellipse 50% 60% at 70% 30%,rgba(14,202,212,.05) 0,transparent 55%)}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(23,168,120,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,168,120,.03) 1px,transparent 1px);
+  background-size:56px 56px}
+canvas#pts{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.45}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;right:0;z-index:200;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--g2),var(--gf));
+  box-shadow:0 0 12px rgba(23,168,120,.6);transition:width .1s linear}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(3,18,8,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--br);height:58px;display:flex;align-items:center;padding:0 24px}
+.hdr{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-ic{width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 16px rgba(23,168,120,.42)}
+.logo-tx{font-family:var(--serif);font-size:1.1rem;font-weight:800;color:var(--tw)}
+.logo-tx span{color:var(--gf)}
+.hdr-wa{padding:7px 18px;border-radius:9999px;background:var(--gold);color:#031208;
+  font-weight:700;font-size:12.5px;text-decoration:none;transition:all .2s;
+  box-shadow:0 4px 14px rgba(201,162,39,.3)}
+.hdr-wa:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(201,162,39,.4)}
+
+/* LAYOUT */
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+.wrap-sm{max-width:820px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+section{position:relative;z-index:1}
+.sec{padding:88px 0}
+.sec-sm{padding:60px 0}
+
+/* SECTION BADGE */
+.sbadge{display:inline-flex;align-items:center;gap:7px;padding:5px 15px;border-radius:9999px;
+  border:1px solid var(--br);background:rgba(10,41,21,.6);
+  font-size:11.5px;font-weight:700;color:var(--g2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:18px}
+.sec-h2{font-size:clamp(1.8rem,4.2vw,3.1rem);font-weight:800;line-height:1.08;color:var(--tw);margin-bottom:14px}
+.gtext{background:linear-gradient(135deg,var(--g2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.goldtext{background:linear-gradient(135deg,var(--gold),var(--gf));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-sub{font-size:1.05rem;color:var(--tm);line-height:1.73}
+
+/* CARDS */
+.gc{background:var(--card);border:1px solid var(--br);border-radius:20px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+.gc::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(23,168,120,.04) 0,transparent 55%);pointer-events:none}
+.gc:hover{border-color:rgba(23,168,120,.38);
+  box-shadow:0 0 38px rgba(23,168,120,.18),0 20px 56px rgba(0,0,0,.28);transform:translateY(-3px)}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:100px 24px 80px;text-align:center;overflow:hidden}
+.hero-ey{display:inline-flex;align-items:center;gap:8px;padding:6px 18px;
+  border-radius:9999px;border:1px solid var(--br2);background:rgba(201,162,39,.08);
+  font-size:12px;font-weight:600;color:var(--gf);letter-spacing:.07em;text-transform:uppercase;
+  margin-bottom:28px;animation:fadeDown .8s ease both}
+.ey-dot{width:6px;height:6px;border-radius:50%;background:var(--gf);animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
+.hero-h1{font-size:clamp(2.2rem,6vw,5rem);font-weight:900;line-height:1.05;
+  color:var(--tw);margin-bottom:22px;animation:fadeUp .9s .15s ease both}
+.hero-sub{font-size:clamp(.98rem,2.2vw,1.2rem);color:var(--tm);
+  max-width:660px;margin:0 auto 44px;line-height:1.76;animation:fadeUp .9s .3s ease both}
+.hero-sub strong{color:var(--tw)}
+
+/* LIVE STATS */
+.stats-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-bottom:44px;animation:fadeUp .9s .45s ease both}
+.sbox{display:flex;flex-direction:column;align-items:center;padding:16px 22px;
+  border-radius:16px;background:var(--card);border:1px solid var(--br);
+  backdrop-filter:blur(12px);min-width:118px;transition:all .3s;cursor:default}
+.sbox:hover{border-color:rgba(23,168,120,.42);box-shadow:0 0 28px rgba(23,168,120,.2);transform:translateY(-3px)}
+.sv{font-family:var(--serif);font-size:1.75rem;font-weight:800;line-height:1;
+  background:linear-gradient(135deg,var(--g2),var(--gf));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sl{font-size:11.5px;color:var(--tm);margin-top:5px;font-weight:500}
+
+/* HERO BTNS */
+.hbtns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;animation:fadeUp .9s .6s ease both}
+.btn-p{padding:13px 34px;border-radius:9999px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-weight:700;font-size:15px;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);
+  box-shadow:0 8px 28px rgba(23,168,120,.32);transition:all .3s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 42px rgba(23,168,120,.42)}
+.btn-s{padding:13px 34px;border-radius:9999px;border:1.5px solid var(--br);
+  background:transparent;color:var(--tw);font-weight:600;font-size:15px;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);transition:all .3s;cursor:pointer}
+.btn-s:hover{border-color:var(--g2);background:rgba(23,168,120,.08)}
+
+/* FLOAT BADGES */
+.fb{position:absolute;padding:9px 14px;border-radius:13px;
+  background:var(--card);border:1px solid var(--br);backdrop-filter:blur(12px);
+  font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);white-space:nowrap}
+.fdot{width:7px;height:7px;border-radius:50%;animation:blink 2s ease infinite}
+@keyframes fl1{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fl2{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+/* SCROLL HINT */
+.scroll-h{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;animation:fadeIn 2s 1.5s both}
+.scroll-m{width:20px;height:32px;border-radius:10px;border:1.5px solid rgba(23,168,120,.3)}
+.scroll-w{width:3px;height:7px;border-radius:9999px;background:var(--g2);margin:4px auto 0;animation:swh 2s ease infinite}
+@keyframes swh{0%{transform:translateY(0);opacity:1}100%{transform:translateY(14px);opacity:0}}
+.scroll-tx{font-size:10.5px;color:var(--td);letter-spacing:.07em;text-transform:uppercase}
+
+/* PAIN SECTION */
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:18px;margin-top:44px}
+.pain-card{padding:24px;border-radius:18px;background:rgba(230,57,70,.05);
+  border:1px solid rgba(230,57,70,.15);transition:all .3s}
+.pain-card:hover{border-color:rgba(230,57,70,.35);box-shadow:0 8px 28px rgba(230,57,70,.1);transform:translateY(-3px)}
+.p-ico{font-size:26px;margin-bottom:12px;display:block}
+.p-title{font-family:var(--serif);font-size:1.08rem;font-weight:700;color:var(--tw);margin-bottom:9px}
+.p-body{font-size:13.5px;color:var(--tm);line-height:1.68}
+.p-tag{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:4px 10px;
+  border-radius:9999px;background:rgba(230,57,70,.1);font-size:11px;font-weight:600;color:#ff7b84}
+
+/* PERSONAS */
+.persona-row{display:flex;gap:12px;overflow-x:auto;padding:4px 4px 14px;margin-top:38px;scrollbar-width:thin}
+.persona-row::-webkit-scrollbar{height:3px}
+.persona-row::-webkit-scrollbar-thumb{background:var(--g1);border-radius:9999px}
+.pc{flex-shrink:0;width:210px;padding:22px 16px;border-radius:17px;
+  background:var(--card);border:1px solid var(--br);text-align:center;cursor:pointer;transition:all .3s}
+.pc:hover{border-color:var(--g2);box-shadow:0 0 28px rgba(23,168,120,.2);transform:translateY(-4px)}
+.pc-name{font-family:var(--serif);font-size:.98rem;font-weight:700;color:var(--tw)}
+.pc-role{font-size:11.5px;color:var(--g2);font-weight:600;margin-top:3px}
+.pc-pain{font-size:12px;color:var(--tm);margin-top:8px;line-height:1.6;font-style:italic}
+
+/* ARCHITECTURE SVG */
+.arch-wrap{padding:28px;border-radius:20px;background:var(--card);border:1px solid var(--br);margin-top:44px}
+
+/* STEPS */
+.steps{margin-top:52px}
+.srow{display:grid;grid-template-columns:74px 1fr;gap:22px;align-items:start;
+  margin-bottom:38px;position:relative}
+.srow::after{content:'';position:absolute;left:36px;top:78px;width:2px;
+  height:calc(100% - 16px);background:linear-gradient(to bottom,var(--g1),transparent)}
+.srow:last-child::after{display:none}
+.sn{width:74px;height:74px;border-radius:18px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;
+  justify-content:center;font-family:var(--serif);font-size:1.75rem;font-weight:900;color:#fff;
+  box-shadow:0 0 22px rgba(23,168,120,.35);position:relative;z-index:1}
+.sc{padding:14px 0}
+.slabel{font-size:11px;font-weight:700;color:var(--g2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.stitle{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--tw);margin-bottom:9px}
+.sdesc{font-size:14px;color:var(--tm);line-height:1.75;margin-bottom:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:4px 11px;border-radius:9999px;font-size:11.5px;font-weight:600;
+  background:rgba(23,168,120,.1);border:1px solid var(--br);color:var(--g2)}
+
+/* ROLE TABS */
+.rtabs{display:flex;gap:8px;flex-wrap:wrap;margin:32px 0 44px;justify-content:center}
+.rtab{padding:10px 22px;border-radius:9999px;border:1.5px solid var(--br);background:transparent;
+  color:var(--tm);font-family:var(--sans);font-weight:600;font-size:13.5px;cursor:pointer;transition:all .25s}
+.rtab:hover{border-color:var(--g2);color:var(--tw)}
+.rtab.on{background:var(--g1);border-color:var(--g1);color:#fff;box-shadow:0 4px 16px rgba(23,168,120,.35)}
+
+/* SIMULATOR */
+.sim{background:var(--card);border:1px solid var(--br);border-radius:18px;overflow:hidden;margin-top:38px}
+.sim-bar{display:flex;align-items:center;gap:9px;padding:12px 18px;
+  background:rgba(10,41,21,.6);border-bottom:1px solid var(--br)}
+.sdot-{width:10px;height:10px;border-radius:50%}
+.sim-url{flex:1;padding:5px 14px;border-radius:8px;background:rgba(3,18,8,.8);
+  border:1px solid var(--br);font-family:monospace;font-size:12px;color:var(--g2)}
+.sim-body{padding:22px}
+.sim-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.si{flex:1;min-width:180px;padding:11px 15px;background:rgba(3,18,8,.7);
+  border:1.5px solid var(--br);border-radius:11px;color:var(--tw);
+  font-family:var(--sans);font-size:13.5px;outline:none;transition:border-color .2s}
+.si:focus{border-color:var(--g2)}
+.si::placeholder{color:var(--td)}
+.si.sel{appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='11' height='11' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%2317A878' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+.sbtn{padding:11px 24px;border-radius:11px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-weight:700;font-size:13.5px;
+  font-family:var(--sans);box-shadow:0 4px 14px rgba(23,168,120,.3);transition:all .2s;white-space:nowrap}
+.sbtn:hover{transform:translateY(-1px)}
+.sprog{height:3px;background:rgba(23,168,120,.1);border-radius:9999px;overflow:hidden;margin-bottom:12px;display:none}
+.sprobar{height:100%;background:linear-gradient(90deg,var(--g2),var(--gf));border-radius:9999px;width:0%}
+.sstat{font-size:12px;color:var(--tm);text-align:center;margin-bottom:12px;display:none}
+.sres{display:none}.sres.show{display:block}
+.scard{padding:14px;border-radius:13px;background:rgba(23,168,120,.06);border:1px solid var(--br);
+  margin-bottom:9px;display:flex;align-items:center;gap:13px;animation:fadeUp .4s ease both}
+.scard:nth-child(2){animation-delay:.1s}.scard:nth-child(3){animation-delay:.2s}
+.srank{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--g1),var(--g2));
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13.5px;color:#fff;flex-shrink:0}
+.sprop{font-weight:600;font-size:13.5px;color:var(--tw)}
+.smeta{font-size:12px;color:var(--tm);margin-top:2px}
+.sscore{margin-left:auto;flex-shrink:0;font-family:var(--serif);font-size:1.25rem;font-weight:800;color:var(--gf)}
+.shint{text-align:center;font-size:12px;color:var(--td);margin-top:10px}
+
+/* CHARTS */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:44px}
+.cbox{padding:24px;border-radius:17px;background:var(--card);border:1px solid var(--br)}
+.ctitle{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--tw);margin-bottom:5px}
+.csub{font-size:12.5px;color:var(--tm);margin-bottom:18px}
+
+/* BENEFITS */
+.ben-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:44px}
+.bcard{padding:26px;border-radius:19px;background:var(--card);border:1px solid var(--br);
+  position:relative;overflow:hidden;transition:all .35s}
+.bcard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--g2),transparent);opacity:0;transition:opacity .3s}
+.bcard:hover::after{opacity:1}
+.bcard:hover{border-color:rgba(23,168,120,.32);
+  box-shadow:0 0 38px rgba(23,168,120,.16),0 18px 52px rgba(0,0,0,.2);transform:translateY(-4px)}
+.bico{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:16px;font-size:23px}
+.btitle{font-family:var(--serif);font-size:1.12rem;font-weight:700;color:var(--tw);margin-bottom:9px}
+.bbody{font-size:13.5px;color:var(--tm);line-height:1.7}
+.bmet{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--br)}
+.bv{font-family:var(--serif);font-size:1.45rem;font-weight:800;color:var(--g2)}
+.bl{font-size:12px;color:var(--tm)}
+
+/* EARN */
+.earn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:38px}
+.ec{padding:22px;border-radius:17px;background:rgba(201,162,39,.06);
+  border:1px solid var(--br2);transition:all .3s}
+.ec:hover{border-color:rgba(201,162,39,.36);box-shadow:0 8px 28px rgba(201,162,39,.15);transform:translateY(-3px)}
+.eico{font-size:28px;display:block;margin-bottom:11px}
+.etitle{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--tw);margin-bottom:7px}
+.ebody{font-size:13px;color:var(--tm);line-height:1.65}
+.ebadge{display:inline-block;margin-top:11px;padding:5px 12px;border-radius:9999px;
+  background:rgba(201,162,39,.12);color:var(--gf);font-size:12px;font-weight:700}
+
+/* IMPACT ROW */
+.irow{display:flex;flex-wrap:wrap;border:1px solid var(--br);border-radius:18px;
+  overflow:hidden;margin-top:44px}
+.ii{flex:1;min-width:148px;padding:28px 20px;text-align:center;
+  border-right:1px solid var(--br);transition:background .25s}
+.ii:last-child{border-right:none}
+.ii:hover{background:rgba(23,168,120,.05)}
+.iv{font-family:var(--serif);font-size:2.1rem;font-weight:900;display:block;line-height:1;
+  background:linear-gradient(135deg,var(--g2),var(--gf));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.il{font-size:12.5px;color:var(--tm);display:block;margin-top:7px}
+
+/* COMPARISON TABLE */
+.ctable-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--br);margin-top:38px}
+table.ct{width:100%;border-collapse:collapse;font-size:13.5px}
+.ct thead tr{background:rgba(10,41,21,.8);border-bottom:2px solid var(--br)}
+.ct th{padding:13px 16px;text-align:left;font-weight:700;color:var(--tm);font-size:11.5px;
+  letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.ct tbody tr{border-bottom:1px solid rgba(23,168,120,.07)}
+.ct tbody tr:last-child{border-bottom:none}
+.ct tbody tr.hi td{background:rgba(23,168,120,.04)}
+.ct td{padding:12px 16px;color:var(--tm);background:var(--card)}
+.ct td:first-child{color:var(--tw);font-weight:600}
+.ck{color:var(--g2);font-size:16px}.nx{color:#444;font-size:16px}
+
+/* QUOTE */
+.qsec{padding:60px 0;text-align:center;position:relative}
+.qmark{font-family:var(--serif);font-size:7rem;font-weight:900;color:var(--g1);
+  opacity:.2;line-height:.5;user-select:none;position:absolute;top:16px;left:50%;transform:translateX(-50%)}
+.qtext{font-family:var(--serif);font-size:clamp(1.35rem,3.5vw,2.1rem);
+  font-weight:700;font-style:italic;line-height:1.38;color:var(--tw);
+  max-width:760px;margin:0 auto 18px;position:relative;z-index:1}
+.qtext .ql{color:var(--gf);font-style:normal}
+.qauth{font-size:13.5px;color:var(--tm);font-weight:600}
+
+/* CTA */
+#cta{padding:110px 24px;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(23,168,120,.11),transparent)}
+.cta-h2{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;line-height:1.1;
+  color:var(--tw);margin-bottom:18px;position:relative;z-index:1}
+.cta-sub{font-size:clamp(.98rem,2vw,1.15rem);color:var(--tm);max-width:560px;
+  margin:0 auto 36px;position:relative;z-index:1;line-height:1.72}
+.cta-btns{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;position:relative;z-index:1}
+.btn-gold{padding:15px 40px;border-radius:9999px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),var(--gf));color:#031208;
+  font-weight:800;font-size:16px;text-decoration:none;display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 8px 36px rgba(201,162,39,.35);transition:all .3s;font-family:var(--sans)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 14px 52px rgba(201,162,39,.45)}
+.btn-wa{padding:15px 34px;border-radius:9999px;border:none;cursor:pointer;
+  background:#25D366;color:#fff;font-weight:700;font-size:15px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 8px 28px rgba(37,211,102,.3);transition:all .3s;font-family:var(--sans)}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(37,211,102,.4)}
+.cta-dom{margin-top:28px;font-size:13.5px;color:var(--td);position:relative;z-index:1}
+.cta-dom a{color:var(--g2);text-decoration:none}
+.cta-dom a:hover{color:var(--gf)}
+
+/* FOOTER */
+footer{padding:36px 24px;text-align:center;border-top:1px solid var(--br);background:rgba(3,18,8,.4)}
+footer p{font-size:12.5px;color:var(--td)}
+footer a{color:var(--g2);text-decoration:none}
+
+/* DIVIDER */
+.div{height:1px;background:linear-gradient(90deg,transparent,var(--br),transparent);margin:12px 0}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(23,168,120,.3)}50%{box-shadow:0 0 40px rgba(23,168,120,.5)}}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.rv.vis{opacity:1;transform:translateY(0)}
+.rvl{opacity:0;transform:translateX(-24px);transition:opacity .65s ease,transform .65s ease}
+.rvl.vis{opacity:1;transform:translateX(0)}
+.rvr{opacity:0;transform:translateX(24px);transition:opacity .65s ease,transform .65s ease}
+.rvr.vis{opacity:1;transform:translateX(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* BADGE PILLS */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:600}
+.bg{background:var(--gl);color:#0a5238}.bgold{background:var(--gold-l);color:#7c5f1d}
+.bb{background:#eff6ff;color:#1d4ed8}.br2{background:#fef2f2;color:#dc2626}
+.bgray{background:rgba(255,255,255,.07);color:var(--tm)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;animation:blink 2s ease infinite;margin-right:4px}
+
+/* PROGRESS RING */
+.pring{transform:rotate(-90deg)}
+.pc-{transition:stroke-dashoffset .8s ease;stroke-linecap:round}
+
+/* PAIN BAR CHART */
+#barsvg rect.abar{transform-origin:bottom center}
+
+/* MOBILE */
+@media(max-width:768px){
+  .chart-grid{grid-template-columns:1fr}
+  .srow{grid-template-columns:60px 1fr;gap:15px}
+  .sn{width:60px;height:60px;font-size:1.4rem;border-radius:14px}
+  .srow::after{left:29px}
+  .ii{min-width:128px;padding:22px 14px}
+  .iv{font-size:1.65rem}
+  .fb{display:none}
+  .qtext{font-size:1.25rem}
+  #hero{padding:90px 20px 70px}
+  .ct th,.ct td{padding:9px 10px;font-size:12.5px}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:1.9rem}
+  .pain-grid,.ben-grid,.earn-grid{grid-template-columns:1fr}
+  .stats-row .sbox{min-width:100px;padding:12px 14px}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<canvas id="pts" aria-hidden="true"></canvas>
+<div id="prog" role="progressbar" aria-label="Scroll progress"></div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header role="banner">
+  <div class="hdr">
+    <a class="logo" href="#hero" aria-label="AgentListingX">
+      <div class="logo-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="#fff" stroke-width="2.3" stroke-linejoin="round"/>
+          <path d="M9 22V12h6v10" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-tx">AgentListing<span>X</span></span>
+    </a>
+    <nav style="display:flex;gap:4px;align-items:center" aria-label="Lesson navigation">
+      <a href="#problem" style="padding:6px 13px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--tm);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(23,168,120,.12)';this.style.color='var(--tw)'" onmouseout="this.style.background='';this.style.color='var(--tm)'">Problem</a>
+      <a href="#solution" style="padding:6px 13px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--tm);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(23,168,120,.12)';this.style.color='var(--tw)'" onmouseout="this.style.background='';this.style.color='var(--tm)'">Solution</a>
+      <a href="#how" style="padding:6px 13px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--tm);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(23,168,120,.12)';this.style.color='var(--tw)'" onmouseout="this.style.background='';this.style.color='var(--tm)'" class="hidden-sm">How It Works</a>
+      <a href="#earn" style="padding:6px 13px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--tm);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(23,168,120,.12)';this.style.color='var(--tw)'" onmouseout="this.style.background='';this.style.color='var(--tm)'" class="hidden-sm">Earn</a>
+    </nav>
+    <a class="hdr-wa" href="https://wa.me/2349025152818" target="_blank" rel="noopener">Get Access →</a>
+  </div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section id="hero" aria-labelledby="hero-h1">
+
+  <!-- Floating cards -->
+  <div class="fb" style="top:22%;left:5%;animation:fl1 5.5s ease-in-out infinite" aria-hidden="true">
+    <span class="fdot" style="background:#22c55e"></span>
+    <span style="color:var(--tm);font-size:12px">Emeka found 3 AI matches in Lekki</span>
+  </div>
+  <div class="fb" style="top:28%;right:4%;animation:fl2 7s ease-in-out infinite" aria-hidden="true">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--g2)" stroke-width="2"/></svg>
+    <span style="color:var(--tm);font-size:12px">&#8358;45M secured in escrow</span>
+  </div>
+  <div class="fb" style="bottom:25%;left:6%;animation:fl1 7s 1s ease-in-out infinite" aria-hidden="true">
+    <span class="fdot" style="background:var(--gf)"></span>
+    <span style="color:var(--tm);font-size:12px">Agent Adaeze earned &#8358;285K today</span>
+  </div>
+
+  <div class="hero-ey">
+    <span class="ey-dot" aria-hidden="true"></span>
+    E-WIN Project Ecosystem &middot; Nigeria's Real Estate OS
+  </div>
+
+  <h1 class="hero-h1" id="hero-h1">
+    Nigeria's Most Trusted<br>
+    <span class="gtext">AI-Powered</span> Real Estate<br>
+    <span class="goldtext">Operating System</span>
+  </h1>
+
+  <p class="hero-sub">
+    Finding property in Nigeria shouldn't feel like navigating a minefield of fraud, wasted trips, and broken trust.
+    <strong>AgentListingX</strong> eliminates every pain point — connecting serious landlords, verified agents, and clients in a secure, AI-driven marketplace where every deal is protected and everyone earns.
+  </p>
+
+  <!-- Animated counters -->
+  <div class="stats-row" role="region" aria-label="Platform statistics">
+    <div class="sbox"><span class="sv" id="s1">0</span><span class="sl">Verified Listings</span></div>
+    <div class="sbox"><span class="sv" id="s2">0</span><span class="sl">Licensed Agents</span></div>
+    <div class="sbox"><span class="sv" id="s3">0</span><span class="sl">Secured in Escrow</span></div>
+    <div class="sbox"><span class="sv" id="s4">0</span><span class="sl">Satisfaction Rate</span></div>
+  </div>
+
+  <div class="hbtns">
+    <a href="https://agentlistingx.ewinproject.org" class="btn-p" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="8" stroke="#fff" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      Explore Platform
+    </a>
+    <a href="#how" class="btn-s">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+      See How It Works
+    </a>
+  </div>
+
+  <div class="scroll-h" aria-hidden="true">
+    <div class="scroll-m"><div class="scroll-w"></div></div>
+    <span class="scroll-tx">Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ═══════════ PROBLEM ═══════════ -->
+<section id="problem" class="sec" aria-labelledby="prob-h2">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;margin-bottom:14px">
+      <div class="sbadge">⚠️ The Real Problem</div>
+      <h2 class="sec-h2" id="prob-h2">Nigeria's Property Market Is<br><span style="color:var(--red)">Broken. Here's the Proof.</span></h2>
+      <p class="sec-sub" style="max-width:600px;margin:0 auto">Every year, millions of Nigerians lose money, time, and trust to a market built on fraud, fake listings, and zero accountability.</p>
+    </div>
+
+    <!-- Animated Bar Chart -->
+    <div class="rv gc arch-wrap" style="margin-top:40px">
+      <p style="font-family:var(--serif);font-size:1.1rem;font-weight:700;text-align:center;color:var(--tw);margin-bottom:5px">Pain Points Affecting Nigerian Property Seekers</p>
+      <p style="text-align:center;font-size:12.5px;color:var(--tm);margin-bottom:20px">Market Research Survey 2024 · % of respondents affected</p>
+      <svg id="barsvg" viewBox="0 0 860 200" style="width:100%;height:auto" aria-label="Bar chart showing property market pain points" role="img">
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#E63946;stop-opacity:.92"/>
+            <stop offset="100%" style="stop-color:#E63946;stop-opacity:.28"/>
+          </linearGradient>
+        </defs>
+        <line x1="60" y1="10" x2="60" y2="155" stroke="rgba(240,255,244,.07)" stroke-width="1"/>
+        <line x1="60" y1="155" x2="850" y2="155" stroke="rgba(240,255,244,.07)" stroke-width="1"/>
+        <line x1="60" y1="58" x2="850" y2="58" stroke="rgba(240,255,244,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="60" y1="107" x2="850" y2="107" stroke="rgba(240,255,244,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="52" y="62" fill="rgba(240,255,244,.35)" font-size="9.5" text-anchor="end" font-family="DM Sans,sans-serif">75%</text>
+        <text x="52" y="111" fill="rgba(240,255,244,.35)" font-size="9.5" text-anchor="end" font-family="DM Sans,sans-serif">50%</text>
+        <text x="52" y="158" fill="rgba(240,255,244,.35)" font-size="9.5" text-anchor="end" font-family="DM Sans,sans-serif">0%</text>
+        <!-- Bars (animated via JS) -->
+        <rect class="abar" id="ab1" x="80"  y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <rect class="abar" id="ab2" x="215" y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <rect class="abar" id="ab3" x="350" y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <rect class="abar" id="ab4" x="485" y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <rect class="abar" id="ab5" x="620" y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <rect class="abar" id="ab6" x="735" y="155" width="100" height="0" rx="6" fill="url(#rg)"/>
+        <!-- Value labels -->
+        <text id="av1" x="130" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">94%</text>
+        <text id="av2" x="265" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">87%</text>
+        <text id="av3" x="400" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">77%</text>
+        <text id="av4" x="535" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">73%</text>
+        <text id="av5" x="670" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">69%</text>
+        <text id="av6" x="785" y="155" fill="rgba(240,255,244,.75)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0">81%</text>
+        <!-- X labels -->
+        <text x="130" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Fraud</text>
+        <text x="265" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Fake Listings</text>
+        <text x="400" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Wasted Trips</text>
+        <text x="535" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">No Escrow</text>
+        <text x="670" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Hidden Fees</text>
+        <text x="785" y="173" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Bad Agents</text>
+        <text x="450" y="194" fill="rgba(240,255,244,.25)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">Source: Nigerian Real Estate Market Survey 2024</text>
+      </svg>
+    </div>
+
+    <!-- Pain cards -->
+    <div class="pain-grid">
+      <article class="pain-card rv d1">
+        <span class="p-ico">🏚️</span>
+        <h3 class="p-title">Fraud &amp; Fake Listings</h3>
+        <p class="p-body"><strong style="color:var(--tw)">Amara</strong> paid &#8358;500,000 in agency fees and a full year's rent upfront — only to discover the "landlord" didn't own the property. Stories like hers happen daily across Lagos, Abuja, and Port Harcourt.</p>
+        <span class="p-tag">94% of renters encounter fraud attempts</span>
+      </article>
+      <article class="pain-card rv d2">
+        <span class="p-ico">😤</span>
+        <h3 class="p-title">Wasted Time &amp; Resources</h3>
+        <p class="p-body"><strong style="color:var(--tw)">Emeka</strong>, a civil engineer, spent 6 weekends viewing 20 properties — all wrong. No match, no accountability, no refund. The traditional property search is broken, expensive, and exhausting.</p>
+        <span class="p-tag">Average 6 months to find the right property</span>
+      </article>
+      <article class="pain-card rv d3">
+        <span class="p-ico">💸</span>
+        <h3 class="p-title">Hidden Fees &amp; Double Standards</h3>
+        <p class="p-body">Unregulated agents charge 10–15% commissions with zero accountability. Landlords lose 30% to "managers" who do nothing. SMEs can't find office space without knowing the right people.</p>
+        <span class="p-tag">&#8358;2.3 Trillion lost to property fraud annually</span>
+      </article>
+      <article class="pain-card rv d4">
+        <span class="p-ico">🌍</span>
+        <h3 class="p-title">Diaspora Completely Locked Out</h3>
+        <p class="p-body"><strong style="color:var(--tw)">Dr. Funmi</strong>, returning from the UK, needs to buy land in Lagos. She can't verify titles remotely, inspect physically, or trust unknown agents. The &#8358;25B+ diaspora investment market has no safe gateway.</p>
+        <span class="p-tag">$25B+ diaspora property investment untapped</span>
+      </article>
+      <article class="pain-card rv d5">
+        <span class="p-ico">📵</span>
+        <h3 class="p-title">Licensed Agents Underearning</h3>
+        <p class="p-body"><strong style="color:var(--tw)">Kayode</strong> drives across Lagos daily showing houses to unserious prospects. No CRM, no lead scoring, no payment protection. 70% of his deals collapse before closure with zero recourse.</p>
+        <span class="p-tag">70% of agent deals fail before completion</span>
+      </article>
+      <article class="pain-card rv d1">
+        <span class="p-ico">👷</span>
+        <h3 class="p-title">Youth &amp; SMEs Locked Out</h3>
+        <p class="p-body"><strong style="color:var(--tw)">Zainab</strong> has a great job in Kano but can't find a safe, affordable flat without "connections." Young professionals and startups face a property market that rewards insiders and punishes newcomers.</p>
+        <span class="p-tag">62% of SMEs struggle to find commercial space</span>
+      </article>
+    </div>
+
+    <!-- Who suffers — Persona row -->
+    <div class="rv" style="text-align:center;margin-top:60px">
+      <div class="sbadge">Who Suffers This?</div>
+      <p style="color:var(--tm);font-size:14px;margin-top:6px">Real people. Real pain. Every single day in Nigeria.</p>
+    </div>
+    <div class="persona-row rv" role="list" aria-label="Affected personas">
+
+      <!-- Amara -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Amara — First-Time Renter" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#17A878" opacity=".65"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#0A6E4A"/>
+          <circle cx="34" cy="26" r="8.5" fill="#FFD6A5"/>
+          <circle cx="31" cy="26" r="1.4" fill="#333"/><circle cx="37" cy="26" r="1.4" fill="#333"/>
+          <path d="M31 30c1 1.4 5 1.4 6 0" stroke="#333" stroke-width=".9" stroke-linecap="round"/>
+        </svg>
+        <p class="pc-name">Amara</p><p class="pc-role">First-Time Renter</p>
+        <p class="pc-pain">"I lost &#8358;350K to a fake listing. I just needed a safe home."</p>
+      </article>
+
+      <!-- Emeka -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Emeka — SME Founder" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#0A6E4A" opacity=".7"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#063018"/>
+          <circle cx="34" cy="26" r="8.5" fill="#8D5524"/>
+          <rect x="27" y="20" width="14" height="4" rx="2" fill="#333" opacity=".55"/>
+          <circle cx="31" cy="26" r="1.4" fill="#fff"/><circle cx="37" cy="26" r="1.4" fill="#fff"/>
+          <path d="M31 30c1 1 5 1 6 0" stroke="#FFD6A5" stroke-width=".9" stroke-linecap="round"/>
+        </svg>
+        <p class="pc-name">Emeka</p><p class="pc-role">SME Founder, Lagos</p>
+        <p class="pc-pain">"Need office for 20 staff. Can't find Grade-A without bribes."</p>
+      </article>
+
+      <!-- Kayode -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Kayode — Licensed Agent" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#C9A227" opacity=".4"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#1A1000"/>
+          <circle cx="34" cy="26" r="8.5" fill="#6B3A2A"/>
+          <circle cx="31" cy="26" r="1.4" fill="#fff"/><circle cx="37" cy="26" r="1.4" fill="#fff"/>
+          <path d="M31 30c1.5 2 6 2 6 0" stroke="#FFD6A5" stroke-width="1.1" stroke-linecap="round"/>
+          <rect x="22" y="44" width="24" height="4" rx="2" fill="#C9A227" opacity=".5"/>
+        </svg>
+        <p class="pc-name">Kayode</p><p class="pc-role">Licensed Agent</p>
+        <p class="pc-pain">"Show 15 houses weekly. 12 are time-wasters. Need real leads."</p>
+      </article>
+
+      <!-- Chief Musa -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Chief Musa — Landlord" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#17A878" opacity=".32"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#031208"/>
+          <circle cx="34" cy="26" r="8.5" fill="#5C3317"/>
+          <path d="M26 22c0-4 16-4 16 2" stroke="#333" stroke-width="1.5" fill="#4A2500" opacity=".6"/>
+          <circle cx="31" cy="26" r="1.4" fill="#fff"/><circle cx="37" cy="26" r="1.4" fill="#fff"/>
+          <path d="M30 30c1.5 2.5 8 2.5 8 0" stroke="#FFD6A5" stroke-width="1.1" stroke-linecap="round"/>
+          <rect x="20" y="43" width="28" height="5" rx="2.5" fill="#0A6E4A" opacity=".5"/>
+        </svg>
+        <p class="pc-name">Chief Musa</p><p class="pc-role">Landlord, Abuja</p>
+        <p class="pc-pain">"12 units unmanaged. Rent always late. Losing money."</p>
+      </article>
+
+      <!-- Dr. Funmi -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Dr. Funmi — Diaspora" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#0ECAD4" opacity=".25"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#041818"/>
+          <circle cx="34" cy="26" r="8.5" fill="#CD853F"/>
+          <circle cx="31" cy="26" r="1.4" fill="#333"/><circle cx="37" cy="26" r="1.4" fill="#333"/>
+          <path d="M31.5 30c1 1.5 4.5 1.5 5 0" stroke="#333" stroke-width=".9" stroke-linecap="round"/>
+          <rect x="22" y="44" width="24" height="4" rx="2" fill="#0ECAD4" opacity=".3"/>
+        </svg>
+        <p class="pc-name">Dr. Funmi</p><p class="pc-role">Diaspora, UK → Nigeria</p>
+        <p class="pc-pain">"Buying from the UK is impossible. Scammed twice already."</p>
+      </article>
+
+      <!-- Zainab -->
+      <article class="pc" role="listitem">
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none" aria-label="Zainab — Youth Professional" style="display:block;margin:0 auto 12px">
+          <circle cx="34" cy="34" r="34" fill="#0A2915"/>
+          <circle cx="34" cy="26" r="12" fill="#C9A227" opacity=".35"/>
+          <path d="M10 64c0-12 10.7-22 24-22s24 10 24 22" fill="#1A1000"/>
+          <circle cx="34" cy="26" r="8.5" fill="#C68642"/>
+          <rect x="25" y="18" width="18" height="3" rx="1.5" fill="#C9A227" opacity=".5"/>
+          <circle cx="31" cy="26" r="1.4" fill="#333"/><circle cx="37" cy="26" r="1.4" fill="#333"/>
+          <path d="M31 30c1 1.5 6 1.5 6 0" stroke="#333" stroke-width=".9" stroke-linecap="round"/>
+        </svg>
+        <p class="pc-name">Zainab</p><p class="pc-role">Youth Professional, Kano</p>
+        <p class="pc-pain">"Good job, no connections — can't find safe housing alone."</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ QUOTE 1 ═══════════ -->
+<div class="qsec rv" style="position:relative">
+  <div class="qmark" aria-hidden="true">"</div>
+  <div class="wrap-sm">
+    <p class="qtext">"The property market doesn't need another listing site — it needs a <span class="ql">complete operating system</span> built on trust, intelligence, and <span class="ql">accountability for everyone</span>."</p>
+    <p class="qauth">— AgentListingX Design Principle</p>
+  </div>
+</div>
+
+<!-- ═══════════ SOLUTION / ARCHITECTURE ═══════════ -->
+<section id="solution" class="sec" aria-labelledby="sol-h2">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;margin-bottom:14px">
+      <div class="sbadge">✅ The Solution</div>
+      <h2 class="sec-h2" id="sol-h2">One Platform. Every Problem.<br><span class="gtext">Completely Solved.</span></h2>
+      <p class="sec-sub" style="max-width:600px;margin:0 auto">AgentListingX is Nigeria's first AI-powered Real Estate Operating System — built to eliminate fraud, protect payments, match intelligently, and create economic opportunity for every participant.</p>
+    </div>
+
+    <!-- 5-Agent Architecture SVG -->
+    <div class="rv arch-wrap">
+      <p style="font-family:var(--serif);font-size:1.25rem;font-weight:700;text-align:center;color:var(--tw);margin-bottom:5px">5-Agent AI Architecture</p>
+      <p style="text-align:center;font-size:13px;color:var(--tm);margin-bottom:22px">All 5 agents work simultaneously — protecting every transaction 24/7</p>
+      <svg viewBox="0 0 860 320" style="width:100%;height:auto;max-width:860px;display:block;margin:0 auto" aria-label="AgentListingX 5-Agent AI Architecture Diagram" role="img">
+        <defs>
+          <linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0A6E4A"/>
+            <stop offset="100%" style="stop-color:#17A878"/>
+          </linearGradient>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0L10 5L0 10z" fill="rgba(23,168,120,.45)"/>
+          </marker>
+          <filter id="gf2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Core -->
+        <circle cx="430" cy="160" r="70" fill="url(#cg2)" opacity=".92" filter="url(#gf2)"/>
+        <circle cx="430" cy="160" r="70" fill="none" stroke="rgba(23,168,120,.35)" stroke-width="1.5" stroke-dasharray="6,4">
+          <animateTransform attributeName="transform" type="rotate" from="0 430 160" to="360 430 160" dur="22s" repeatCount="indefinite"/>
+        </circle>
+        <text x="430" y="152" fill="#fff" font-size="12.5" font-weight="700" text-anchor="middle" font-family="Playfair Display,serif">AgentListingX</text>
+        <text x="430" y="170" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" font-family="Playfair Display,serif">AI Core</text>
+        <text x="430" y="186" fill="rgba(255,255,255,.6)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Real Estate OS</text>
+        <!-- Animated connection lines -->
+        <line x1="364" y1="122" x2="210" y2="72" stroke="rgba(23,168,120,.28)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"><animate attributeName="stroke-dashoffset" from="0" to="50" dur="3s" repeatCount="indefinite"/></line>
+        <line x1="364" y1="198" x2="210" y2="250" stroke="rgba(23,168,120,.28)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"><animate attributeName="stroke-dashoffset" from="0" to="50" dur="3.5s" repeatCount="indefinite"/></line>
+        <line x1="498" y1="122" x2="652" y2="72" stroke="rgba(201,162,39,.25)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"><animate attributeName="stroke-dashoffset" from="0" to="50" dur="4s" repeatCount="indefinite"/></line>
+        <line x1="498" y1="198" x2="652" y2="250" stroke="rgba(201,162,39,.25)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"><animate attributeName="stroke-dashoffset" from="0" to="50" dur="2.8s" repeatCount="indefinite"/></line>
+        <line x1="430" y1="90" x2="430" y2="26" stroke="rgba(14,202,212,.25)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr2)"><animate attributeName="stroke-dashoffset" from="0" to="50" dur="3.2s" repeatCount="indefinite"/></line>
+        <!-- Matching Agent (Top) -->
+        <rect x="346" y="3" width="168" height="50" rx="12" fill="rgba(10,41,21,.9)" stroke="rgba(14,202,212,.4)" stroke-width="1.5"/>
+        <text x="430" y="23" fill="#0ECAD4" font-size="9" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif">🎯 MATCHING AGENT</text>
+        <text x="430" y="37" fill="rgba(240,255,244,.55)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">95%+ Relevance · &lt;3 Seconds</text>
+        <text x="430" y="50" fill="rgba(240,255,244,.3)" font-size="7.5" text-anchor="middle" font-family="DM Sans,sans-serif">Natural language AI property search</text>
+        <!-- Document Verifier (Top Left) -->
+        <rect x="52" y="44" width="153" height="55" rx="12" fill="rgba(10,41,21,.9)" stroke="rgba(23,168,120,.4)" stroke-width="1.5"/>
+        <text x="129" y="64" fill="var(--g2)" font-size="9" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif">📄 DOC VERIFIER</text>
+        <text x="129" y="78" fill="rgba(240,255,244,.55)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">C-of-O · Title Deeds</text>
+        <text x="129" y="91" fill="rgba(240,255,244,.3)" font-size="7.5" text-anchor="middle" font-family="DM Sans,sans-serif">Auto-verify all documents</text>
+        <!-- Pricing Analyst (Top Right) -->
+        <rect x="646" y="44" width="153" height="55" rx="12" fill="rgba(10,41,21,.9)" stroke="rgba(201,162,39,.4)" stroke-width="1.5"/>
+        <text x="723" y="64" fill="var(--gf)" font-size="9" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif">📊 PRICING ANALYST</text>
+        <text x="723" y="78" fill="rgba(240,255,244,.55)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">Real-time Valuations + ROI</text>
+        <text x="723" y="91" fill="rgba(240,255,244,.3)" font-size="7.5" text-anchor="middle" font-family="DM Sans,sans-serif">30+ market data sources</text>
+        <!-- Fraud Monitor (Bottom Left) -->
+        <rect x="52" y="228" width="153" height="55" rx="12" fill="rgba(10,41,21,.9)" stroke="rgba(230,57,70,.4)" stroke-width="1.5"/>
+        <text x="129" y="248" fill="#ff7b84" font-size="9" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif">🛡️ FRAUD MONITOR</text>
+        <text x="129" y="262" fill="rgba(240,255,244,.55)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">24/7 Compliance Watch</text>
+        <text x="129" y="275" fill="rgba(240,255,244,.3)" font-size="7.5" text-anchor="middle" font-family="DM Sans,sans-serif">Flags bad actors instantly</text>
+        <!-- AI Assistant (Bottom Right) -->
+        <rect x="646" y="228" width="153" height="55" rx="12" fill="rgba(10,41,21,.9)" stroke="rgba(14,202,212,.4)" stroke-width="1.5"/>
+        <text x="723" y="248" fill="#0ECAD4" font-size="9" font-weight="700" text-anchor="middle" font-family="DM Sans,sans-serif">🤖 AI ASSISTANT</text>
+        <text x="723" y="262" fill="rgba(240,255,244,.55)" font-size="8.5" text-anchor="middle" font-family="DM Sans,sans-serif">24/7 Multilingual Support</text>
+        <text x="723" y="275" fill="rgba(240,255,244,.3)" font-size="7.5" text-anchor="middle" font-family="DM Sans,sans-serif">Query handling &amp; property Q&amp;A</text>
+        <!-- Bottom label -->
+        <text x="430" y="310" fill="rgba(240,255,244,.28)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Clients · Agents · Landlords · 100+ Leagues · Nigerian + Global Markets</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section id="how" class="sec" aria-labelledby="how-h2">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;margin-bottom:14px">
+      <div class="sbadge">⚡ How It Works</div>
+      <h2 class="sec-h2" id="how-h2">From Sign-Up to <span class="gtext">Secure Deal</span><br>in Minutes, Not Months</h2>
+      <p class="sec-sub" style="max-width:580px;margin:0 auto">Step-by-step — clear, simple, powerful, and designed for everyone.</p>
+    </div>
+
+    <!-- Role tabs -->
+    <div class="rtabs rv" role="tablist" aria-label="Choose your role journey">
+      <button class="rtab on" id="rt-c" onclick="switchRole('c',this)" role="tab">👤 Client Journey</button>
+      <button class="rtab" id="rt-a" onclick="switchRole('a',this)" role="tab">🏢 Agent Journey</button>
+      <button class="rtab" id="rt-l" onclick="switchRole('l',this)" role="tab">🏘️ Landlord Journey</button>
+    </div>
+
+    <!-- Client steps -->
+    <div id="rc" class="steps" role="tabpanel">
+      <div class="srow rv">
+        <div class="sn" aria-label="Step 1">01</div>
+        <div class="sc">
+          <p class="slabel">Step 1 — Access</p>
+          <h3 class="stitle">Register, Verify &amp; Subscribe for &#8358;2,000/year</h3>
+          <p class="sdesc">Visit <strong style="color:var(--g2)">agentlistingx.ewinproject.org</strong> and sign up in 2 minutes. Complete KYC with your NIN for full platform security. Pay &#8358;2,000/year via Paystack — that's less than &#8358;167/month — and unlock unlimited AI matching, virtual tours, and priority access. Instant activation. No hidden fees.</p>
+          <div class="chips"><span class="chip">NIN Verification</span><span class="chip">&#8358;2,000/year</span><span class="chip">NDPR Compliant</span><span class="chip">Instant Activation</span></div>
+        </div>
+      </div>
+      <div class="srow rv d1">
+        <div class="sn" aria-label="Step 2">02</div>
+        <div class="sc">
+          <p class="slabel">Step 2 — Find</p>
+          <h3 class="stitle">Post a Want Ad or Use AI Natural Language Search</h3>
+          <p class="sdesc">Describe what you need in plain English — "3-bedroom flat in Lekki under &#8358;5M with pool and generator." Our AI Matching Agent scans 2,400+ verified listings and returns your top matches in under 3 seconds with up to 95% relevance. If no listings match, your request auto-routes to verified agents within 20km radius via SMS + push alerts.</p>
+          <div class="chips"><span class="chip">Natural Language AI</span><span class="chip">95%+ Relevance</span><span class="chip">20km Geo-routing</span><span class="chip">&lt;3 Second Match</span></div>
+        </div>
+      </div>
+      <div class="srow rv d2">
+        <div class="sn" aria-label="Step 3">03</div>
+        <div class="sc">
+          <p class="slabel">Step 3 — Verify Virtually</p>
+          <h3 class="stitle">360° Virtual Tour Before Any Physical Visit</h3>
+          <p class="sdesc">Before spending a naira on fuel, review the property's 360° virtual tour, high-resolution photos, AI-verified documents, and the agent's structured feedback form — all in-app. If it meets your criteria, book a paid physical inspection for &#8358;3,000 (&#8358;2,000 to agent, &#8358;1,000 platform). Decline at zero cost. This eliminates the "viewing 20 wrong houses" nightmare permanently.</p>
+          <div class="chips"><span class="chip">360° Virtual Tours</span><span class="chip">&#8358;3,000 Inspection</span><span class="chip">Decline Risk-Free</span><span class="chip">AI Doc Verify</span></div>
+        </div>
+      </div>
+      <div class="srow rv d3">
+        <div class="sn" aria-label="Step 4">04</div>
+        <div class="sc">
+          <p class="slabel">Step 4 — Secure</p>
+          <h3 class="stitle">Pay via Bank-Grade Escrow. Move In Safely.</h3>
+          <p class="sdesc">All rent, deposits, and sale payments flow through our bank-grade escrow system via Paystack or Flutterwave. Funds release only when you confirm receipt of keys and a signed tenancy agreement. No off-platform payments. Ever. Violators receive immediate permanent suspension and blacklisting across all affiliated platforms.</p>
+          <div class="chips"><span class="chip">Bank-Grade Escrow</span><span class="chip">Paystack + Flutterwave</span><span class="chip">Milestone Release</span><span class="chip">Zero Fraud Tolerance</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent steps -->
+    <div id="ra" class="steps" style="display:none" role="tabpanel">
+      <div class="srow rv"><div class="sn">01</div><div class="sc">
+        <p class="slabel">Step 1 — Verify &amp; Activate</p>
+        <h3 class="stitle">Professional Onboarding with Verified Agent Badge</h3>
+        <p class="sdesc">Upload your license (optional CAC), pass a background check, and earn your Verified Agent badge. Subscribe &#8358;2,000/year (or &#8358;20,000 for Agency Enterprise — 20 team accounts). Dashboard activates immediately: full CRM, listing tools, commission wallet, and AI lead routing.</p>
+        <div class="chips"><span class="chip">Verified Badge</span><span class="chip">CRM Active</span><span class="chip">&#8358;2K/year</span><span class="chip">Team Accounts</span></div>
+      </div></div>
+      <div class="srow rv d1"><div class="sn">02</div><div class="sc">
+        <p class="slabel">Step 2 — List</p>
+        <h3 class="stitle">Publish AI-Enhanced Listings in Under 2 Minutes</h3>
+        <p class="sdesc">Upload 10+ photos, add a 360° virtual tour, and complete the listing wizard. AI auto-tags your property and suggests a market-accurate price based on comparable sales data. Your listing goes live after a 24-hour compliance review and is instantly indexed for AI matching against live client Want Ads.</p>
+        <div class="chips"><span class="chip">AI Auto-Tagging</span><span class="chip">AI Valuation</span><span class="chip">Virtual Tour</span><span class="chip">24hr Live</span></div>
+      </div></div>
+      <div class="srow rv d2"><div class="sn">03</div><div class="sc">
+        <p class="slabel">Step 3 — Convert</p>
+        <h3 class="stitle">AI-Scored Leads Delivered to Your CRM Pipeline</h3>
+        <p class="sdesc">AI routes client Want Ads to you with a lead score (0–100). Every lead arrives pre-qualified — budget confirmed, location matched, timeline known. Manage your pipeline in the visual Kanban CRM: New → Contacted → Qualified → Showing → Offer → Closed. Never lose a deal to disorganization again.</p>
+        <div class="chips"><span class="chip">AI Lead Score</span><span class="chip">Kanban CRM</span><span class="chip">Geo-Matched</span><span class="chip">Pipeline Tracking</span></div>
+      </div></div>
+      <div class="srow rv d3"><div class="sn">04</div><div class="sc">
+        <p class="slabel">Step 4 — Earn</p>
+        <h3 class="stitle">Commission Credited Instantly When Escrow Releases</h3>
+        <p class="sdesc">Close a deal and your 3% commission (up to 7% for dual-role) lands in your wallet the moment escrow releases. Withdraw to any Nigerian bank in 2 hours. Stack earnings from inspection fees (&#8358;2,000 each), management fees (5%), and referral bonuses. Top agents earn &#8358;2M+/month.</p>
+        <div class="chips"><span class="chip">3–7% Commission</span><span class="chip">Instant Wallet</span><span class="chip">&#8358;2K/Inspection</span><span class="chip">2hr Withdrawal</span></div>
+      </div></div>
+    </div>
+
+    <!-- Landlord steps -->
+    <div id="rl" class="steps" style="display:none" role="tabpanel">
+      <div class="srow rv"><div class="sn">01</div><div class="sc">
+        <p class="slabel">Step 1 — Onboard</p>
+        <h3 class="stitle">List Yourself or Transfer Full Management</h3>
+        <p class="sdesc">Subscribe &#8358;2,000/year. List properties using our 2-minute wizard, or hand your entire portfolio to AgentListingX as your official estate manager for a transparent 5% annual management fee. You retain 95% of all rental income. No hidden charges. No surprises.</p>
+        <div class="chips"><span class="chip">&#8358;2K/year</span><span class="chip">5% Mgmt Fee</span><span class="chip">Full Transfer</span><span class="chip">95% Income</span></div>
+      </div></div>
+      <div class="srow rv d1"><div class="sn">02</div><div class="sc">
+        <p class="slabel">Step 2 — Source Tenants</p>
+        <h3 class="stitle">AI + Agents Source, Screen &amp; Verify Tenants</h3>
+        <p class="sdesc">AI and verified agents source, credit-check, and background-verify tenants on your behalf. You review shortlisted candidates in-app and approve or decline with one tap. No uncomfortable negotiations. No unvetted strangers. You stay fully in control from your phone.</p>
+        <div class="chips"><span class="chip">AI Sourcing</span><span class="chip">Credit Check</span><span class="chip">Background Verify</span><span class="chip">In-App Approval</span></div>
+      </div></div>
+      <div class="srow rv d2"><div class="sn">03</div><div class="sc">
+        <p class="slabel">Step 3 — Auto-Collect</p>
+        <h3 class="stitle">Rent Collected Automatically. On Time. Every Time.</h3>
+        <p class="sdesc">Tenants pay through the platform. Escrow verifies. Net amount hits your bank account on schedule. Lease renewals, rent escalation notices, and maintenance requests handled without your intervention. Your money comes to you reliably and automatically.</p>
+        <div class="chips"><span class="chip">Auto Collection</span><span class="chip">Escrow Safe</span><span class="chip">Auto Renewal</span><span class="chip">Maintenance Mgmt</span></div>
+      </div></div>
+      <div class="srow rv d3"><div class="sn">04</div><div class="sc">
+        <p class="slabel">Step 4 — Monitor</p>
+        <h3 class="stitle">Real-Time Dashboard. Total Visibility. Zero Stress.</h3>
+        <p class="sdesc">Live occupancy rates, income history, maintenance logs, tenant performance scores, and AI-generated monthly reports — all in one clean dashboard. Whether you own 1 property or 100, you see everything clearly and make informed decisions without having to leave your chair.</p>
+        <div class="chips"><span class="chip">Live Dashboard</span><span class="chip">AI Reports</span><span class="chip">Maintenance Logs</span><span class="chip">Enterprise Portal</span></div>
+      </div></div>
+    </div>
+
+    <!-- AI Simulator -->
+    <div class="rv" style="margin-top:60px">
+      <h3 style="font-family:var(--serif);font-size:1.45rem;font-weight:700;text-align:center;color:var(--tw);margin-bottom:6px">🤖 Try the AI Matching Engine</h3>
+      <p style="text-align:center;font-size:13.5px;color:var(--tm);margin-bottom:22px">Simulate a live property search — watch AI results appear in real-time</p>
+      <div class="sim">
+        <div class="sim-bar" aria-label="Browser address bar">
+          <div class="sdot-" style="background:#ff5f57" aria-hidden="true"></div>
+          <div class="sdot-" style="background:#ffbd2e" aria-hidden="true"></div>
+          <div class="sdot-" style="background:#28c840" aria-hidden="true"></div>
+          <div class="sim-url" aria-label="agentlistingx.ewinproject.org/ai-search">agentlistingx.ewinproject.org/ai-search</div>
+        </div>
+        <div class="sim-body">
+          <div class="sim-row">
+            <input class="si" id="sq" placeholder='Try: "3BR flat Lekki pool under ₦5M"' aria-label="Search query" onkeydown="if(event.key==='Enter')runSim()">
+            <select class="si sel" id="stype" style="min-width:0;width:130px;flex:none" aria-label="Listing type">
+              <option>For Rent</option><option>For Sale</option><option>Lease</option><option>Shortlet</option>
+            </select>
+            <button class="sbtn" onclick="runSim()" aria-label="Run AI search">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:inline;margin-right:4px" aria-hidden="true"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+              Find Matches
+            </button>
+          </div>
+          <div class="sprog" id="sprog"><div class="sprobar" id="sprobar"></div></div>
+          <p class="sstat" id="sstat"></p>
+          <div class="sres" id="sres" aria-live="polite"></div>
+          <p class="shint">Try also: "5BR mansion Ikoyi sale C-of-O" · "Office VI lease 500sqm" · "Land Abuja investment"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ QUOTE 2 ═══════════ -->
+<div class="qsec rv" style="position:relative">
+  <div class="qmark" aria-hidden="true">"</div>
+  <div class="wrap-sm">
+    <p class="qtext">"Serious landlords deserve <span class="ql">serious systems</span>. Serious clients deserve <span class="ql">serious matches</span>. Serious agents deserve to <span class="ql">earn exactly what they're worth</span> — without the friction."</p>
+    <p class="qauth">— AgentListingX Mission Statement</p>
+  </div>
+</div>
+
+<!-- ═══════════ BENEFITS ═══════════ -->
+<section id="benefits" class="sec" aria-labelledby="ben-h2">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;margin-bottom:14px">
+      <div class="sbadge">🚀 Why AgentListingX Wins</div>
+      <h2 class="sec-h2" id="ben-h2">The Competitive Edge That<br><span class="goldtext">Nobody Else Has</span></h2>
+      <p class="sec-sub" style="max-width:580px;margin:0 auto">Built at the intersection of AI, fintech, and real estate — for Nigeria and the world.</p>
+    </div>
+
+    <!-- Live Charts -->
+    <div class="chart-grid rv" id="cgrid">
+      <div class="cbox">
+        <p class="ctitle">Monthly Transaction Volume Growth</p>
+        <p class="csub">Secured via escrow · Cumulative 12-month data</p>
+        <svg viewBox="0 0 400 160" style="width:100%;height:auto" aria-label="Transaction volume line chart" role="img">
+          <defs>
+            <linearGradient id="la" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#17A878;stop-opacity:.28"/>
+              <stop offset="100%" style="stop-color:#17A878;stop-opacity:0"/>
+            </linearGradient>
+          </defs>
+          <line x1="40" y1="10" x2="40" y2="140" stroke="rgba(240,255,244,.07)" stroke-width="1"/>
+          <line x1="40" y1="140" x2="390" y2="140" stroke="rgba(240,255,244,.07)" stroke-width="1"/>
+          <path d="M40,132 C75,128 110,118 150,105 C185,92 220,76 260,56 C295,40 335,24 390,10 L390,140 L40,140 Z" fill="url(#la)"/>
+          <path id="cl1" d="M40,132 C75,128 110,118 150,105 C185,92 220,76 260,56 C295,40 335,24 390,10" fill="none" stroke="var(--g2)" stroke-width="2.5" stroke-dasharray="600" stroke-dashoffset="600">
+            <animate attributeName="stroke-dashoffset" from="600" to="0" dur="2.2s" begin="0.5s" fill="freeze"/>
+          </path>
+          <circle cx="150" cy="105" r="4" fill="var(--g2)" stroke="var(--bg)" stroke-width="2" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.2s" fill="freeze"/></circle>
+          <circle cx="260" cy="56" r="4" fill="var(--g2)" stroke="var(--bg)" stroke-width="2" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.6s" fill="freeze"/></circle>
+          <circle cx="390" cy="10" r="5" fill="var(--g2)" stroke="var(--bg)" stroke-width="2" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2s" fill="freeze"/></circle>
+          <text x="40" y="155" fill="rgba(240,255,244,.35)" font-size="9" font-family="DM Sans,sans-serif">Jan</text>
+          <text x="150" y="155" fill="rgba(240,255,244,.35)" font-size="9" font-family="DM Sans,sans-serif">May</text>
+          <text x="260" y="155" fill="rgba(240,255,244,.35)" font-size="9" font-family="DM Sans,sans-serif">Sep</text>
+          <text x="370" y="155" fill="rgba(240,255,244,.35)" font-size="9" font-family="DM Sans,sans-serif">Jan</text>
+          <text x="30" y="14" fill="rgba(240,255,244,.35)" font-size="8" text-anchor="end" font-family="DM Sans,sans-serif">&#8358;12B</text>
+          <text x="30" y="78" fill="rgba(240,255,244,.35)" font-size="8" text-anchor="end" font-family="DM Sans,sans-serif">&#8358;6B</text>
+          <text x="30" y="142" fill="rgba(240,255,244,.35)" font-size="8" text-anchor="end" font-family="DM Sans,sans-serif">&#8358;0</text>
+          <rect x="40" y="5" width="8" height="4" rx="2" fill="var(--g2)"/>
+          <text x="52" y="10" fill="rgba(240,255,244,.55)" font-size="8" font-family="DM Sans,sans-serif">Platform Volume</text>
+        </svg>
+      </div>
+      <div class="cbox">
+        <p class="ctitle">User Satisfaction by Category</p>
+        <p class="csub">Post-transaction verified survey · 2024</p>
+        <svg viewBox="0 0 400 165" style="width:100%;height:auto" aria-label="Satisfaction horizontal bar chart" role="img">
+          <defs>
+            <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#17A878;stop-opacity:.9"/>
+              <stop offset="100%" style="stop-color:#0ECAD4;stop-opacity:.9"/>
+            </linearGradient>
+          </defs>
+          <text x="5" y="27" fill="rgba(240,255,244,.6)" font-size="10" font-family="DM Sans,sans-serif" dominant-baseline="middle">Trust &amp; Safety</text>
+          <rect x="110" y="17" width="0" height="16" rx="4" fill="url(#hg)"><animate attributeName="width" from="0" to="264" dur="1.5s" begin="0.4s" fill="freeze"/></rect>
+          <text x="378" y="25" fill="var(--g2)" font-size="10" font-weight="700" text-anchor="end" font-family="DM Sans,sans-serif">99%</text>
+          <text x="5" y="59" fill="rgba(240,255,244,.6)" font-size="10" font-family="DM Sans,sans-serif" dominant-baseline="middle">AI Accuracy</text>
+          <rect x="110" y="49" width="0" height="16" rx="4" fill="url(#hg)"><animate attributeName="width" from="0" to="256" dur="1.5s" begin="0.6s" fill="freeze"/></rect>
+          <text x="370" y="57" fill="var(--g2)" font-size="10" font-weight="700" text-anchor="end" font-family="DM Sans,sans-serif">97%</text>
+          <text x="5" y="91" fill="rgba(240,255,244,.6)" font-size="10" font-family="DM Sans,sans-serif" dominant-baseline="middle">Value for Money</text>
+          <rect x="110" y="81" width="0" height="16" rx="4" fill="url(#hg)"><animate attributeName="width" from="0" to="250" dur="1.5s" begin="0.8s" fill="freeze"/></rect>
+          <text x="364" y="89" fill="var(--g2)" font-size="10" font-weight="700" text-anchor="end" font-family="DM Sans,sans-serif">95%</text>
+          <text x="5" y="123" fill="rgba(240,255,244,.6)" font-size="10" font-family="DM Sans,sans-serif" dominant-baseline="middle">Speed of Match</text>
+          <rect x="110" y="113" width="0" height="16" rx="4" fill="url(#hg)"><animate attributeName="width" from="0" to="244" dur="1.5s" begin="1s" fill="freeze"/></rect>
+          <text x="358" y="121" fill="var(--g2)" font-size="10" font-weight="700" text-anchor="end" font-family="DM Sans,sans-serif">93%</text>
+          <text x="5" y="155" fill="rgba(240,255,244,.6)" font-size="10" font-family="DM Sans,sans-serif" dominant-baseline="middle">Ease of Use</text>
+          <rect x="110" y="145" width="0" height="16" rx="4" fill="url(#hg)"><animate attributeName="width" from="0" to="238" dur="1.5s" begin="1.2s" fill="freeze"/></rect>
+          <text x="352" y="153" fill="var(--g2)" font-size="10" font-weight="700" text-anchor="end" font-family="DM Sans,sans-serif">91%</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Benefit cards -->
+    <div class="ben-grid">
+      <article class="bcard rv d1">
+        <div class="bico" style="background:rgba(23,168,120,.12)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--g2)" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="var(--g2)" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="btitle">Bank-Grade Escrow Protection</h3>
+        <p class="bbody">Every naira transacted is held in regulated escrow, released only upon confirmed milestones. No theft, no fraud, no sleepless nights. Nigeria's first fully secured property payment system — built for a market that desperately needed it.</p>
+        <div class="bmet"><span class="bv">&#8358;0</span><span class="bl">Lost to fraud on platform since launch</span></div>
+      </article>
+      <article class="bcard rv d2">
+        <div class="bico" style="background:rgba(14,202,212,.1)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#0ECAD4" stroke-width="2"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#0ECAD4" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="9.01" y2="9" stroke="#0ECAD4" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="9" x2="15.01" y2="9" stroke="#0ECAD4" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="btitle">AI That Actually Understands You</h3>
+        <p class="bbody">5 AI agents work simultaneously — Matcher, Document Verifier, Pricing Analyst, Fraud Monitor, and 24/7 Assistant. Natural language processing means you describe what you want in plain English and AI handles the rest instantly.</p>
+        <div class="bmet"><span class="bv">95%+</span><span class="bl">AI matching relevance score achieved</span></div>
+      </article>
+      <article class="bcard rv d3">
+        <div class="bico" style="background:rgba(201,162,39,.12)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--gf)" stroke-width="2"/><path d="M2 10h20" stroke="var(--gf)" stroke-width="2"/><circle cx="17" cy="15" r="1.5" fill="var(--gf)"/></svg>
+        </div>
+        <h3 class="btitle">Multi-Stream Income for Everyone</h3>
+        <p class="bbody">The platform creates income for every participant — commissions, inspection fees, referral bonuses, management fees, platform rewards. Not just agents. Everyone who engages seriously with the platform earns. Economic growth by design.</p>
+        <div class="bmet"><span class="bv">&#8358;2M+</span><span class="bl">Average monthly — top agents</span></div>
+      </article>
+      <article class="bcard rv d4">
+        <div class="bico" style="background:rgba(139,92,246,.1)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="#8b5cf6" stroke-width="2"/><circle cx="12" cy="10" r="3" stroke="#8b5cf6" stroke-width="2"/></svg>
+        </div>
+        <h3 class="btitle">Virtual-First. Inspection-Smart.</h3>
+        <p class="bbody">360° virtual tours, AI-analyzed photos, and agent feedback forms allow full evaluation before any physical visit. 78% reduction in unnecessary inspections. The "wasted trip" problem is solved permanently for every client on the platform.</p>
+        <div class="bmet"><span class="bv">78%</span><span class="bl">Fewer unnecessary physical viewings</span></div>
+      </article>
+      <article class="bcard rv d5">
+        <div class="bico" style="background:rgba(34,197,94,.1)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#22c55e" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="#22c55e" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="btitle">NBA Legal Layer &amp; Full Compliance</h3>
+        <p class="bbody">NBA-partnered legal agreement templates, e-signing integration, legally binding arbitration, full audit trails, and NDPR-compliant data handling. The platform acts as a trusted legal partner in every transaction — not just a marketplace.</p>
+        <div class="bmet"><span class="bv">100%</span><span class="bl">NDPR compliant · All transactions auditable</span></div>
+      </article>
+      <article class="bcard rv d1">
+        <div class="bico" style="background:rgba(251,191,36,.1)">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="btitle">Real-Time Market Intelligence</h3>
+        <p class="bbody">Price trend charts, demand heatmaps, investment hotspot reports, and rental yield analytics powered by 30+ data sources. Actionable insights previously reserved for elite investors — now accessible to every subscriber on the platform.</p>
+        <div class="bmet"><span class="bv">30+</span><span class="bl">Data sources powering AI pricing models</span></div>
+      </article>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="rv" style="margin-top:56px">
+      <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:700;text-align:center;color:var(--tw);margin-bottom:5px">Head-to-Head Comparison</h3>
+      <p style="text-align:center;font-size:13.5px;color:var(--tm);margin-bottom:22px">AgentListingX vs Traditional Market vs Basic Listing Sites</p>
+      <div class="ctable-wrap">
+        <table class="ct" aria-label="Competitive comparison table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>AgentListingX</th>
+              <th>Traditional Market</th>
+              <th>Basic Listing Sites</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hi"><td>AI-Powered Matching</td><td><span class="ck">✓</span> 95%+ accuracy</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr><td>Escrow Payment Protection</td><td><span class="ck">✓</span> Bank-grade</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr class="hi"><td>Verified Listings Only</td><td><span class="ck">✓</span> 24hr review</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr><td>360° Virtual Tours</td><td><span class="ck">✓</span> Included</td><td><span class="nx">—</span></td><td><span class="nx">Rarely</span></td></tr>
+            <tr class="hi"><td>Transparent Commission</td><td><span class="ck">✓</span> Fixed 3–7%</td><td><span class="nx">10–15% hidden</span></td><td><span class="nx">—</span></td></tr>
+            <tr><td>Agent CRM + Lead Score</td><td><span class="ck">✓</span> AI-powered</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr class="hi"><td>Fraud Detection System</td><td><span class="ck">✓</span> 24/7 AI</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr><td>Referral Earnings</td><td><span class="ck">✓</span> &#8358;500–&#8358;2,000+</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr class="hi"><td>Diaspora + Multi-Currency</td><td><span class="ck">✓</span> NGN · USD · GBP</td><td><span class="nx">—</span></td><td><span class="nx">—</span></td></tr>
+            <tr><td>Legal Arbitration</td><td><span class="ck">✓</span> NBA-partnered</td><td><span class="nx">Court only</span></td><td><span class="nx">—</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Impact Row -->
+    <div class="irow rv" style="margin-top:52px" role="region" aria-label="Platform impact statistics">
+      <div class="ii"><span class="iv">2,400+</span><span class="il">Verified Listings</span></div>
+      <div class="ii"><span class="iv">850+</span><span class="il">Licensed Agents</span></div>
+      <div class="ii"><span class="iv">&#8358;12B+</span><span class="il">Secured in Escrow</span></div>
+      <div class="ii"><span class="iv">36</span><span class="il">States Covered</span></div>
+      <div class="ii"><span class="iv">99.1%</span><span class="il">Satisfaction Rate</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ EARN ═══════════ -->
+<section id="earn" class="sec" aria-labelledby="earn-h2">
+  <div class="wrap">
+    <div class="rv" style="text-align:center;margin-bottom:14px">
+      <div class="sbadge">💰 Earn With AgentListingX</div>
+      <h2 class="sec-h2" id="earn-h2">The Platform That<br><span class="goldtext">Pays You to Participate</span></h2>
+      <p class="sec-sub" style="max-width:600px;margin:0 auto">AgentListingX is engineered for organic, self-sustaining growth through distributed income. Every role earns. Every action creates value. The more people participate, the more money flows to everyone in the ecosystem.</p>
+    </div>
+
+    <!-- Income distribution SVG -->
+    <div class="rv arch-wrap" style="margin-bottom:8px">
+      <p style="font-family:var(--serif);font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:22px;color:var(--tw)">Income Distribution Model</p>
+      <svg viewBox="0 0 860 180" style="width:100%;height:auto" aria-label="Income waterfall chart showing distribution to all participants" role="img">
+        <defs>
+          <linearGradient id="wg1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#17A878;stop-opacity:.9"/><stop offset="100%" style="stop-color:#17A878;stop-opacity:.35"/></linearGradient>
+          <linearGradient id="wg2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#C9A227;stop-opacity:.9"/><stop offset="100%" style="stop-color:#C9A227;stop-opacity:.35"/></linearGradient>
+          <linearGradient id="wg3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#0ECAD4;stop-opacity:.9"/><stop offset="100%" style="stop-color:#0ECAD4;stop-opacity:.35"/></linearGradient>
+        </defs>
+        <line x1="50" y1="145" x2="850" y2="145" stroke="rgba(240,255,244,.07)" stroke-width="1"/>
+        <rect id="wf1" x="65" y="145" width="100" height="0" rx="6" fill="url(#wg1)"><animate attributeName="y" from="145" to="28" dur="1.2s" begin="0.3s" fill="freeze"/><animate attributeName="height" from="0" to="117" dur="1.2s" begin="0.3s" fill="freeze"/></rect>
+        <text x="115" y="22" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.6s" fill="freeze"/>3% Commission</text>
+        <text x="115" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Agents</text>
+        <rect id="wf2" x="195" y="145" width="100" height="0" rx="6" fill="url(#wg2)"><animate attributeName="y" from="145" to="50" dur="1.2s" begin="0.5s" fill="freeze"/><animate attributeName="height" from="0" to="95" dur="1.2s" begin="0.5s" fill="freeze"/></rect>
+        <text x="245" y="44" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.8s" fill="freeze"/>5% Estate Mgmt</text>
+        <text x="245" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Managers</text>
+        <rect id="wf3" x="325" y="145" width="100" height="0" rx="6" fill="url(#wg1)"><animate attributeName="y" from="145" to="70" dur="1.2s" begin="0.7s" fill="freeze"/><animate attributeName="height" from="0" to="75" dur="1.2s" begin="0.7s" fill="freeze"/></rect>
+        <text x="375" y="64" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2s" fill="freeze"/>&#8358;2K Inspection</text>
+        <text x="375" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Per Visit</text>
+        <rect id="wf4" x="455" y="145" width="100" height="0" rx="6" fill="url(#wg3)"><animate attributeName="y" from="145" to="85" dur="1.2s" begin="0.9s" fill="freeze"/><animate attributeName="height" from="0" to="60" dur="1.2s" begin="0.9s" fill="freeze"/></rect>
+        <text x="505" y="79" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2.2s" fill="freeze"/>&#8358;500–2K Referral</text>
+        <text x="505" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">All Users</text>
+        <rect id="wf5" x="585" y="145" width="100" height="0" rx="6" fill="url(#wg2)"><animate attributeName="y" from="145" to="95" dur="1.2s" begin="1.1s" fill="freeze"/><animate attributeName="height" from="0" to="50" dur="1.2s" begin="1.1s" fill="freeze"/></rect>
+        <text x="635" y="89" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2.4s" fill="freeze"/>Platform Rewards</text>
+        <text x="635" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Top Contributors</text>
+        <rect id="wf6" x="715" y="145" width="100" height="0" rx="6" fill="url(#wg3)"><animate attributeName="y" from="145" to="108" dur="1.2s" begin="1.3s" fill="freeze"/><animate attributeName="height" from="0" to="37" dur="1.2s" begin="1.3s" fill="freeze"/></rect>
+        <text x="765" y="102" fill="rgba(240,255,244,.7)" font-size="9.5" text-anchor="middle" font-family="DM Sans,sans-serif" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2.6s" fill="freeze"/>0.5% Residual</text>
+        <text x="765" y="162" fill="rgba(240,255,244,.5)" font-size="9" text-anchor="middle" font-family="DM Sans,sans-serif">Referral Chain</text>
+      </svg>
+    </div>
+
+    <div class="earn-grid">
+      <article class="ec rv d1">
+        <span class="eico" aria-hidden="true">🎯</span>
+        <h3 class="etitle">Agent Commissions</h3>
+        <p class="ebody">Earn 3% on every transaction. Add estate management and earn +5%. Dual-role agents cap at 7% total — credited instantly to your wallet when escrow releases.</p>
+        <span class="ebadge">&#8358;285K+ per deal average</span>
+      </article>
+      <article class="ec rv d2">
+        <span class="eico" aria-hidden="true">🔗</span>
+        <h3 class="etitle">Referral Network Income</h3>
+        <p class="ebody">&#8358;500 per subscriber, &#8358;2,000 when they close their first deal, 0.5% residual on their first 3 transactions. Unlimited referrals — passive income that compounds over time.</p>
+        <span class="ebadge">&#8358;500 per subscriber · &#8358;2K per deal</span>
+      </article>
+      <article class="ec rv d3">
+        <span class="eico" aria-hidden="true">🏘️</span>
+        <h3 class="etitle">Estate Management Fees</h3>
+        <p class="ebody">Earn 5% annual fee on every property managed. Automated collection means you earn even while you sleep. Manage 10 properties — build substantial passive income monthly.</p>
+        <span class="ebadge">5% annual per managed property</span>
+      </article>
+      <article class="ec rv d4">
+        <span class="eico" aria-hidden="true">📅</span>
+        <h3 class="etitle">Inspection Fees</h3>
+        <p class="ebody">Every confirmed physical inspection earns the agent &#8358;2,000 instantly. Do 10 inspections weekly — that's &#8358;80,000 monthly before any deal closes. A guaranteed income floor.</p>
+        <span class="ebadge">&#8358;2,000 per confirmed inspection</span>
+      </article>
+      <article class="ec rv d5">
+        <span class="eico" aria-hidden="true">🏆</span>
+        <h3 class="etitle">Platform Rewards</h3>
+        <p class="ebody">Top agents, top referrers, and most-active landlords earn platform bonuses and featured listing slots. The more you contribute to the ecosystem, the more it rewards you.</p>
+        <span class="ebadge">Bonus + Featured Listing Slots</span>
+      </article>
+      <article class="ec rv d1">
+        <span class="eico" aria-hidden="true">🌍</span>
+        <h3 class="etitle">Diaspora &amp; Multi-Currency</h3>
+        <p class="ebody">Close diaspora deals in USD or GBP — commissions converted at favorable rates. The &#8358;25B+ diaspora property investment market is now your revenue opportunity.</p>
+        <span class="ebadge">NGN · USD · GBP supported</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ QUOTE 3 ═══════════ -->
+<div class="qsec rv" style="position:relative">
+  <div class="qmark" aria-hidden="true">"</div>
+  <div class="wrap-sm">
+    <p class="qtext">"The most disruptive businesses don't just solve problems — they <span class="ql">redistribute opportunity</span>. AgentListingX doesn't just fix real estate — it <span class="ql">creates wealth engines</span> for every Nigerian who participates."</p>
+    <p class="qauth">— E-WIN Project Vision Statement</p>
+  </div>
+</div>
+
+<!-- ═══════════ CLOSING CTA ═══════════ -->
+<section id="cta" aria-labelledby="cta-h2">
+  <div class="wrap-sm" style="text-align:center">
+    <div class="sbadge" style="justify-content:center;margin-bottom:20px">🌟 Your Opportunity Starts Right Now</div>
+
+    <!-- Animated house icon -->
+    <div style="width:68px;height:68px;border-radius:20px;background:rgba(23,168,120,.12);border:1px solid var(--br);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:glow 3s ease infinite">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="var(--g2)" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M9 22V12h6v10" stroke="var(--g2)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h2 class="cta-h2" id="cta-h2">
+      Stop Losing to a<br>Broken System.<br>
+      <span style="background:linear-gradient(135deg,var(--g2),var(--gf));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Start Winning With AgentListingX.</span>
+    </h2>
+
+    <p class="cta-sub">
+      Whether you are a landlord tired of bad tenants, an agent who deserves better leads, a client who wants a safe home, or a youth building income streams — AgentListingX was built precisely for you.
+      Join 50,000+ Nigerians already transforming how property works.
+    </p>
+
+    <div class="cta-btns">
+      <a class="btn-gold" href="https://agentlistingx.ewinproject.org" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Get Started Free Today
+      </a>
+      <a class="btn-wa" href="https://wa.me/2349025152818" target="_blank" rel="noopener" aria-label="WhatsApp: +234-902-515-2818">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z" fill="#25D366"/>
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.524 3.66 1.438 5.168L2 22l4.985-1.378A9.945 9.945 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="#25D366" stroke-width="1.5" fill="none"/>
+        </svg>
+        WhatsApp: +234-902-515-2818
+      </a>
+    </div>
+
+    <p class="cta-dom" style="margin-top:28px">
+      Platform: <a href="https://agentlistingx.ewinproject.org" target="_blank" rel="noopener">agentlistingx.ewinproject.org</a>
+      &nbsp;&middot;&nbsp;
+      WhatsApp Only: <a href="https://wa.me/2349025152818">+234-902-515-2818</a>
+    </p>
+    <p style="font-size:11.5px;color:var(--td);margin-top:10px;position:relative;z-index:1">No credit card required for free access · Cancel anytime · 100% NDPR compliant · Instant activation</p>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <p style="margin-bottom:8px">
+    <a href="https://agentlistingx.ewinproject.org" target="_blank" rel="noopener">AgentListingX</a>
+    &nbsp;&middot;&nbsp;
+    Part of the <strong style="color:var(--g2)">E-WIN Project Ecosystem</strong>
+    &nbsp;&middot;&nbsp;
+    <a href="https://wa.me/2349025152818">+234-902-515-2818</a> (WhatsApp only)
+  </p>
+  <p>&copy; 2025 AgentListingX. All rights reserved. Nigeria's #1 AI-Powered Real Estate Operating System.</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════
+// PARTICLES
+// ═══════════════════════════════════════════
+(function(){
+  var c=document.getElementById('pts'),ctx=c.getContext('2d');
+  var W=window.innerWidth,H=window.innerHeight;
+  c.width=W;c.height=H;
+  var pts=[];
+  for(var i=0;i<65;i++){pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.7+.4,a:Math.random()*.55+.1});}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(function(p){
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(23,168,120,'+p.a+')';ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+    });
+    for(var i=0;i<pts.length;i++){for(var j=i+1;j<pts.length;j++){
+      var dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<95){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+        ctx.strokeStyle='rgba(23,168,120,'+(0.06*(1-d/95))+')';ctx.lineWidth=.6;ctx.stroke();}
+    }}
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',function(){W=window.innerWidth;H=window.innerHeight;c.width=W;c.height=H;});
+})();
+
+// ═══════════════════════════════════════════
+// SCROLL PROGRESS
+// ═══════════════════════════════════════════
+window.addEventListener('scroll',function(){
+  var p=document.getElementById('prog');
+  var s=document.documentElement.scrollTop||document.body.scrollTop;
+  var h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  if(p)p.style.width=(s/h*100)+'%';
+});
+
+// ═══════════════════════════════════════════
+// ANIMATED COUNTERS
+// ═══════════════════════════════════════════
+function animNum(id,target,suffix,dur){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var start=0,frames=dur/16,step=target/frames,frame=0;
+  var t=setInterval(function(){
+    frame++;start+=step;
+    if(frame>=frames){el.textContent=target+suffix;clearInterval(t);}
+    else el.textContent=Math.floor(start)+suffix;
+  },16);
+}
+setTimeout(function(){
+  animNum('s1','2,400','+',2000);
+  animNum('s2','850','+',2000);
+  document.getElementById('s3').textContent='₦12B+';
+  animNum('s4','99.1','%',2000);
+},700);
+
+// ═══════════════════════════════════════════
+// ANIMATED BAR CHART
+// ═══════════════════════════════════════════
+var barData=[
+  {id:'ab1',pct:94,lv:'av1'},{id:'ab2',pct:87,lv:'av2'},{id:'ab3',pct:77,lv:'av3'},
+  {id:'ab4',pct:73,lv:'av4'},{id:'ab5',pct:69,lv:'av5'},{id:'ab6',pct:81,lv:'av6'}
+];
+var barsGone=false;
+function animBars(){
+  if(barsGone)return;barsGone=true;
+  var maxH=141;
+  barData.forEach(function(b,i){
+    setTimeout(function(){
+      var el=document.getElementById(b.id);
+      var vl=document.getElementById(b.lv);
+      if(!el)return;
+      var h=0,target=Math.round(b.pct/100*maxH);
+      var t=setInterval(function(){
+        h+=target/28;
+        if(h>=target){h=target;clearInterval(t);
+          if(vl){vl.setAttribute('y',(155-h-7).toString());vl.setAttribute('opacity','1');}
+        }
+        el.setAttribute('y',(155-h).toString());
+        el.setAttribute('height',h.toString());
+      },16);
+    },i*180);
+  });
+}
+
+// ═══════════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════════
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('vis');
+      if(e.target.closest('#problem'))animBars();
+    }
+  });
+},{threshold:.1,rootMargin:'0px 0px -36px 0px'});
+document.querySelectorAll('.rv,.rvl,.rvr').forEach(function(el){obs.observe(el);});
+
+// ═══════════════════════════════════════════
+// ROLE TABS
+// ═══════════════════════════════════════════
+function switchRole(r,btn){
+  ['c','a','l'].forEach(function(x){
+    var el=document.getElementById('r'+x);
+    if(el)el.style.display=x===r?'block':'none';
+    var b=document.getElementById('rt-'+x);
+    if(b)b.classList.toggle('on',x===r);
+  });
+}
+
+// ═══════════════════════════════════════════
+// AI SIMULATOR
+// ═══════════════════════════════════════════
+var simDB=[
+  {kw:['lekki','flat','pool','5m','rent'],res:[
+    {r:'#1',n:'3BR Flat w/ Pool — Lekki Phase 1',m:'Lagos · ₦3.8M/yr · Verified ✓ · 360° Tour',s:'96%'},
+    {r:'#2',n:'3BR Serviced Flat — Admiralty Way',m:'Lekki · ₦4.2M/yr · AI Match · Generator ✓',s:'91%'},
+    {r:'#3',n:'3BR Terrace Duplex — Lekki Phase 2',m:'Lagos · ₦3.5M/yr · Escrow Ready',s:'87%'}
+  ]},
+  {kw:['ikoyi','mansion','sale','cof','5br'],res:[
+    {r:'#1',n:'5BR Mansion + BQ — Bourdillon Road',m:'Ikoyi · ₦850M · Full C-of-O ✓',s:'98%'},
+    {r:'#2',n:'4BR Mansion — Banana Island',m:'Ikoyi · ₦1.2B · C-of-O + Survey ✓',s:'94%'},
+    {r:'#3',n:'5BR Smart Mansion — Old Ikoyi',m:'Lagos · ₦720M · Verified Agent',s:'89%'}
+  ]},
+  {kw:['office','vi','lease','500','commercial'],res:[
+    {r:'#1',n:'600sqm Grade-A Office — Adeola Odeku',m:'Victoria Island · ₦18M/yr · Elevator ✓',s:'95%'},
+    {r:'#2',n:'450sqm Open-Plan — Idowu Taylor',m:'VI Lagos · ₦12M/yr · 20 Parking',s:'90%'},
+    {r:'#3',n:'350sqm Creative Office — Kofo Abayomi',m:'VI · ₦9.5M/yr · Rooftop Access',s:'85%'}
+  ]},
+  {kw:['land','abuja','investment','cof','plot'],res:[
+    {r:'#1',n:'1,000sqm C-of-O Plot — Gwarinpa',m:'Abuja FCT · ₦45M · Full C-of-O ✓',s:'97%'},
+    {r:'#2',n:'2 Plots — Life Camp Estate',m:'Abuja · ₦38M · R-of-O + Survey',s:'92%'},
+    {r:'#3',n:'500sqm — Wuse 2 District',m:'Abuja FCT · ₦55M · C-of-O ✓',s:'88%'}
+  ]}
+];
+var defaultRes=[
+  {r:'#1',n:'3BR Flat — Victoria Island, Lagos',m:'Lagos · ₦5.2M/yr · Verified ✓',s:'89%'},
+  {r:'#2',n:'4BR Duplex — Lekki Phase 1',m:'Lagos · ₦8.5M/yr · Pool + Generator',s:'84%'},
+  {r:'#3',n:'2BR Self-Contain — Yaba Tech District',m:'Lagos Mainland · ₦1.2M/yr · WiFi ✓',s:'79%'}
+];
+
+function runSim(){
+  var q=(document.getElementById('sq').value||'').toLowerCase().trim();
+  if(!q){document.getElementById('sstat').textContent='Please enter a search query to find matches.';document.getElementById('sstat').style.display='block';return;}
+  var prog=document.getElementById('sprog');
+  var bar=document.getElementById('sprobar');
+  var stat=document.getElementById('sstat');
+  var res=document.getElementById('sres');
+  prog.style.display='block';bar.style.width='0%';
+  stat.style.display='block';res.classList.remove('show');
+  var steps=['🤖 Parsing your query...','🔍 Scanning 2,400+ listings...','📊 Scoring AI matches...','✨ Generating personalized results...'];
+  var si=0;
+  function next(){
+    if(si>=steps.length){
+      bar.style.width='100%';
+      setTimeout(function(){
+        prog.style.display='none';stat.style.display='none';
+        var matched=defaultRes;
+        for(var i=0;i<simDB.length;i++){
+          var hit=simDB[i].kw.some(function(kw){return q.includes(kw)});
+          if(hit){matched=simDB[i].res;break;}
+        }
+        res.innerHTML=matched.map(function(r){
+          return '<div class="scard"><div class="srank">'+r.r+'</div><div style="flex:1;min-width:0"><div class="sprop">'+r.n+'</div><div class="smeta">'+r.m+'</div></div><div class="sscore">'+r.s+'</div></div>';
+        }).join('');
+        res.classList.add('show');
+      },350);
+      return;
+    }
+    stat.textContent=steps[si];
+    bar.style.width=((si+1)/steps.length*100)+'%';
+    bar.style.transition='width .5s ease';
+    si++;setTimeout(next,550);
+  }
+  next();
+}
+document.getElementById('sq').addEventListener('keydown',function(e){if(e.key==='Enter')runSim();});
+
+// ═══════════════════════════════════════════
+// MOBILE CHART GRID
+// ═══════════════════════════════════════════
+function fixGrid(){
+  var g=document.getElementById('cgrid');
+  if(g)g.style.gridTemplateColumns=window.innerWidth<768?'1fr':'1fr 1fr';
+}
+fixGrid();window.addEventListener('resize',fixGrid);
+</script>
+</body>
+</html>

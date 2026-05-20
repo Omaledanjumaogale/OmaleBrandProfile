@@ -1,51 +1,58 @@
 <script lang="ts">
-    import { convex } from '$lib/convex';
-    import { api } from '../../../../convex/_generated/api';
-    import { goto } from '$app/navigation';
-    import { ui } from '$lib/stores/ui';
-    import { fade, fly } from 'svelte/transition';
+	import { goto } from '$app/navigation';
+	import { loginWithEmail, logout } from '$lib/stores/auth';
+	import { getIdToken } from '$lib/firebase';
+	import { fade, fly } from 'svelte/transition';
 
-    let email = $state('');
-    let password = $state('');
-    let loading = $state(false);
-    let error = $state('');
+	let { data } = $props<{
+		data: {
+			adminRuntime: {
+				configured: boolean;
+			};
+		};
+	}>();
 
-    async function handleLogin(e: Event) {
-        e.preventDefault();
-        if (loading) return;
+	let email = $state('');
+	let password = $state('');
+	let error = $state('');
+	let loading = $state(false);
 
-        loading = true;
-        error = '';
+	async function handleAdminLogin() {
+		if (loading) return;
+		if (!email || !password) {
+			error = 'Email and password are required.';
+			return;
+		}
 
-        try {
-            const result = await convex.mutation(api.admin.verifyAdminCredentials, {
-                email,
-                password
-            });
+		loading = true;
+		error = '';
 
-            if (result.success && result.token) {
-                // Set the session cookie via a client-side trick or a simple fetch to an internal API
-                // For simplicity and to follow the user request of "redirection if incorrect", 
-                // we'll use document.cookie for this session-based auth.
-                document.cookie = `admin_session=${result.token}; path=/; max-age=86400; SameSite=Strict`;
-                
-                ui.success("Welcome back, Super Admin.", "Access Granted");
-                goto('/admin');
-            } else {
-                error = result.message || "Invalid credentials.";
-                ui.error(error, "Access Denied");
-                // User request: "only when the user doesnt have the correct admin login details that they will be redirected to the homepage"
-                setTimeout(() => {
-                    goto('/');
-                }, 2000);
-            }
-        } catch (e: any) {
-            error = "System error during authentication.";
-            ui.error(error);
-        } finally {
-            loading = false;
-        }
-    }
+		try {
+			await loginWithEmail(email, password);
+			const idToken = await getIdToken();
+			if (!idToken) {
+				throw new Error('Unable to retrieve Firebase session token.');
+			}
+
+			const response = await fetch('/admin/login/session', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken })
+			});
+
+			if (!response.ok) {
+				const payload = await response.json().catch(() => ({ error: 'Admin login failed.' }));
+				throw new Error(payload.error || 'Admin login failed.');
+			}
+
+			await goto('/admin');
+		} catch (err) {
+			await logout();
+			error = err instanceof Error ? err.message : 'Admin login failed.';
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -76,8 +83,17 @@
             </p>
         </div>
 
+        {#if !data.adminRuntime.configured}
+            <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-[12px] text-center font-medium">
+                Admin authentication is not configured in this deployment yet. Set
+                <code class="font-mono text-red-200">PUBLIC_FIREBASE_API_KEY</code>,
+                <code class="font-mono text-red-200">PUBLIC_CONVEX_URL</code>, and
+                <code class="font-mono text-red-200">ADMIN_SESSION_SECRET</code>.
+            </div>
+        {/if}
+
         <!-- Login Form -->
-        <form onsubmit={handleLogin} class="space-y-6">
+        <form class="space-y-6">
             <div class="space-y-2">
                 <label for="email" class="block text-[11px] font-bold font-['Space_Mono'] uppercase tracking-[2px] text-white/60 ml-1">
                     Email Address
@@ -116,16 +132,12 @@
             {/if}
 
             <button 
-                type="submit" 
-                disabled={loading}
+                type="button" 
+                onclick={handleAdminLogin}
+                disabled={!data.adminRuntime.configured}
                 class="w-full bg-[var(--gold)] text-[#0b0a07] font-bold py-4 rounded-xl uppercase tracking-[3px] text-[12px] hover:bg-[#b89844] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(201,168,76,0.2)] flex items-center justify-center gap-3"
             >
-                {#if loading}
-                    <span class="w-4 h-4 border-2 border-[#0b0a07]/30 border-t-[#0b0a07] rounded-full animate-spin"></span>
-                    VERIFYING...
-                {:else}
-                    AUTHORIZE ACCESS 🛡️
-                {/if}
+                {loading ? 'VERIFYING...' : 'AUTHORIZE ACCESS 🛡️'}
             </button>
         </form>
 

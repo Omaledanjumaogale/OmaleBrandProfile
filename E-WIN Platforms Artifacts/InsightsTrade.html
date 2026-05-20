@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TradezMarket — E-WIN Project</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a5c3a'/><text y='.9em' font-size='64' x='14'>&#8358;</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#C9A84C;--gl:#F0D080;--gd:#A87C2A;
+  --gr:#3CB371;--grm:#2E8B5A;--grg:rgba(60,179,113,.28);
+  --dk:#060D08;--dk2:#0B1810;--dk3:#111E15;
+  --sf:rgba(255,255,255,.04);--b:rgba(201,168,76,.16);--bg:rgba(60,179,113,.16);
+  --tx:#EDF3EF;--mu:#6E9E7C;--rd:#E05252;--bl:#4A8FD4;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);overflow-x:hidden;min-width:300px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dk2)}::-webkit-scrollbar-thumb{background:var(--g);border-radius:3px}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35}
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.018;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") repeat;background-size:128px}
+main{position:relative;z-index:2}
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:rgba(6,13,8,.92);backdrop-filter:blur(22px);border-bottom:1px solid var(--b)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--g),var(--gr));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--dk);flex-shrink:0;box-shadow:0 0 16px var(--grg)}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;background:linear-gradient(90deg,var(--gl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.h-url{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--mu);border:1px solid var(--b);background:rgba(255,255,255,.03);padding:.24rem .62rem;border-radius:5px;white-space:nowrap}
+@media(max-width:460px){.h-url{display:none}}
+/* TICKER */
+.ticker{margin-top:62px;background:rgba(201,168,76,.05);border-bottom:1px solid var(--b);overflow:hidden;padding:.46rem 0}
+.ticker-t{display:flex;white-space:nowrap;animation:tk 34s linear infinite}
+.ticker-t:hover{animation-play-state:paused}
+@keyframes tk{to{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:.36rem;padding:0 1.6rem;font-size:.73rem;color:var(--mu);font-weight:500}
+.up{color:var(--gr)}.dn{color:var(--rd)}
+/* SECTIONS */
+s-{display:block}
+section{position:relative;padding:84px 18px;overflow:hidden}
+.w{max-width:1060px;margin:0 auto;width:100%}
+/* TYPOGRAPHY */
+.lbl{display:inline-flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--g);margin-bottom:11px}
+.lbl::before{content:'';width:22px;height:2px;background:linear-gradient(90deg,var(--g),transparent)}
+.h2{font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4.5vw,3rem);font-weight:700;line-height:1.1;letter-spacing:-.022em;margin-bottom:13px}
+.desc{font-size:.97rem;color:var(--mu);line-height:1.76;max-width:600px}
+.gtext{background:linear-gradient(90deg,var(--g),var(--gl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grtext{color:var(--gr)}
+.ctr{text-align:center}.ctr .desc{margin:0 auto}
+/* REVEAL */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.rl{opacity:0;transform:translateX(-24px);transition:opacity .6s ease,transform .6s ease}
+.rr{opacity:0;transform:translateX(24px);transition:opacity .6s ease,transform .6s ease}
+.vis{opacity:1!important;transform:none!important}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}.d6{transition-delay:.6s}
+/* BUTTONS */
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gd));color:var(--dk);font-weight:800;font-size:.86rem;padding:.76rem 1.8rem;border-radius:11px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .3s;box-shadow:0 4px 20px rgba(201,168,76,.28)}
+.btn-g:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(201,168,76,.44)}
+.btn-o{background:transparent;color:var(--gr);font-weight:700;font-size:.86rem;padding:.76rem 1.8rem;border-radius:11px;border:1.5px solid var(--gr);cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .3s}
+.btn-o:hover{background:rgba(60,179,113,.1);transform:translateY(-3px)}
+.btns{display:flex;gap:11px;flex-wrap:wrap}
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:62px;background:radial-gradient(ellipse 80% 52% at 50% 0%,rgba(60,179,113,.11) 0%,transparent 68%),radial-gradient(ellipse 48% 32% at 94% 88%,rgba(201,168,76,.08) 0%,transparent 55%),var(--dk)}
+.hero-g{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:1060px;margin:0 auto;width:100%;padding:38px 18px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(60,179,113,.09);border:1px solid var(--bg);padding:.3rem .86rem;border-radius:100px;margin-bottom:20px}
+.edot{width:7px;height:7px;border-radius:50%;background:var(--gr);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.4)}}
+.etx{font-size:.68rem;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.1em}
+.hero-h{font-family:'Playfair Display',serif;font-size:clamp(2rem,5.5vw,3.8rem);font-weight:900;line-height:1.07;letter-spacing:-.025em;margin-bottom:17px}
+.hero-h .a{background:linear-gradient(90deg,var(--g),var(--gl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-h .b{color:var(--gr);text-shadow:0 0 38px var(--grg)}
+.hero-p{font-size:.98rem;color:var(--mu);line-height:1.76;margin-bottom:32px;max-width:490px}
+.mini-stats{display:flex;gap:20px;flex-wrap:wrap;margin-top:30px}
+.ms-v{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700}
+.ms-l{font-size:.66rem;color:var(--mu);margin-top:2px}
+/* HERO WIDGET */
+.widget{background:rgba(11,24,16,.9);border:1px solid var(--b);border-radius:18px;padding:22px;backdrop-filter:blur(18px);position:relative;overflow:hidden;box-shadow:0 18px 72px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
+.widget::before{content:'';position:absolute;top:-46px;right:-46px;width:160px;height:160px;border-radius:50%;background:radial-gradient(var(--grg),transparent 70%);pointer-events:none}
+.wh{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.wt{font-size:.72rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
+.lpill{display:flex;align-items:center;gap:4px;background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.25);padding:.18rem .5rem;border-radius:100px;font-size:.62rem;font-weight:700;color:var(--rd)}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--rd);animation:pulse 1.4s infinite}
+.mi{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:11px;margin-bottom:7px;transition:border-color .2s}
+.mi:hover{border-color:var(--bg)}.mi:last-child{margin-bottom:0}
+.mq{font-size:.77rem;font-weight:600;margin-bottom:6px;line-height:1.34}
+.mb{height:5px;border-radius:3px;background:rgba(255,255,255,.06);margin-bottom:4px;overflow:hidden}
+.mf{height:100%;border-radius:3px;transition:width 1.8s ease}
+.mo{display:flex;justify-content:space-between;font-size:.67rem}
+.yc{color:var(--gr);font-weight:700}.nc{color:var(--rd);font-weight:700}
+.mm{font-size:.63rem;color:var(--mu);margin-top:3px}
+/* PAIN */
+#pain{background:radial-gradient(ellipse 52% 42% at 0% 52%,rgba(224,82,82,.055) 0%,transparent 58%),var(--dk2)}
+.pain-g{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}
+.pc{background:rgba(224,82,82,.04);border:1px solid rgba(224,82,82,.12);border-radius:var(--r);padding:22px;transition:all .3s;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 78% 12%,rgba(224,82,82,.08),transparent 52%);opacity:0;transition:.3s}
+.pc:hover{transform:translateY(-4px);border-color:rgba(224,82,82,.28)}.pc:hover::after{opacity:1}
+.pe{font-size:1.8rem;margin-bottom:11px}
+.pt{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--rd);margin-bottom:6px}
+.pd{font-size:.81rem;color:var(--mu);line-height:1.66}.pd strong{color:var(--tx)}
+.pstrip{display:flex;gap:12px;overflow-x:auto;padding:3px 0 12px;scrollbar-width:thin;scrollbar-color:var(--g) transparent;margin-top:34px}
+.pstrip::-webkit-scrollbar{height:4px}.pstrip::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
+.pa{flex-shrink:0;width:136px;background:var(--sf);border:1px solid var(--b);border-radius:11px;padding:14px;text-align:center;transition:all .3s}
+.pa:hover{border-color:var(--g);transform:translateY(-3px)}
+.pav{width:46px;height:46px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:linear-gradient(135deg,var(--dk3),var(--dk2));border:2px solid var(--b)}
+.pn{font-size:.78rem;font-weight:700;margin-bottom:2px}.pr{font-size:.65rem;color:var(--mu)}
+/* QUOTE */
+.qb{text-align:center;padding:58px 18px;background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(60,179,113,.05));border-top:1px solid var(--b);border-bottom:1px solid var(--b);position:relative;overflow:hidden}
+.qb::before{content:'\201C';font-family:'Playfair Display',serif;font-size:13rem;line-height:1;color:rgba(201,168,76,.05);position:absolute;top:-26px;left:8px;pointer-events:none}
+.qt{font-family:'Playfair Display',serif;font-size:clamp(1.15rem,3vw,1.85rem);font-style:italic;font-weight:400;line-height:1.5;max-width:720px;margin:0 auto 13px;background:linear-gradient(135deg,var(--gl),var(--tx));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.qa{font-size:.76rem;color:var(--mu);font-weight:600;letter-spacing:.05em}
+/* SOLUTION */
+#solution{background:radial-gradient(ellipse 62% 42% at 50% 0%,rgba(60,179,113,.09) 0%,transparent 62%),var(--dk)}
+.sol-g{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:48px}
+.cb{background:rgba(11,24,16,.9);border:1px solid var(--bg);border-radius:18px;padding:21px;box-shadow:0 14px 52px rgba(0,0,0,.4)}
+.cb-t{font-size:.72rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.cb-v{font-family:'JetBrains Mono',monospace;font-size:1.65rem;font-weight:700;color:var(--gr);margin-bottom:11px}
+#lc{width:100%;height:124px}
+.clbls{display:flex;justify-content:space-between;margin-top:5px}
+.cl{font-size:.58rem;color:var(--mu)}
+.om{margin-top:12px;background:rgba(255,255,255,.025);border:1px solid var(--b);border-radius:10px;padding:12px}
+.oml{display:flex;justify-content:space-between;font-size:.71rem;margin-bottom:6px}
+.omb{height:8px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;position:relative}
+.omy{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gr),#7CF5A8);transition:width 2s ease}
+.omn{position:absolute;right:0;top:0;height:100%;border-radius:4px;background:linear-gradient(270deg,var(--rd),#FF8A8A);transition:width 2s ease}
+.omf{display:flex;justify-content:space-between;margin-top:4px;font-size:.65rem}
+.fb{margin-top:12px;background:rgba(11,24,16,.95);border:1px solid var(--bg);border-radius:14px;padding:18px}
+.ft{font-size:.7rem;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.fd{font-family:'JetBrains Mono',monospace;font-size:clamp(.68rem,1.7vw,.9rem);color:var(--gl);line-height:1.7;background:rgba(255,255,255,.022);border-radius:8px;padding:14px;border-left:3px solid var(--gr);overflow-x:auto;white-space:pre}
+.fn{font-size:.74rem;color:var(--mu);margin-top:8px;line-height:1.56}.fn strong{color:var(--g)}
+.si-list{display:flex;flex-direction:column;gap:13px}
+.si{display:flex;align-items:flex-start;gap:12px;padding:15px;background:var(--sf);border:1px solid var(--b);border-radius:var(--r);transition:all .28s}
+.si:hover{border-color:var(--bg);background:rgba(60,179,113,.035)}
+.si-ico{width:38px;height:38px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;background:rgba(60,179,113,.09);border:1px solid var(--bg)}
+.si-tit{font-weight:700;font-size:.88rem;margin-bottom:2px}.si-des{font-size:.78rem;color:var(--mu);line-height:1.58}
+/* STATS */
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:1060px;margin:0 auto;padding:0 18px}
+.sc{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);padding:20px;text-align:center;transition:all .3s}
+.sc:hover{border-color:var(--g);transform:translateY(-3px)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:clamp(1.15rem,3vw,1.8rem);font-weight:700;background:linear-gradient(135deg,var(--g),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.sl{font-size:.7rem;color:var(--mu);font-weight:600}.sc2{font-size:.64rem;margin-top:3px;font-weight:700}
+/* HOW IT WORKS */
+#how{background:var(--dk2)}
+.steps{margin-top:48px}
+.sr2{display:grid;grid-template-columns:68px 1fr;gap:18px;position:relative}
+.sr2:not(:last-child) .sl2{position:absolute;left:33px;top:68px;bottom:-31px;width:2px;background:linear-gradient(180deg,var(--g),var(--gr),transparent)}
+.sn-wrap{display:flex;flex-direction:column;align-items:center;padding-top:3px}
+.sn{width:48px;height:48px;border-radius:50%;flex-shrink:0;z-index:1;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,var(--dk3),var(--dk2));border:2px solid var(--g);color:var(--g);box-shadow:0 0 14px rgba(201,168,76,.16);transition:all .3s}
+.sr2:hover .sn{background:linear-gradient(135deg,var(--g),var(--gd));color:var(--dk);box-shadow:0 0 24px rgba(201,168,76,.38)}
+.sc3{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);padding:22px;margin-bottom:32px;transition:all .3s}
+.sr2:hover .sc3{border-color:var(--bg)}
+.stag{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--g);margin-bottom:5px}
+.st{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;margin-bottom:7px}
+.sd{font-size:.84rem;color:var(--mu);line-height:1.68;margin-bottom:10px}
+.sb{background:rgba(60,179,113,.05);border:1px solid var(--bg);border-radius:8px;padding:10px 12px;font-size:.76rem;color:var(--mu);line-height:1.55}.sb strong{color:var(--gr)}
+/* SIM */
+.sim{background:rgba(11,24,16,.9);border:1px solid var(--bg);border-radius:18px;padding:22px;margin-top:40px}
+.sim-t{font-family:'Playfair Display',serif;font-size:.96rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sim-g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sim-l{font-size:.68rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.sim-i{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--b);color:var(--tx);padding:.58rem .85rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;outline:none}
+.sim-i:focus{border-color:var(--g)}
+.sim-r{background:rgba(60,179,113,.07);border:1px solid var(--bg);border-radius:10px;padding:16px;text-align:center;margin-top:12px}
+.sr-l{font-size:.68rem;color:var(--mu);margin-bottom:2px}
+.sr-v{font-family:'JetBrains Mono',monospace;font-size:1.65rem;font-weight:700;color:var(--gr)}
+.sr-s{font-size:.66rem;color:var(--mu);margin-top:3px}
+/* MARKETS */
+#markets{background:var(--dk2)}
+.mbox{background:rgba(11,24,16,.9);border:1px solid var(--bg);border-radius:18px;overflow:hidden;margin-top:40px}
+.mt{width:100%;border-collapse:collapse}
+.mt thead th{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);padding:.58rem .9rem;text-align:left;border-bottom:1px solid var(--b)}
+.mt tbody td{padding:.72rem .9rem;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.032)}
+.mt tbody tr:hover td{background:rgba(255,255,255,.016)}.mt tbody tr:last-child td{border-bottom:none}
+.br{display:inline-block;width:64px;height:4px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;vertical-align:middle;margin-right:4px}
+.bf{height:100%;border-radius:2px}
+.cd{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--g)}
+.by{background:rgba(60,179,113,.12);color:var(--gr);padding:.16rem .54rem;border-radius:5px;font-size:.68rem;font-weight:700;border:1px solid rgba(60,179,113,.2);cursor:pointer;transition:.2s;display:inline-block}
+.by:hover{background:rgba(60,179,113,.26)}
+.bn2{background:rgba(224,82,82,.12);color:var(--rd);padding:.16rem .54rem;border-radius:5px;font-size:.68rem;font-weight:700;border:1px solid rgba(224,82,82,.2);cursor:pointer;transition:.2s;display:inline-block;margin-left:3px}
+.bn2:hover{background:rgba(224,82,82,.26)}
+/* ACCA SLIP */
+.as{background:rgba(11,24,16,.9);border:1px solid var(--bg);border-radius:18px;padding:22px;margin-top:24px}
+.ash{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);padding-bottom:12px;margin-bottom:15px}
+.ast{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.asb{background:var(--gr);color:var(--dk);font-size:.6rem;font-weight:800;padding:.15rem .44rem;border-radius:100px}
+.asi{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.035)}
+.asi:last-of-type{border-bottom:none}
+.asq{font-size:.76rem;font-weight:600;flex:1;margin-right:8px;line-height:1.28}
+.asp{padding:.15rem .5rem;border-radius:4px;font-size:.66rem;font-weight:700;flex-shrink:0}
+.asy{background:rgba(60,179,113,.12);color:var(--gr);border:1px solid rgba(60,179,113,.18)}
+.asn{background:rgba(224,82,82,.12);color:var(--rd);border:1px solid rgba(224,82,82,.18)}
+.aso{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--g);font-weight:600;margin-left:6px;flex-shrink:0}
+.astt{margin-top:12px;padding-top:12px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.atl{font-size:.76rem;color:var(--mu)}.atv{font-family:'JetBrains Mono',monospace;font-size:1.18rem;font-weight:700;color:var(--gr)}
+/* BENEFITS */
+#benefits{background:radial-gradient(ellipse 68% 48% at 100% 50%,rgba(201,168,76,.065) 0%,transparent 52%),var(--dk)}
+.bg2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.bc{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);padding:22px;transition:all .32s cubic-bezier(.2,.8,.3,1);position:relative;overflow:hidden;cursor:default}
+.bc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(201,168,76,.09),transparent 52%);opacity:0;transition:opacity .4s}
+.bc:hover{transform:translateY(-5px);border-color:var(--g);box-shadow:0 12px 46px rgba(201,168,76,.12)}.bc:hover::before{opacity:1}
+.bi{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,rgba(201,168,76,.11),rgba(60,179,113,.08));border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:13px}
+.bti{font-family:'Playfair Display',serif;font-size:.97rem;font-weight:700;margin-bottom:5px}
+.bde{font-size:.78rem;color:var(--mu);line-height:1.64}
+/* OFFERS */
+#offers{background:var(--dk2)}
+.og{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.oc{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);padding:20px;transition:all .3s}
+.oc:hover{border-color:var(--bg);transform:translateY(-4px)}
+.ocat{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.ost{padding:.15rem .5rem;border-radius:100px;font-size:.6rem;font-weight:700}
+.so{background:rgba(60,179,113,.09);color:var(--gr);border:1px solid rgba(60,179,113,.18)}
+.sp{background:rgba(201,168,76,.09);color:var(--g);border:1px solid rgba(201,168,76,.18)}
+.oti{font-weight:700;font-size:.86rem;margin-bottom:4px;line-height:1.34}
+.obu{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--gr);margin-bottom:5px}
+.ome{font-size:.66rem;color:var(--mu)}
+/* ESCROW FLOW */
+.ef{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;margin-top:32px}
+.ef-s{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 5px;min-width:84px}
+.ef-c{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--dk3),var(--dk2));border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:6px;box-shadow:0 0 12px rgba(201,168,76,.15)}
+.ef-l{font-size:.63rem;font-weight:700;color:var(--mu);max-width:72px;line-height:1.24}
+.ef-a{color:var(--g);font-size:1.1rem;margin:0 2px;margin-bottom:22px}
+/* DEALS */
+#deals{background:var(--dk)}
+.dg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.dc{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;transition:all .3s}
+.dc:hover{border-color:var(--g);transform:translateY(-4px);box-shadow:0 9px 32px rgba(0,0,0,.4)}
+.di{height:90px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--dk3),var(--dk2))}
+.db{padding:13px}
+.dcat{font-size:.62rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.dti{font-weight:700;font-size:.82rem;margin-bottom:3px;line-height:1.28}
+.dpr{font-family:'JetBrains Mono',monospace;font-size:.92rem;font-weight:700;color:var(--g)}
+/* EDGE */
+#edge{background:var(--dk2)}
+.et{width:100%;border-collapse:collapse;min-width:520px;margin-top:32px}
+.et thead th{padding:10px 12px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);text-align:center;border-bottom:1px solid var(--b)}
+.et thead th:first-child{text-align:left}
+.et tbody td{padding:11px 12px;font-size:.79rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.032)}
+.et tbody td:first-child{text-align:left;font-weight:600}
+.et tbody tr:last-child td{border-bottom:none}.et tbody tr:hover td{background:rgba(255,255,255,.012)}
+.tc{background:rgba(60,179,113,.045)}
+.ck{color:var(--gr);font-size:.9rem}.cx{color:var(--rd);opacity:.6}.ch{color:var(--g);opacity:.78}
+/* IMPACT */
+#impact{background:radial-gradient(ellipse 52% 42% at 24% 50%,rgba(60,179,113,.09) 0%,transparent 58%),var(--dk)}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-top:40px}
+.il{display:flex;flex-direction:column;gap:12px}
+.ii{display:flex;align-items:flex-start;gap:11px;padding:14px;background:var(--sf);border:1px solid var(--b);border-radius:11px;transition:all .3s}
+.ii:hover{border-color:var(--bg)}
+.ii-i{font-size:1.15rem;flex-shrink:0;margin-top:1px}
+.ii-t{font-weight:700;font-size:.86rem;margin-bottom:2px}
+.ii-d{font-size:.77rem;color:var(--mu);line-height:1.56}
+.dw{display:flex;flex-direction:column;align-items:center}
+#ds{width:100%;max-width:220px}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-top:14px}
+.dli{display:flex;align-items:center;gap:4px;font-size:.71rem;color:var(--mu)}
+.dld{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rb{margin-top:14px;background:rgba(201,168,76,.04);border:1px solid var(--b);border-radius:12px;padding:18px}
+.rt{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;margin-bottom:8px;color:var(--g)}
+.rd{font-size:.78rem;color:var(--mu);line-height:1.64}.rd strong{color:var(--tx)}
+/* PRICING */
+#pricing{background:var(--dk2)}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.prc{background:var(--sf);border:1px solid var(--b);border-radius:var(--r);padding:26px;transition:all .3s;position:relative}
+.prc.feat{border-color:var(--g);background:linear-gradient(135deg,rgba(201,168,76,.065),rgba(60,179,113,.038))}
+.prc.feat::before{content:'MOST POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--g),var(--gl));color:var(--dk);font-size:.56rem;font-weight:800;padding:.24rem .78rem;border-radius:100px;letter-spacing:.08em;white-space:nowrap}
+.prc:hover{transform:translateY(-5px)}
+.pn2{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:7px}
+.pp{font-family:'JetBrains Mono',monospace;font-size:1.9rem;font-weight:700;color:var(--tx);margin-bottom:2px}
+.pp small{font-size:.88rem;color:var(--mu)}
+.pde{font-size:.78rem;color:var(--mu);margin:8px 0 15px;line-height:1.56}
+.pf{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.pf li{display:flex;align-items:flex-start;gap:6px;font-size:.78rem;color:var(--tx)}
+.pf li::before{content:'\2713';color:var(--gr);font-weight:700;flex-shrink:0}
+.pf li.off::before{content:'\2717';color:var(--mu)}.pf li.off{color:var(--mu)}
+.pb{width:100%;padding:.7rem;border-radius:8px;font-size:.84rem;font-weight:700;transition:all .25s;cursor:pointer;font-family:'DM Sans',sans-serif}
+.pb-pri{background:linear-gradient(135deg,var(--g),var(--gd));color:var(--dk);border:none}
+.pb-pri:hover{box-shadow:0 5px 20px rgba(201,168,76,.28);transform:translateY(-2px)}
+.pb-out{background:transparent;color:var(--tx);border:1.5px solid var(--b)}
+.pb-out:hover{border-color:var(--g);color:var(--g)}
+/* CTA */
+#cta{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:96px 18px;background:radial-gradient(ellipse 76% 62% at 50% 50%,rgba(60,179,113,.12) 0%,transparent 62%),radial-gradient(ellipse 42% 32% at 7% 9%,rgba(201,168,76,.07) 0%,transparent 52%),var(--dk)}
+.ci{max-width:680px;margin:0 auto;position:relative;z-index:2}
+.cp{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--g);margin-bottom:18px}
+.ch2{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,6.5vw,4rem);font-weight:900;line-height:1.07;letter-spacing:-.03em;margin-bottom:16px}
+.cs{font-size:.97rem;color:var(--mu);line-height:1.74;margin-bottom:32px;max-width:520px;margin-left:auto;margin-right:auto}
+.cbt{display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin-bottom:32px}
+.curl{font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--mu);margin-bottom:9px}
+.cwa{display:inline-flex;align-items:center;gap:6px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.2);color:#25D366;padding:.5rem 1.05rem;border-radius:100px;font-size:.82rem;font-weight:700;transition:all .3s;text-decoration:none}
+.cwa:hover{background:rgba(37,211,102,.16);transform:translateY(-2px)}
+.ring{position:absolute;border-radius:50%;border:1px solid;pointer-events:none;top:50%;left:50%;animation:rp 5s ease-in-out infinite}
+@keyframes rp{0%,100%{opacity:.2;transform:translate(-50%,-50%) scale(1)}50%{opacity:.48;transform:translate(-50%,-50%) scale(1.06)}}
+footer{background:var(--dk2);border-top:1px solid var(--b);padding:26px 18px;text-align:center}
+.fl{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;background:linear-gradient(90deg,var(--g),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.fd2{font-size:.68rem;color:var(--mu);line-height:1.58;max-width:540px;margin:0 auto 10px}
+.fli{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.fli a{font-size:.72rem;color:var(--mu);transition:color .2s;text-decoration:none}.fli a:hover{color:var(--g)}
+/* TOAST */
+#toast{position:fixed;bottom:18px;right:18px;z-index:9999;background:var(--dk2);border:1px solid var(--gr);border-radius:11px;padding:11px 16px;font-size:.82rem;font-weight:600;color:var(--tx);transform:translateY(80px);opacity:0;transition:all .3s ease;max-width:260px;pointer-events:none;box-shadow:0 7px 28px rgba(0,0,0,.4)}
+/* RESPONSIVE */
+@media(max-width:940px){
+  .hero-g,.sol-g,.ig{grid-template-columns:1fr;gap:32px}
+  .bg2{grid-template-columns:repeat(2,1fr)}
+  .pain-g{grid-template-columns:repeat(2,1fr)}
+  .sr{grid-template-columns:repeat(2,1fr)}
+  .pg{grid-template-columns:1fr;max-width:340px;margin-left:auto;margin-right:auto}
+  .dg,.og{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:620px){
+  section{padding:52px 14px}.hero-g{padding:20px 14px}
+  .btns,.cbt{flex-direction:column;align-items:flex-start}.cbt{align-items:center}
+  .bg2,.pain-g,.dg,.og{grid-template-columns:1fr}
+  .sr{grid-template-columns:1fr 1fr}
+  .sr2{grid-template-columns:50px 1fr;gap:12px}
+  .ef{flex-direction:column;align-items:flex-start;padding-left:12px}
+  .ef-a{transform:rotate(90deg);margin:3px 0}
+  .sim-g{grid-template-columns:1fr}
+  .et{font-size:.7rem}.et th,.et td{padding:7px 5px}
+  .fd{font-size:.68rem}.mt{font-size:.74rem}.mt th,.mt td{padding:.52rem .65rem}
+}
+@media(max-width:360px){.sr{grid-template-columns:1fr}.logo-name{font-size:1rem}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="noise"></div>
+<header>
+  <div class="logo">
+    <div class="logo-mark">T</div>
+    <div class="logo-name">TradezMarket</div>
+  </div>
+  <div class="h-url">tradezmarket.ewinproject.org</div>
+</header>
+<main>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-t" id="ticker">
+    <span class="ti">&#127475;&#127468; NGN/USD <span class="dn">&#9660; 1,618</span> &nbsp;|</span>
+    <span class="ti">&#8383; BTC <span class="up">&#9650; $97,412</span> &nbsp;|</span>
+    <span class="ti">&#9917; Eagles AFCON <span class="up">YES 74%</span> &nbsp;|</span>
+    <span class="ti">&#128441;&#65039; 2027 Election <span class="dn">APC 43%</span> &nbsp;|</span>
+    <span class="ti">&#129302; AGI Before 2027 <span class="up">71%</span> &nbsp;|</span>
+    <span class="ti">&#128200; Dangote Q3 Beat <span class="up">63%</span> &nbsp;|</span>
+    <span class="ti">&#8358;4.2B+ Volume <span class="up">&#9650;</span> &nbsp;|</span>
+    <span class="ti">48,274 Traders <span class="up">Live</span> &nbsp;|</span>
+    <span class="ti">Burna Grammy 2027 <span class="up">68%</span> &nbsp;|</span>
+    <span class="ti">Naira &#8358;2000/$ by Q4 <span class="dn">38%</span> &nbsp;|</span>
+    <span class="ti">&#127475;&#127468; NGN/USD <span class="dn">&#9660; 1,618</span> &nbsp;|</span>
+    <span class="ti">&#8383; BTC <span class="up">&#9650; $97,412</span> &nbsp;|</span>
+    <span class="ti">&#9917; Eagles AFCON <span class="up">YES 74%</span> &nbsp;|</span>
+    <span class="ti">&#128441;&#65039; 2027 Election <span class="dn">APC 43%</span> &nbsp;|</span>
+    <span class="ti">&#129302; AGI Before 2027 <span class="up">71%</span> &nbsp;|</span>
+    <span class="ti">&#128200; Dangote Q3 Beat <span class="up">63%</span> &nbsp;|</span>
+    <span class="ti">&#8358;4.2B+ Volume <span class="up">&#9650;</span> &nbsp;|</span>
+    <span class="ti">48,274 Traders <span class="up">Live</span> &nbsp;|</span>
+    <span class="ti">Burna Grammy 2027 <span class="up">68%</span> &nbsp;|</span>
+    <span class="ti">Naira &#8358;2000/$ by Q4 <span class="dn">38%</span> &nbsp;|</span>
+  </div>
+</div>
+<!-- HERO -->
+<section id="hero">
+<div class="hero-g">
+  <div>
+    <div class="eyebrow rv"><div class="edot"></div><span class="etx">E-WIN Project Ecosystem &middot; Live Now</span></div>
+    <h1 class="hero-h rv d1">Your Opinions<br>Are Worth<br><span class="a">Real Money.</span><br><span class="b">Start Earning Now.</span></h1>
+    <p class="hero-p rv d2">TradezMarket is Nigeria&rsquo;s first AI-powered prediction trading platform &mdash; where your knowledge of sports, politics, crypto, and culture becomes a structured financial instrument. Trade outcomes. Earn rewards. Build wealth.</p>
+    <div class="btns rv d3">
+      <button class="btn-g" onclick="open('https://tradezmarket.ewinproject.org','_blank')">&#128640; Start Trading Free</button>
+      <button class="btn-o" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">&#9654; How It Works</button>
+    </div>
+    <div class="mini-stats rv d4">
+      <div><div class="ms-v" style="color:var(--g)" id="hs1">&#8358;0</div><div class="ms-l">Volume Traded</div></div>
+      <div><div class="ms-v" style="color:var(--gr)" id="hs2">0</div><div class="ms-l">Active Traders</div></div>
+      <div><div class="ms-v" style="color:var(--g)">1,247+</div><div class="ms-l">Live Markets</div></div>
+      <div><div class="ms-v" style="color:var(--gr)">99.8%</div><div class="ms-l">Uptime SLA</div></div>
+    </div>
+  </div>
+  <div class="rr d1">
+    <div class="widget">
+      <div class="wh"><span class="wt">&#128293; Trending Markets</span><span class="lpill"><span class="ldot"></span>LIVE</span></div>
+      <div class="mi"><div class="mq">Will Super Eagles qualify for AFCON 2027 final?</div><div class="mb"><div class="mf" id="mf1" style="width:0%;background:linear-gradient(90deg,var(--gr),#7CF5A8)"></div></div><div class="mo"><span class="yc">YES 74% &times;1.35</span><span class="nc">NO 26% &times;3.85</span></div><div class="mm">Vol: &#8358;14.2M &middot; &#9201; 12d</div></div>
+      <div class="mi"><div class="mq">Bitcoin closes above $100K before July 2026?</div><div class="mb"><div class="mf" id="mf2" style="width:0%;background:linear-gradient(90deg,var(--g),var(--gl))"></div></div><div class="mo"><span class="yc">YES 63% &times;1.59</span><span class="nc">NO 37% &times;2.70</span></div><div class="mm">Vol: &#8358;31.8M &middot; &#9201; 110d</div></div>
+      <div class="mi"><div class="mq">Tinubu wins 2027 Nigerian presidential election?</div><div class="mb"><div class="mf" id="mf3" style="width:0%;background:linear-gradient(90deg,var(--rd),#FF8A8A)"></div></div><div class="mo"><span class="yc">YES 43% &times;2.33</span><span class="nc">NO 57% &times;1.75</span></div><div class="mm">Vol: &#8358;48.6M &middot; &#9201; 420d</div></div>
+      <div style="margin-top:11px;padding-top:11px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center"><span style="font-size:.68rem;color:var(--mu)">AI &middot; LMSR Pricing</span><a href="https://tradezmarket.ewinproject.org" target="_blank" style="font-size:.68rem;color:var(--gr);font-weight:700">View all 1,247+ &#8594;</a></div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- PAIN -->
+<section id="pain">
+<div class="w">
+  <div class="rv"><div class="lbl">The Problem</div><h2 class="h2">Millions of Nigerians<br><span style="color:var(--rd)">Losing Value Every Day</span></h2><p class="desc">Your knowledge, your opinions, your analysis &mdash; given away for free every day. Meanwhile, global elites profit from the same information you already possess. That ends today.</p></div>
+  <div class="pain-g">
+    <div class="pc rv d1"><div class="pe">&#128202;</div><div class="pt">No Financial Access</div><div class="pd"><strong>Emeka, 24</strong> &mdash; IT tech, Lagos. Investment apps demand &#8358;200K minimum. Stock markets inaccessible. He has knowledge but zero structured outlet to monetise it.</div></div>
+    <div class="pc rv d2"><div class="pe">&#127922;</div><div class="pt">Betting vs. Knowledge</div><div class="pd"><strong>Adaeze, 29</strong> &mdash; Political analyst, Abuja. Predicted 2023 election within 1.2% margin. Betting apps reward luck, not intelligence. Her expertise earns zero.</div></div>
+    <div class="pc rv d3"><div class="pe">&#128184;</div><div class="pt">Unprotected Freelancers</div><div class="pd"><strong>Ngozi, 26</strong> &mdash; UX designer, Enugu. Delivered &#8358;180K project. Client vanished for 3 months. No escrow. No protection. Nigerian creatives lose millions yearly.</div></div>
+    <div class="pc rv d4"><div class="pe">&#127968;</div><div class="pt">Asset Sales Without Trust</div><div class="pd"><strong>Biodun, 38</strong> &mdash; Lagos developer selling &#8358;45M SaaS. No verified marketplace. WhatsApp-based deals. Escrow scams rampant. Zero buyer verification.</div></div>
+    <div class="pc rv d5"><div class="pe">&#127758;</div><div class="pt">Global Platform Exclusion</div><div class="pd"><strong>Tunde, 31</strong> &mdash; Web3 dev. Polymarket and Kalshi ignore Nigeria. No Naira support. USD wallets with 3% conversion fees eating profits daily.</div></div>
+    <div class="pc rv d6"><div class="pe">&#128200;</div><div class="pt">Wasted Economic Intelligence</div><div class="pd"><strong>Chidi, 22</strong> &mdash; UNILAG student. 6 hours daily on football analysis and crypto research. Zero monetisation. Insights worth billions, completely unmonetised.</div></div>
+  </div>
+  <div class="rv" style="margin-top:32px"><p style="font-size:.74rem;color:var(--mu);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em">The People TradezMarket Serves</p></div>
+  <div class="pstrip">
+    <div class="pa rv d1"><div class="pav">&#9889;</div><div class="pn">Emeka, 24</div><div class="pr">IT Tech &middot; Lagos</div></div>
+    <div class="pa rv d2"><div class="pav">&#128441;&#65039;</div><div class="pn">Adaeze, 29</div><div class="pr">Analyst &middot; Abuja</div></div>
+    <div class="pa rv d3"><div class="pav">&#8383;</div><div class="pn">Tunde, 31</div><div class="pr">Web3 Dev</div></div>
+    <div class="pa rv d4"><div class="pav">&#128295;</div><div class="pn">Ngozi, 26</div><div class="pr">Designer &middot; Enugu</div></div>
+    <div class="pa rv d5"><div class="pav">&#127968;</div><div class="pn">Biodun, 38</div><div class="pr">Developer &middot; Lagos</div></div>
+    <div class="pa rv d6"><div class="pav">&#128241;</div><div class="pn">Chioma, 22</div><div class="pr">Student &middot; UNILAG</div></div>
+    <div class="pa rv d1"><div class="pav">&#127970;</div><div class="pn">Chinedu, 44</div><div class="pr">Investor &middot; Lagos</div></div>
+    <div class="pa rv d2"><div class="pav">&#129489;&#8205;&#128188;</div><div class="pn">Yakubu, 35</div><div class="pr">Entrepreneur</div></div>
+  </div>
+</div>
+</section>
+<div class="qb"><p class="qt rv">&ldquo;You already know what&rsquo;s going to happen.<br>TradezMarket built the infrastructure to pay you for being right.&rdquo;</p><div class="qa">&mdash; E-WIN Project &middot; TradezMarket Founding Principle</div></div>
+<!-- SOLUTION -->
+<section id="solution">
+<div class="w">
+  <div class="rv"><div class="lbl">The Solution</div><h2 class="h2">One Platform.<br><span class="gtext">Infinite Opportunity.</span></h2><p class="desc">TradezMarket converts your knowledge into capital through prediction markets, AI intelligence, escrow commerce, and decentralised opinion contracts &mdash; all priced in Naira, built for Nigeria.</p></div>
+  <div class="sol-g">
+    <div class="rl">
+      <div class="cb">
+        <div class="cb-t">Bitcoin $100K Market &mdash; Live Probability</div>
+        <div class="cb-v" id="cbv">63.4%</div>
+        <svg id="lc" viewBox="0 0 400 124" preserveAspectRatio="none">
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3CB371" stop-opacity=".42"/><stop offset="100%" stop-color="#3CB371" stop-opacity="0"/></linearGradient></defs>
+          <path id="ca" fill="url(#lg)"/><path id="cl2" fill="none" stroke="#3CB371" stroke-width="2.1" stroke-linecap="round"/>
+        </svg>
+        <div class="clbls" id="clbls"></div>
+      </div>
+      <div class="om">
+        <div class="oml"><span style="color:var(--gr);font-weight:700" id="oyeslbl">YES 63%</span><span style="color:var(--mu);font-size:.68rem">Market Consensus</span><span style="color:var(--rd);font-weight:700" id="onolbl">NO 37%</span></div>
+        <div class="omb"><div class="omy" id="omy" style="width:0%"></div><div class="omn" id="omn" style="width:0%"></div></div>
+        <div class="omf"><span style="color:var(--gr)">&times;1.59 odds</span><span style="color:var(--mu);font-size:.65rem">LMSR AMM</span><span style="color:var(--rd)">&times;2.70 odds</span></div>
+      </div>
+      <div class="fb">
+        <div class="ft">&#9881;&#65039; LMSR Pricing Formula</div>
+        <div class="fd">C(q) = b&#215;ln(e^(qY/b) + e^(qN/b))
+
+P(YES) =    e^(qYES/b)
+         &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
+         e^(qYES/b) + e^(qNO/b)</div>
+        <div class="fn">Where <strong>b</strong> = liquidity depth. As YES capital flows in, <strong>P(YES) rises</strong> &amp; odds compress &mdash; rewarding early, informed positions. Same math used by Wall Street market makers.</div>
+      </div>
+    </div>
+    <div class="rr">
+      <div class="si-list">
+        <div class="si"><div class="si-ico">&#128202;</div><div><div class="si-tit">Prediction Markets</div><div class="si-des">Trade YES/NO on 1,247+ events. Sports, politics, crypto, culture. Live odds update as capital flows. Collective wisdom sets the price.</div></div></div>
+        <div class="si"><div class="si-ico">&#128185;</div><div><div class="si-tit">Opinion Contract Markets (AMM)</div><div class="si-des">Tokenise your opinion. Buy and sell positions like financial instruments using LMSR pricing. Trade before resolution, sell if the market moves your way.</div></div></div>
+        <div class="si"><div class="si-ico">&#127919;</div><div><div class="si-tit">Accumulator Trade Slips</div><div class="si-des">Combine multiple picks. Odds multiply for exponential returns. Multi-market knowledge, monetised at scale.</div></div></div>
+        <div class="si"><div class="si-ico">&#127970;</div><div><div class="si-tit">Escrow-Protected Offers Market</div><div class="si-des">Post tasks with 95% held in smart escrow. Taskers bid. Funds release only on successful delivery. Freelancers finally protected.</div></div></div>
+        <div class="si"><div class="si-ico">&#127968;</div><div><div class="si-tit">High-Value Deals Marketplace</div><div class="si-des">Buy and sell real estate, SaaS, social media accounts. All escrow-backed. KYC-verified buyers. Close deals in days, not months.</div></div></div>
+        <div class="si"><div class="si-ico">&#129302;</div><div><div class="si-tit">AI Market Intelligence</div><div class="si-des">Multi-agent AI scans 1,247 live data sources in real-time. Updates probabilities before the market does. Trade with intelligence, not instinct.</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- STATS -->
+<div class="sr" style="padding:0 18px 0">
+  <div class="sc rv d1"><div class="sv" id="sv1">&#8358;0</div><div class="sl">Total Volume</div><div class="sc2" style="color:var(--gr)">&#9650; Growing Daily</div></div>
+  <div class="sc rv d2"><div class="sv" id="sv2">0</div><div class="sl">Active Traders</div><div class="sc2" style="color:var(--gr)">&#9650; +284 Today</div></div>
+  <div class="sc rv d3"><div class="sv" id="sv3">0</div><div class="sl">Live Markets</div><div class="sc2" style="color:var(--g)">&#9650; +42 This Week</div></div>
+  <div class="sc rv d4"><div class="sv">99.8%</div><div class="sl">Platform Uptime</div><div class="sc2" style="color:var(--gr)">Enterprise SLA</div></div>
+</div>
+<div class="qb" style="margin-top:48px"><p class="qt rv">&ldquo;The best investment you can make is in knowledge you already have &mdash; and a platform honest enough to pay you for it.&rdquo;</p><div class="qa">&mdash; TradezMarket &middot; E-WIN Project Ecosystem</div></div>
+<!-- HOW IT WORKS -->
+<section id="how">
+<div class="w">
+  <div class="rv ctr"><div class="lbl" style="justify-content:center">How It Works</div><h2 class="h2">From Zero to First Trade<br>in Under 5 Minutes</h2><p class="desc" style="margin:0 auto">No finance degree. No USD wallet. No complicated setup. Just your phone, your knowledge &mdash; and TradezMarket.</p></div>
+  <div class="steps" style="margin-top:48px">
+    <div class="sr2 rv"><div class="sn-wrap"><div class="sn">1</div><div class="sl2"></div></div><div class="sc3"><div class="stag">Step One</div><div class="st">&#128274; Create Your Verified Account</div><div class="sd">Sign up at <strong style="color:var(--g)">tradezmarket.ewinproject.org</strong>. Complete NIN-verified KYC in minutes. Your identity is secured, trading limits unlocked.</div><div class="sb"><strong>Required:</strong> Full name &middot; Date of birth &middot; Email &middot; Phone &amp; WhatsApp &middot; State of residence/origin &middot; LGA &middot; NIN (11 digits) &middot; Address &middot; Password. Enterprise-grade encryption.</div></div></div>
+    <div class="sr2 rv d1"><div class="sn-wrap"><div class="sn">2</div><div class="sl2"></div></div><div class="sc3"><div class="stag">Step Two</div><div class="st">&#128179; Fund Your Naira Wallet</div><div class="sd">Deposit instantly via bank transfer, card (Visa/Mastercard/Verve), or USSD. Funds appear in seconds. No USD. No FX risk. Pure Naira.</div><div class="sb"><strong>Min deposit:</strong> &#8358;100 &middot; <strong>Banks:</strong> GTBank, Access, Zenith, First Bank, OPay, PalmPay, Moniepoint &middot; <strong>Processing:</strong> Instant</div></div></div>
+    <div class="sr2 rv d2"><div class="sn-wrap"><div class="sn">3</div><div class="sl2"></div></div><div class="sc3"><div class="stag">Step Three</div><div class="st">&#127760; Explore 1,247+ Live Markets</div><div class="sd">Browse prediction markets across Sports, Politics, Crypto, Economy, Tech, and Pop Culture. Every market shows live odds, volume, countdown, and AI analysis.</div><div class="sb"><strong>Example:</strong> &ldquo;BTC hits $120K before June 2026?&rdquo; &middot; YES at 63% = <strong>&times;1.59 odds</strong> &middot; &#8358;31.8M already staked by other traders.</div></div></div>
+    <div class="sr2 rv d3"><div class="sn-wrap"><div class="sn">4</div><div class="sl2"></div></div><div class="sc3"><div class="stag">Step Four</div><div class="st">&#127919; Place Your Trade or Build an Accumulator</div><div class="sd">Pick YES or NO. Set your stake. Confirm a single trade &mdash; or stack multiple picks into an Accumulator Slip for compounding multiplied odds.</div><div class="sb"><strong>Single:</strong> &#8358;5,000 &times;1.59 = <strong>&#8358;7,950</strong> &middot; <strong>5-pick Acca:</strong> same &#8358;5,000 could return <strong>&#8358;80,000+</strong> if all 5 correct.</div></div></div>
+    <div class="sr2 rv d4"><div class="sn-wrap"><div class="sn">5</div></div><div class="sc3"><div class="stag">Step Five</div><div class="st">&#9201; Market Resolves &mdash; You Get Paid</div><div class="sd">When countdown ends, AI and admin verify outcome. Correct predictions? Winnings credited instantly to your wallet. Withdraw to any Nigerian bank in 1&ndash;2 hours.</div><div class="sb"><strong>&#10003; Correct:</strong> Stake &times; odds credited &middot; <strong>&#10007; Wrong:</strong> Stake to liquidity pool &middot; <strong>Withdraw:</strong> Any Nigerian bank, 1&ndash;2 hours</div></div></div>
+  </div>
+  <!-- SIM -->
+  <div class="sim rv">
+    <div class="sim-t">&#129518; Trade Payout Simulator <span style="font-size:.66rem;color:var(--mu);font-weight:400;margin-left:auto">Try it live</span></div>
+    <div class="sim-g">
+      <div><div class="sim-l">Stake Amount (&#8358;)</div><input type="number" class="sim-i" id="simS" value="5000" oninput="calcSim()"></div>
+      <div><div class="sim-l">YES Odds Multiplier (&times;)</div><input type="number" class="sim-i" id="simO" value="1.64" step="0.01" oninput="calcSim()"></div>
+    </div>
+    <div style="margin-top:12px"><div class="sim-l">Accumulator Picks</div><input type="range" id="simL" min="1" max="8" value="1" oninput="calcSim()" style="width:100%;accent-color:var(--g);margin-top:5px"><div style="display:flex;justify-content:space-between;font-size:.67rem;color:var(--mu);margin-top:3px"><span>1 pick</span><span id="simLV">1 pick</span><span>8 picks</span></div></div>
+    <div class="sim-r"><div class="sr-l">Potential Payout</div><div class="sr-v" id="simR">&#8358;8,200</div><div class="sr-s" id="simSub">1-pick &middot; &times;1.64 &middot; &#8358;3,200 profit</div></div>
+  </div>
+</div>
+</section>
+<!-- MARKETS TABLE -->
+<section id="markets">
+<div class="w">
+  <div class="rv"><div class="lbl">Live Markets</div><h2 class="h2">1,247 Reasons to<br><span class="gtext">Trade Today</span></h2><p class="desc">Every real-world event is a trading opportunity. From the Super Eagles to the Stock Exchange.</p></div>
+  <div class="mbox rv"><div style="overflow-x:auto"><table class="mt"><thead><tr><th>Market Question</th><th>Category</th><th>YES %</th><th>Volume</th><th>Closes</th><th>Trade</th></tr></thead><tbody id="mtb"></tbody></table></div></div>
+  <div class="as rv">
+    <div class="ash"><div class="ast">&#127919; Sample Accumulator Slip <span class="asb">4 PICKS</span></div><div style="font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--g)">Combined &times;8.92</div></div>
+    <div class="asi"><div class="asq">Super Eagles qualify for AFCON 2027 final?</div><div class="asp asy">YES</div><div class="aso">&times;1.35</div></div>
+    <div class="asi"><div class="asq">Bitcoin closes above $100K before July 2026?</div><div class="asp asy">YES</div><div class="aso">&times;1.59</div></div>
+    <div class="asi"><div class="asq">Tinubu does NOT win 2027 presidential election?</div><div class="asp asn">NO</div><div class="aso">&times;1.75</div></div>
+    <div class="asi"><div class="asq">Davido releases album before December 2026?</div><div class="asp asy">YES</div><div class="aso">&times;2.38</div></div>
+    <div class="astt"><div><div class="atl">Stake: <strong style="color:var(--tx)">&#8358;5,000</strong></div><div class="atl" style="font-size:.65rem;margin-top:2px">All 4 correct = max payout</div></div><div style="text-align:right"><div class="atv">&#8358;44,600</div><div class="atl" style="font-size:.65rem">+&#8358;39,600 profit (792%)</div></div></div>
+  </div>
+</div>
+</section>
+<!-- BENEFITS -->
+<section id="benefits">
+<div class="w">
+  <div class="rv ctr"><div class="lbl" style="justify-content:center">Key Benefits</div><h2 class="h2">Why TradezMarket<br><span class="gtext">Changes Everything</span></h2></div>
+  <div class="bg2">
+    <div class="bc rv d1"><div class="bi">&#127475;&#127468;</div><div class="bti">Built for Nigeria</div><div class="bde">100% Naira-native. Bank transfer, card, USSD. GTBank, OPay, Access, Zenith. Your money, your currency, your platform. No USD accounts needed.</div></div>
+    <div class="bc rv d2"><div class="bi">&#129302;</div><div class="bti">AI Market Intelligence</div><div class="bde">Multi-agent AI scans 1,247 live data sources &mdash; social feeds, news, on-chain data, sports APIs &mdash; updating probabilities in real-time before you can blink.</div></div>
+    <div class="bc rv d3"><div class="bi">&#128274;</div><div class="bti">Smart Contract Escrow</div><div class="bde">Every naira of every deal locked by automated smart contracts. No human can arbitrarily withhold your money. Winnings release programmatically.</div></div>
+    <div class="bc rv d4"><div class="bi">&#128202;</div><div class="bti">Trading, Not Gambling</div><div class="bde">LMSR pricing rewards skill and research over luck. The more informed your position, the more you earn. A financial instrument, not a slot machine.</div></div>
+    <div class="bc rv d5"><div class="bi">&#128188;</div><div class="bti">Multiple Income Streams</div><div class="bde">Trade predictions. Earn from freelance tasks. Sell high-value assets. Participate in opinion polls. Four distinct earning mechanisms &mdash; one ecosystem.</div></div>
+    <div class="bc rv d6"><div class="bi">&#127758;</div><div class="bti">Enterprise-Grade &amp; Scalable</div><div class="bde">99.8% uptime SLA. API access for institutional traders. Built for 10 million users from day one. Ready for Ghana, Kenya, and South Africa expansion.</div></div>
+  </div>
+</div>
+</section>
+<!-- OFFERS -->
+<section id="offers">
+<div class="w">
+  <div class="rv"><div class="lbl">Offers Market</div><h2 class="h2">Get Paid for<br><span class="grtext">What You Do Best</span></h2><p class="desc">Post tasks. Bid on projects. Earn securely. 95% of every project value locked in smart escrow before work begins.</p></div>
+  <div class="rv" style="margin-top:26px">
+    <p style="font-size:.75rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:16px">How Escrow Protects Every Transaction</p>
+    <div class="ef">
+      <div class="ef-s"><div class="ef-c">&#128203;</div><div class="ef-l">Creator posts + funds</div></div>
+      <div class="ef-a">&#8594;</div>
+      <div class="ef-s"><div class="ef-c">&#127970;</div><div class="ef-l">95% locked in escrow</div></div>
+      <div class="ef-a">&#8594;</div>
+      <div class="ef-s"><div class="ef-c">&#128587;</div><div class="ef-l">Tasker bids &amp; wins</div></div>
+      <div class="ef-a">&#8594;</div>
+      <div class="ef-s"><div class="ef-c">&#9989;</div><div class="ef-l">Delivery approved</div></div>
+      <div class="ef-a">&#8594;</div>
+      <div class="ef-s"><div class="ef-c">&#128176;</div><div class="ef-l">Funds released instantly</div></div>
+    </div>
+  </div>
+  <div class="og">
+    <div class="oc rv d1"><div class="ocat">Tech &amp; Dev <span class="ost so">OPEN</span></div><div class="oti">Build DeFi smart contracts for prediction market platform</div><div class="obu">&#8358;250,000</div><div class="ome">&#128100; Emeka O. &middot; &#128172; 7 bids &middot; &#128274; Escrow secured</div></div>
+    <div class="oc rv d2"><div class="ocat">Design <span class="ost sp">IN PROGRESS</span></div><div class="oti">Design mobile trading app UI/UX &mdash; Dark fintech theme</div><div class="obu">&#8358;80,000</div><div class="ome">&#128100; Adaeze B. &middot; &#128172; 12 bids &middot; &#128274; Escrow secured</div></div>
+    <div class="oc rv d3"><div class="ocat">Marketing <span class="ost so">OPEN</span></div><div class="oti">90-day social media campaign &mdash; 5K new signups target</div><div class="obu">&#8358;120,000</div><div class="ome">&#128100; Chioma R. &middot; &#128172; 9 bids &middot; &#128274; Escrow secured</div></div>
+  </div>
+</div>
+</section>
+<!-- DEALS -->
+<section id="deals">
+<div class="w">
+  <div class="rv"><div class="lbl">Deals Marketplace</div><h2 class="h2">Buy &amp; Sell<br><span class="gtext">High-Value Assets Safely</span></h2><p class="desc">Real estate. SaaS. Social media accounts. Digital assets. All escrow-backed and KYC-verified. Closed in days, not months.</p></div>
+  <div class="dg">
+    <div class="dc rv d1"><div class="di">&#127968;</div><div class="db"><div class="dcat">Real Estate &middot; Lekki Phase 1</div><div class="dti">4-Bed Luxury Duplex &mdash; C of O Available</div><div class="dpr">&#8358;280,000,000</div></div></div>
+    <div class="dc rv d2"><div class="di">&#128187;</div><div class="db"><div class="dcat">SaaS Product &middot; 1,200 Active Users</div><div class="dti">Loan Management SaaS &mdash; &#8358;14.4M ARR</div><div class="dpr">&#8358;45,000,000</div></div></div>
+    <div class="dc rv d3"><div class="di">&#128241;</div><div class="db"><div class="dcat">Social Media &middot; 280K Followers</div><div class="dti">Instagram Finance Page &mdash; 8% Engagement</div><div class="dpr">&#8358;8,500,000</div></div></div>
+  </div>
+</div>
+</section>
+<!-- EDGE -->
+<section id="edge">
+<div class="w">
+  <div class="rv ctr"><div class="lbl" style="justify-content:center">Competitive Edge</div><h2 class="h2">How We Compare</h2><p class="desc" style="margin:0 auto">No platform in Africa does what TradezMarket does. Here&rsquo;s the honest comparison.</p></div>
+  <div style="overflow-x:auto;margin-top:32px" class="rv"><table class="et">
+    <thead><tr><th style="text-align:left;min-width:160px">Feature</th><th style="color:var(--gr)">TradezMarket &#10022;</th><th>Kalshi</th><th>Polymarket</th><th>Sportybet</th></tr></thead>
+    <tbody>
+      <tr><td>Naira (&#8358;) Native</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>Bank Transfer / USSD</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="ck">&#10003;</td></tr>
+      <tr><td>Nigerian Event Markets</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="ch">~</td><td class="cx">&#10007;</td></tr>
+      <tr><td>LMSR AMM Pricing</td><td class="tc ck">&#10003;</td><td class="ck">&#10003;</td><td class="ck">&#10003;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>AI Market Intelligence</td><td class="tc ck">&#10003;</td><td class="ch">~</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>Freelance Offers Market</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>High-Value Deals Market</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>Smart Contract Escrow</td><td class="tc ck">&#10003;</td><td class="ch">~</td><td class="ck">&#10003;</td><td class="cx">&#10007;</td></tr>
+      <tr><td>Free Tier Available</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="ck">&#10003;</td></tr>
+      <tr><td>RaaS Intelligence API</td><td class="tc ck">&#10003;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td><td class="cx">&#10007;</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</section>
+<!-- IMPACT -->
+<section id="impact">
+<div class="w">
+  <div class="rv ctr"><div class="lbl" style="justify-content:center">Results as a Service (RaaS)</div><h2 class="h2">Beyond a Platform &mdash;<br><span class="grtext">An Economic Infrastructure</span></h2></div>
+  <div class="ig">
+    <div class="il rl">
+      <div class="ii"><div class="ii-i">&#127979;</div><div><div class="ii-t">Youth Empowerment</div><div class="ii-d">220M Nigerians. 70% under 35. TradezMarket gives every young person a structured way to monetise knowledge they carry daily.</div></div></div>
+      <div class="ii"><div class="ii-i">&#128188;</div><div><div class="ii-t">Freelancer Protection</div><div class="ii-d">Escrow-backed tasks mean Nigeria&rsquo;s 35M gig workers get paid on time, every time. No more chasing clients.</div></div></div>
+      <div class="ii"><div class="ii-i">&#127959;</div><div><div class="ii-t">Asset Market Formalisation</div><div class="ii-d">Transparent, verified marketplace for high-value Nigerian assets. Formalising a &#8358;2.8 trillion informal economy.</div></div></div>
+      <div class="ii"><div class="ii-i">&#127760;</div><div><div class="ii-t">E-WIN Ecosystem Expansion</div><div class="ii-d">TradezMarket is one product in the E-WIN Project. Revenue funds ecosystem growth across Nigeria and into Africa.</div></div></div>
+    </div>
+    <div class="rr">
+      <div class="dw">
+        <svg id="ds" viewBox="0 0 200 200">
+          <text x="100" y="94" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="#3CB371">&#8358;42.8M</text>
+          <text x="100" y="110" text-anchor="middle" font-family="DM Sans" font-size="8.5" fill="#6E9E7C">Total Revenue</text>
+        </svg>
+        <div class="dl">
+          <div class="dli"><div class="dld" style="background:#3CB371"></div>Trading Fees 42%</div>
+          <div class="dli"><div class="dld" style="background:#C9A84C"></div>Subscriptions 22%</div>
+          <div class="dli"><div class="dld" style="background:#4A8FD4"></div>Escrow Fees 16%</div>
+          <div class="dli"><div class="dld" style="background:#B39DDB"></div>Deals Market 12%</div>
+          <div class="dli"><div class="dld" style="background:#E05252"></div>API / RaaS 8%</div>
+        </div>
+      </div>
+      <div class="rb" style="margin-top:16px">
+        <div class="rt">&#128161; The TradezMarket RaaS Model</div>
+        <div class="rd">Unlike traditional SaaS platforms that charge for software access, TradezMarket charges for <strong>results</strong>. Traders pay when they win. Businesses pay when deals close. Freelancers pay when tasks complete. Revenue is structurally aligned with user success.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<div class="qb"><p class="qt rv">&ldquo;Knowledge is the new capital.<br>TradezMarket is the new bank.&rdquo;</p><div class="qa">&mdash; E-WIN Project Ecosystem &middot; 2026</div></div>
+<!-- PRICING -->
+<section id="pricing">
+<div class="w">
+  <div class="rv ctr"><div class="lbl" style="justify-content:center">Subscription Plans</div><h2 class="h2">Choose Your<br><span class="gtext">Trading Level</span></h2><p class="desc" style="margin:0 auto">All prices in Nigerian Naira. No hidden fees. Upgrade or cancel anytime.</p></div>
+  <div class="pg">
+    <div class="prc rv d1">
+      <div class="pn2">Starter</div><div class="pp">Free <small>forever</small></div>
+      <div class="pde">Explore markets and place your first trades.</div>
+      <ul class="pf">
+        <li>Up to &#8358;50,000 monthly volume</li><li>5 active market positions</li><li>Basic portfolio dashboard</li><li>Community opinion polls</li>
+        <li class="off">AI market intelligence</li><li class="off">Accumulator slips</li><li class="off">Deals marketplace</li>
+      </ul>
+      <button class="pb pb-out" onclick="open('https://tradezmarket.ewinproject.org','_blank')">Get Started Free</button>
+    </div>
+    <div class="prc feat rv d2">
+      <div class="pn2">Pro Trader</div><div class="pp">&#8358;4,999 <small>/month</small></div>
+      <div class="pde">For serious traders who want AI insights and full market access.</div>
+      <ul class="pf">
+        <li>Unlimited trading volume</li><li>Unlimited market positions</li><li>Full AI market intelligence</li><li>Accumulator trade slips</li>
+        <li>Deals marketplace access</li><li>Priority customer support</li><li>Advanced portfolio analytics</li>
+      </ul>
+      <button class="pb pb-pri" onclick="open('https://tradezmarket.ewinproject.org','_blank')">Start Pro Free Trial</button>
+    </div>
+    <div class="prc rv d3">
+      <div class="pn2">Enterprise</div><div class="pp">&#8358;49,999 <small>/month</small></div>
+      <div class="pde">For institutional traders, agencies, and API-driven strategies.</div>
+      <ul class="pf">
+        <li>Everything in Pro</li><li>Full API access &amp; webhooks</li><li>Custom market creation</li><li>White-label options</li>
+        <li>Dedicated account manager</li><li>SLA-backed uptime guarantee</li><li>Early feature access</li>
+      </ul>
+      <button class="pb pb-out" onclick="open('https://tradezmarket.ewinproject.org','_blank')">Contact Sales</button>
+    </div>
+  </div>
+</div>
+</section>
+<!-- CTA -->
+<section id="cta" style="position:relative">
+  <div class="ring" style="width:480px;height:480px;border-color:rgba(60,179,113,.11);animation-delay:0s"></div>
+  <div class="ring" style="width:720px;height:720px;border-color:rgba(201,168,76,.07);animation-delay:1.6s"></div>
+  <div class="ring" style="width:960px;height:960px;border-color:rgba(60,179,113,.04);animation-delay:3.2s"></div>
+  <div class="ci">
+    <div class="cp rv">The Future of Nigerian Finance</div>
+    <h2 class="ch2 rv d1">Your Knowledge.<br><span class="gtext">Real Money.</span><br><span class="grtext">Right Now.</span></h2>
+    <p class="cs rv d2">48,274 Nigerians are already trading &#8358;4.2 billion worth of outcomes on TradezMarket. They&rsquo;re earning real money from their knowledge of football, politics, crypto, and culture. The only question is &mdash; when will you join them?</p>
+    <div class="cbt rv d3">
+      <button class="btn-g" style="font-size:.92rem;padding:.84rem 2rem" onclick="open('https://tradezmarket.ewinproject.org','_blank')">&#128640; Start Trading Free &mdash; No Minimum</button>
+      <button class="btn-o" style="font-size:.92rem;padding:.84rem 2rem" onclick="open('https://tradezmarket.ewinproject.org','_blank')">&#128202; Explore Live Markets</button>
+    </div>
+    <div class="curl rv d4">tradezmarket.ewinproject.org</div>
+    <a class="cwa rv d5" href="https://wa.me/2349025152818" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp: +234-902-515-2818
+    </a>
+    <div style="margin-top:22px;font-size:.7rem;color:var(--mu);line-height:1.62;max-width:480px;margin-left:auto;margin-right:auto" class="rv d6">&#9888;&#65039; <strong style="color:var(--g)">Risk Notice:</strong> Prediction trading involves risk of capital loss. Only trade what you can afford to lose. Past performance does not guarantee future results. TradezMarket is a product of the E-WIN Project Ecosystem.</div>
+  </div>
+</section>
+<!-- FOOTER -->
+<footer>
+  <div class="fl">TradezMarket</div>
+  <div style="font-size:.7rem;color:var(--mu);margin-bottom:9px;font-family:'JetBrains Mono',monospace">tradezmarket.ewinproject.org</div>
+  <div class="fd2">TradezMarket is a product of the E-WIN Project Ecosystem. All trading involves risk. Platform regulated in accordance with applicable Nigerian financial laws. Smart contract escrow audited and verified. &copy; 2026 E-WIN Project. All rights reserved.</div>
+  <div class="fli">
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Platform</a>
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Markets</a>
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Offers</a>
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Deals</a>
+    <a href="https://wa.me/2349025152818" target="_blank">WhatsApp Support</a>
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Privacy Policy</a>
+    <a href="https://tradezmarket.ewinproject.org" target="_blank">Terms</a>
+  </div>
+</footer>
+</main>
+<div id="toast"></div>
+<script>
+/* PARTICLE CANVAS */
+const cv=document.getElementById('bg');const cx=cv.getContext('2d');let W,H,pts=[];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+function mkPts(){pts=[];const n=Math.floor(W*H/13000);for(let i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.3+.4,o:Math.random()*.38+.08})}
+function draw(){cx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=`rgba(60,179,113,${p.o})`;cx.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<85){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(60,179,113,${.07*(1-d/85)})`;cx.lineWidth=.5;cx.stroke()}}requestAnimationFrame(draw)}
+rsz();mkPts();draw();window.addEventListener('resize',()=>{rsz();mkPts()});
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.rv,.rl,.rr').forEach(el=>obs.observe(el));
+/* HERO BARS */
+setTimeout(()=>{document.getElementById('mf1').style.width='74%';document.getElementById('mf2').style.width='63%';document.getElementById('mf3').style.width='43%'},500);
+/* LIVE CHART */
+let cd=[];for(let i=0;i<30;i++)cd.push(42+Math.random()*38);
+function drawChart(){const s=document.getElementById('lc');if(!s)return;const W2=400,H2=124,p=9;const mn=Math.min(...cd),mx=Math.max(...cd);const pts2=cd.map((v,i)=>{const x=p+(i/(cd.length-1))*(W2-2*p);const y=H2-p-((v-mn)/(mx-mn||1))*(H2-2*p);return`${x},${y}`});document.getElementById('cl2').setAttribute('d','M'+pts2.join('L'));const fp=pts2[0],lp=pts2[pts2.length-1];document.getElementById('ca').setAttribute('d',`M${fp}L${pts2.join('L')}L${W2-p},${H2-p}L${p},${H2-p}Z`);const lb=document.getElementById('clbls');if(lb)lb.innerHTML=['30d','25d','20d','15d','10d','5d','Now'].map(d=>`<span class="cl">${d}</span>`).join('')}
+drawChart();
+setInterval(()=>{cd.push(cd[cd.length-1]+(Math.random()-.48)*3.2);if(cd.length>30)cd.shift();drawChart();const v=cd[cd.length-1];const pct=Math.min(95,Math.max(5,(v/80)*100));document.getElementById('cbv').textContent=pct.toFixed(1)+'%';document.getElementById('oyeslbl').textContent=`YES ${Math.round(pct)}%`;document.getElementById('onolbl').textContent=`NO ${Math.round(100-pct)}%`;document.getElementById('omy').style.width=pct+'%';document.getElementById('omn').style.width=(100-pct)+'%'},3000);
+setTimeout(()=>{document.getElementById('omy').style.width='63%';document.getElementById('omn').style.width='37%'},350);
+/* STAT COUNTERS */
+function animC(el,end,pre='',suf='',dur=1800){if(!el)return;let cur=0,step=end/60;const t=setInterval(()=>{cur+=step;if(cur>=end){cur=end;clearInterval(t)}el.textContent=pre+(end>999?Math.floor(cur).toLocaleString():Math.floor(cur))+suf},dur/60)}
+const obsS=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){animC(document.getElementById('sv1'),4200,'&#8358;','M+');animC(document.getElementById('sv2'),48274,'','');animC(document.getElementById('sv3'),1247,'','');animC(document.getElementById('hs1'),4200,'&#8358;','B+');animC(document.getElementById('hs2'),48274,'','k+');obsS.unobserve(e.target)}})},{threshold:.3});
+const se=document.querySelector('.sr');if(se)obsS.observe(se);
+/* SIMULATOR */
+function calcSim(){const s=parseFloat(document.getElementById('simS').value)||0;const o=parseFloat(document.getElementById('simO').value)||1;const l=parseInt(document.getElementById('simL').value)||1;document.getElementById('simLV').textContent=l+(l===1?' pick':' picks');const c=Math.pow(o,l);const pay=s*c;const pro=pay-s;document.getElementById('simR').textContent='&#8358;'+Math.floor(pay).toLocaleString();document.getElementById('simSub').textContent=l+'-pick \xb7 \xd7'+c.toFixed(2)+' combined \xb7 &#8358;'+Math.floor(pro).toLocaleString()+' profit'}
+calcSim();
+/* MARKETS TABLE */
+const mks=[{q:'Will Super Eagles qualify for AFCON 2027 final?',cat:'&#9917; Sports',y:74,v:'&#8358;14.2M',c:'12d'},{q:'Bitcoin closes above $100K before July 2026?',cat:'&#8383; Crypto',y:63,v:'&#8358;31.8M',c:'110d'},{q:'Tinubu wins 2027 presidential election?',cat:'&#128441;&#65039; Politics',y:43,v:'&#8358;48.6M',c:'420d'},{q:'Dangote Refinery at full capacity by Q3 2026?',cat:'&#127981; Economy',y:58,v:'&#8358;8.4M',c:'85d'},{q:'Burna Boy wins GRAMMY before 2028?',cat:'&#127917; Culture',y:68,v:'&#8358;4.2M',c:'630d'},{q:'AI achieves AGI milestone before 2027?',cat:'&#129302; Tech',y:31,v:'&#8358;22.1M',c:'290d'}];
+function renderM(){const tb=document.getElementById('mtb');if(!tb)return;tb.innerHTML=mks.map(m=>{const gc=m.y>=50?'linear-gradient(90deg,#3CB371,#7CF5A8)':'linear-gradient(90deg,#E05252,#FF8A8A)';const mc=m.y>=50?'var(--gr)':'var(--rd)';const no=100-m.y;return`<tr><td style="font-weight:600;max-width:240px;line-height:1.34">${m.q}</td><td><span style="font-size:.72rem;background:rgba(255,255,255,.04);padding:.16rem .5rem;border-radius:5px">${m.cat}</span></td><td><span class="br"><span class="bf" style="width:${m.y}%;background:${gc}"></span></span><span style="color:${mc};font-weight:700;font-size:.77rem">${m.y}%</span></td><td style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--g)">${m.v}</td><td class="cd">${m.c}</td><td><span class="by" onclick="toast('Added YES to slip!')">YES</span><span class="bn2" onclick="toast('Added NO to slip!')">NO</span></td></tr>`}).join('')}
+renderM();
+setInterval(()=>{mks.forEach(m=>{m.y=Math.min(95,Math.max(5,m.y+(Math.random()-.5)*1.4))});renderM()},5200);
+/* DONUT */
+function drawDonut(){const s=document.getElementById('ds');if(!s)return;const segs=[{p:.42,c:'#3CB371'},{p:.22,c:'#C9A84C'},{p:.16,c:'#4A8FD4'},{p:.12,c:'#B39DDB'},{p:.08,c:'#E05252'}];const cx2=100,cy2=100,r=68,ir=42;let start=-Math.PI/2,paths='';segs.forEach(sg=>{const end=start+sg.p*2*Math.PI;const x1=cx2+r*Math.cos(start),y1=cy2+r*Math.sin(start);const x2=cx2+r*Math.cos(end),y2=cy2+r*Math.sin(end);const ix1=cx2+ir*Math.cos(end),iy1=cy2+ir*Math.sin(end);const ix2=cx2+ir*Math.cos(start),iy2=cy2+ir*Math.sin(start);const lg=sg.p>.5?1:0;paths+=`<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg} 1 ${x2.toFixed(1)},${y2.toFixed(1)} L${ix1.toFixed(1)},${iy1.toFixed(1)} A${ir},${ir} 0 ${lg} 0 ${ix2.toFixed(1)},${iy2.toFixed(1)} Z" fill="${sg.c}" opacity=".88"/>`;start=end});s.innerHTML+=paths}
+drawDonut();
+/* HERO COUNTER */
+setTimeout(()=>{animC(document.getElementById('hs1'),4200,'','B+',1600);animC(document.getElementById('hs2'),48274,'','k+',1900)},700);
+/* TOAST */
+function toast(msg){const t=document.getElementById('toast');t.textContent='&#10003;  '+msg;t.style.transform='translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateY(80px)';t.style.opacity='0'},3000)}
+</script>
+</body>
+</html>

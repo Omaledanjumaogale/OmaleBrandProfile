@@ -41,37 +41,33 @@
 		);
 	}
 
-	onMount(async () => {
-		// Initialise theme from localStorage / system preference
+	onMount(() => {
 		theme.init();
 		setupRevealObserver();
-		// Initialise Firebase Auth — subscribes to auth state changes
-		// and syncs ID token to Convex for authenticated backend calls
 		const unsubscribeAuth = initAuth();
 
-		// ── Progressive Web Push Hooks ──────────────────────────────
-		if ('serviceWorker' in navigator && 'PushManager' in window) {
-			try {
-				const registration = await navigator.serviceWorker.register('/service-worker.js', {
-					type: 'module',
-					scope: '/'
-				});
-				console.log('[PWA] Service Worker registered:', registration);
-			} catch (err) {
-				console.error('[PWA] Service Worker registration failed:', err);
-			}
-		}
-
-		// Catch dynamically added .reveal elements
 		const mutObs = new MutationObserver(() => setupRevealObserver());
 		mutObs.observe(document.body, { childList: true, subtree: true });
 
-		// Fallback: reveal all after 3s if animations are blocked
 		const fallback = setTimeout(() => {
 			document.querySelectorAll<HTMLElement>('.reveal').forEach((el) =>
 				el.classList.add('visible')
 			);
 		}, 3000);
+
+		void (async () => {
+			if ('serviceWorker' in navigator && 'PushManager' in window) {
+				try {
+					const registration = await navigator.serviceWorker.register('/service-worker.js', {
+						type: 'module',
+						scope: '/'
+					});
+					console.log('[PWA] Service Worker registered:', registration);
+				} catch (err) {
+					console.error('[PWA] Service Worker registration failed:', err);
+				}
+			}
+		})();
 
 		return () => {
 			unsubscribeAuth();

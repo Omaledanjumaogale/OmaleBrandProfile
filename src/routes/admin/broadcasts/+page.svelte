@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { convex } from '$lib/convex';
-    import { api } from '../../../../convex/_generated/api';
+    import { api } from '$convex/_generated/api';
     import { ui } from '$lib/stores/ui';
     import { fade, fly } from 'svelte/transition';
     import Tooltip from '$lib/components/ui/Tooltip.svelte';

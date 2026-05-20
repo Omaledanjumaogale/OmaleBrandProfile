@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { convex } from '$lib/convex';
-	import { api } from '../../../../../convex/_generated/api';
-	import { currentUser } from '$lib/stores/auth';
-	import { ui } from '$lib/stores/ui';
+	import { api } from '$convex/_generated/api';
+import { ui } from '$lib/stores/ui';
 
 	let requests: any[] = $state([]);
 	let loading    = $state(true);
@@ -38,7 +37,7 @@
 		updating = id;
 		try {
 			await convex.mutation(api.functions.updateServiceRequestStatus, {
-				id: id as any, status, adminEmail: $currentUser?.email ?? undefined
+				id: id as any, status
 			});
 			ui.success(`Request marked as ${status}.`);
 			selected = null;

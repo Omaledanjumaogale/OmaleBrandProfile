@@ -36,8 +36,8 @@
                 © 2026 E-WIN PROJECT · ENTERPRISE COMMAND CENTER V2.4
             </p>
             <div class="flex items-center gap-6">
-                <a href="/admin/support" class="text-[10px] text-white/30 hover:text-[var(--gold)] uppercase tracking-widest transition-colors">Support</a>
-                <a href="/admin/docs" class="text-[10px] text-white/30 hover:text-[var(--gold)] uppercase tracking-widest transition-colors">Documentation</a>
+                <a href="/admin/monitoring" class="text-[10px] text-white/30 hover:text-[var(--gold)] uppercase tracking-widest transition-colors">Monitoring</a>
+                <a href="/admin/audit" class="text-[10px] text-white/30 hover:text-[var(--gold)] uppercase tracking-widest transition-colors">Audit Trail</a>
             </div>
         </footer>
     </div>

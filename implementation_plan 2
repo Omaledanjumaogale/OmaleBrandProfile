@@ -1,0 +1,266 @@
+# OmaleBrandProfile-1 — Enterprise-Grade Upgrade Plan
+**Last Updated:** 2026-05-12 · Session 4 — **ALL 7 PHASES COMPLETE ✅**
+**Build:** `204 modules transformed · exit code 0 · @sveltejs/adapter-cloudflare ✔ done`
+
+---
+
+## Overview
+
+Upgrading the **E-WIN ProfileX** SvelteKit 5 + Convex + Firebase application from a functional prototype to a production-ready, enterprise-grade platform across 7 phases.
+
+---
+
+## Status Legend
+
+| Symbol | Meaning |
+|---|---|
+| ✅ | Fully complete |
+| 🔄 | Partially done / needs follow-up |
+| ⏳ | Pending |
+| 🚫 | Blocked / dependency |
+
+---
+
+## Final Phase Progress Summary
+
+| Phase | Priority | Status |
+|---|---|---|
+| 1 — Security & Auth Guards | 🔴 Critical | ✅ Complete |
+| 2 — Mobile Responsiveness | 🔴 Critical | ✅ Complete |
+| 3 — Convex Backend Hardening | 🟠 High | ✅ Complete |
+| 4 — Theme Store & State | 🟠 High | ✅ Complete |
+| 5 — Design System & Visual | 🟡 Medium | ✅ Complete |
+| 6 — SEO & Accessibility | 🟡 Medium | ✅ Complete |
+| 7 — Admin Modularization | 🟢 Enhancement | ✅ Complete |
+
+---
+
+## Phase 1 — Foundation & Critical Security Fixes ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| Google Fonts (Bebas Neue, Space Mono) + preconnect | `src/app.html` | ✅ |
+| Remove duplicate favicon / JSON-LD, add canonical | `src/app.html` | ✅ |
+| HMAC-SHA256 session middleware | `src/hooks.server.ts` | ✅ |
+| Domain standardization + CSP/HSTS security headers | `src/hooks.server.ts` | ✅ |
+| RBAC route guards (`role: 'admin'` check) | `src/hooks.server.ts` | ✅ |
+| Admin layout server guard | `src/routes/admin/+layout.server.ts` | ✅ |
+| Dashboard layout server guard + IAM approval check | `src/routes/dashboard/+layout.server.ts` | ✅ |
+| Session API (exchange Firebase token → HMAC cookie) | `src/routes/api/session/+server.ts` | ✅ |
+| Admin login page (HMAC session-based) | `src/routes/admin/login/+page.svelte` | ✅ |
+| Admin settings page | `src/routes/admin/settings/+page.svelte` | ✅ |
+| Dashboard member profile page | `src/routes/dashboard/profile/+page.svelte` | ✅ |
+| IAM registration 3-step wizard | `src/routes/register/iam/+page.svelte` | ✅ |
+| Branded 404/500 error page | `src/routes/+error.svelte` | ✅ |
+| App type definitions (`SessionPayload`) | `src/app.d.ts` | ✅ |
+
+**Environment Requirements:**
+- `SESSION_SECRET` — HMAC signing key (min 32 chars), set in `.env`
+- `RESEND_API_KEY` — Email dispatch via Resend API, set in Convex dashboard
+
+---
+
+## Phase 2 — Mobile Responsiveness ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| Hero: fluid VW-based image scaling, responsive order | `src/lib/components/Hero.svelte` | ✅ |
+| Hero: fixed `hidden flex` Tailwind conflict | `src/lib/components/Hero.svelte` | ✅ |
+| IAMOnboarding: inline stats on mobile, float on lg+ | `src/lib/components/IAMOnboarding.svelte` | ✅ |
+| BottomNav: route-aware (hidden on `/admin`, `/dashboard`) | `src/lib/components/BottomNav.svelte` | ✅ |
+| BottomNav: iOS `safe-area-inset-bottom` | `src/lib/components/BottomNav.svelte` | ✅ |
+| Footer: CSS `env()` instead of magic-number `mb` | `src/lib/components/Footer.svelte` | ✅ |
+| DashboardLayout: CSS sidebar always-visible on lg+ | `src/lib/components/dashboard/DashboardLayout.svelte` | ✅ |
+| DashboardLayout: mobile hamburger + scroll-lock overlay | `src/lib/components/dashboard/DashboardLayout.svelte` | ✅ |
+| DashboardLayout: dynamic user name from Firebase | `src/lib/components/dashboard/DashboardLayout.svelte` | ✅ |
+| DashboardLayout: logout clears cookie + Firebase session | `src/lib/components/dashboard/DashboardLayout.svelte` | ✅ |
+| Root layout: replaced `setInterval` polling → MutationObserver | `src/routes/+layout.svelte` | ✅ |
+| Root layout: Header/Footer/BottomNav hidden on shell routes | `src/routes/+layout.svelte` | ✅ |
+| Header: rebuilt as right-side slide drawer (fixes 320px overflow) | `src/lib/components/Header.svelte` | ✅ |
+| Header: `env(safe-area-inset-top)` on `<nav>` and drawer | `src/lib/components/Header.svelte` | ✅ |
+| Header: `env(safe-area-inset-bottom)` on drawer footer | `src/lib/components/Header.svelte` | ✅ |
+| Header: `aria-expanded`, `aria-controls` on hamburger button | `src/lib/components/Header.svelte` | ✅ |
+
+---
+
+## Phase 3 — Convex Backend Hardening ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| Schema: `updatedAt`, `reviewedBy` on applications | `convex/schema.ts` | ✅ |
+| Schema: `adminEmail` on auditLogs | `convex/schema.ts` | ✅ |
+| Schema: `by_createdAt` index for cursor pagination | `convex/schema.ts` | ✅ |
+| Schema: `rateLimits` table for submission throttling | `convex/schema.ts` | ✅ |
+| Cursor-based pagination (`paginationOptsValidator`) | `convex/functions.ts` | ✅ |
+| Rate limiting: 3 submissions/minute per email | `convex/functions.ts` | ✅ |
+| Email notifications via Resend (service request + IAM confirm) | `convex/functions.ts` | ✅ |
+| `orchestrateBackgroundTasks` as `internalMutation` | `convex/functions.ts` | ✅ |
+| `getApplicationByEmail` query for dashboard guard | `convex/functions.ts` | ✅ |
+| `cleanupOldSessions` + rate limit record cleanup | `convex/functions.ts` | ✅ |
+| Daily cron: `cleanupOldSessions` at midnight UTC | `convex/crons.ts` | ✅ |
+| Admin page: all TypeScript errors fixed (explicit types, casts) | `src/routes/admin/+page.svelte` | ✅ |
+| Login page: Firebase `auth` null guard | `src/routes/login/+page.svelte` | ✅ |
+
+**Pagination Usage Pattern:**
+```typescript
+const result = await convex.query(api.functions.getApplicationsPaginated, {
+  paginationOpts: { numItems: 20, cursor: null }
+});
+// result.page = items, result.isDone, result.continueCursor
+```
+
+---
+
+## Phase 4 — Theme Store & State Management ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| `ui.ts`: Toast queue store (success/error/info/warning, auto-dismiss) | `src/lib/stores/ui.ts` | ✅ |
+| `ui.ts`: `isServiceModalOpen` / `openServiceModal` / `closeServiceModal` | `src/lib/stores/ui.ts` | ✅ |
+| `ui.ts`: `theme` store with localStorage persistence + system-preference detection | `src/lib/stores/ui.ts` | ✅ |
+| `ui.ts`: `theme.init()` called in root layout `onMount` | `src/routes/+layout.svelte` | ✅ |
+| Toast component mounted globally in root layout | `src/lib/components/ui/Toast.svelte` | ✅ |
+| Admin settings page reads/writes Convex settings | `src/routes/admin/settings/+page.svelte` | ✅ |
+| `auth.ts`: Firebase `auth` null guard in login | `src/routes/login/+page.svelte` | ✅ |
+| Root layout: `setInterval` polling removed → MutationObserver | `src/routes/+layout.svelte` | ✅ |
+
+**Theme Store API:**
+```typescript
+import { theme } from '$lib/stores/ui';
+theme.init();      // call in root onMount — reads localStorage / prefers-color-scheme
+theme.toggle();    // switches dark ↔ light, persists to localStorage
+theme.set('dark'); // explicit set
+$theme             // reactive: 'dark' | 'light'
+```
+
+---
+
+## Phase 5 — Design System & Visual Upgrade ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| `app.css`: Full design token system (dark mode base) | `src/app.css` | ✅ |
+| `app.css`: System-preference light mode | `src/app.css` | ✅ |
+| `app.css`: Font variable declarations | `src/app.css` | ✅ |
+| `app.css`: `input-base`, `card`, `btn-gold` utility classes | `src/app.css` | ✅ |
+| `app.css`: Anti-overflow, focus-visible, scrollbar-hide | `src/app.css` | ✅ |
+| Toast component (success/error/info/warning) | `src/lib/components/ui/Toast.svelte` | ✅ |
+| ThemeToggle component — sun/moon SVG, 44px touch target, writes `.light` to `<html>` | `src/lib/components/ui/ThemeToggle.svelte` | ✅ |
+| ThemeToggle integrated into Header nav bar | `src/lib/components/Header.svelte` | ✅ |
+| StatCard: animated counter (ease-out cubic, 900ms, `aria-live`) | `src/lib/components/dashboard/StatCard.svelte` | ✅ |
+| StatCard: color-coded left glow bar per prop (gold/teal/blue) | `src/lib/components/dashboard/StatCard.svelte` | ✅ |
+| Services: "Connect Now" CTA → `openServiceModal()` per card | `src/lib/components/Services.svelte` | ✅ |
+| Services: `aria-hidden` on decorative icon divs | `src/lib/components/Services.svelte` | ✅ |
+
+---
+
+## Phase 6 — SEO, Performance & Accessibility ✅ COMPLETE
+
+| Task | File | Status |
+|---|---|---|
+| `static/robots.txt`: disallow `/admin`, `/dashboard`, `/api` | `static/robots.txt` | ✅ |
+| `static/sitemap.xml`: homepage + `/register/iam` | `static/sitemap.xml` | ✅ |
+| `aria-label` on all icon-only buttons (hamburger, close, logout) | All components | ✅ |
+| `aria-expanded` + `aria-controls` on hamburger button | `src/lib/components/Header.svelte` | ✅ |
+| `role="dialog"` + `aria-modal` on navigation drawer | `src/lib/components/Header.svelte` | ✅ |
+| `role="list"` / `role="listitem"` on card grids (admin tabs) | `src/routes/admin/+page.svelte` | ✅ |
+| `aria-label` on service request / application lists | `src/routes/admin/+page.svelte` | ✅ |
+| `aria-live="polite"` on animated StatCard counter | `src/lib/components/dashboard/StatCard.svelte` | ✅ |
+| `aria-hidden="true"` on decorative emoji / icon elements | Multiple components | ✅ |
+| `sr-only` labels on `<select>` elements in admin cards | `src/lib/components/admin/RequestCard.svelte`, `ApplicationCard.svelte` | ✅ |
+| `aria-label` on per-service "Connect Now" buttons | `src/lib/components/Services.svelte` | ✅ |
+| `<dialog>` native element for DetailsModal (built-in focus trap + Escape) | `src/lib/components/admin/DetailsModal.svelte` | ✅ |
+
+> [!NOTE]
+> **Lighthouse audit** (target: Performance ≥ 85, A11y ≥ 95, SEO = 100) should be run after deployment to Cloudflare Pages, where CDN + HTTP/2 push headers will significantly improve LCP scores.
+
+---
+
+## Phase 7 — Admin Portal Modularization ✅ COMPLETE
+
+The admin page was reduced from **581 lines → 398 lines** by extracting focused sub-components.
+
+| Task | File | Status |
+|---|---|---|
+| `RequestCard.svelte` — service request card with status badge + select | `src/lib/components/admin/RequestCard.svelte` | ✅ |
+| `ApplicationCard.svelte` — IAM application card with approve/decline select | `src/lib/components/admin/ApplicationCard.svelte` | ✅ |
+| `DetailsModal.svelte` — native `<dialog>`, focus trap, Escape key, slide-in animation | `src/lib/components/admin/DetailsModal.svelte` | ✅ |
+| Admin page: import + wire up 3 new components | `src/routes/admin/+page.svelte` | ✅ |
+| Admin page: `role="list"/"listitem"` + keyed `{#each}` with `(item._id)` | `src/routes/admin/+page.svelte` | ✅ |
+| Admin page: old inline modal replaced with `<DetailsModal>` | `src/routes/admin/+page.svelte` | ✅ |
+| Admin settings: fixed `../../../../convex/_generated/api` import path | `src/routes/admin/settings/+page.svelte` | ✅ |
+
+---
+
+## Build Verification ✅
+
+```
+pnpm run build
+
+vite v7.3.1
+✓ 204 modules transformed
+✓ built in 7.51s (client)
+✓ built in 31.78s (SSR)
+
+> Using @sveltejs/adapter-cloudflare
+  ✔ done
+
+Exit code: 0
+```
+
+---
+
+## Open Blockers & Known Notes
+
+> [!IMPORTANT]
+> **`RESEND_API_KEY`** must be configured in the Convex dashboard environment variables for email delivery to function. Without it, email dispatch silently skips — no error thrown.
+
+> [!IMPORTANT]
+> **`SESSION_SECRET`** must be set in `.env` (or Cloudflare Pages env vars) for HMAC session signing. Minimum 32 characters. Example: `openssl rand -base64 32`
+
+> [!WARNING]
+> **`CONVEX_DEPLOYMENT`** must be set and `npx convex dev` run at least once to populate `convex/_generated/api.ts` before deploying. The file currently exists as a stub.
+
+> [!NOTE]
+> The **`adapter-cloudflare` IDE false positive** in the Svelte language server is a stale-cache issue. The package is installed and the build confirms it works. Fix: `Ctrl+Shift+P → Svelte: Restart Language Server`.
+
+---
+
+## Functional Verification Checklist
+
+### Build
+- [x] `pnpm install` — all deps resolve cleanly
+- [x] `pnpm run build` — Cloudflare adapter build succeeds (exit 0)
+- [x] `pnpm run dev` — Vite boots at `localhost:5173` with no errors
+
+### Auth & Routing
+- [x] Unauthenticated `/admin` → redirected to `/admin/login`
+- [x] Unauthenticated `/dashboard` → redirected to `/admin/login`
+- [ ] IAM application submit → Convex mutation + confirmation email sent
+- [ ] Service request submit → Convex mutation + admin notification email
+- [ ] Rate limiting: submitting 4× in 1 minute returns clear error message
+- [ ] Admin approve application → `updatedAt` + `reviewedBy` + auditLog written
+- [ ] Dashboard member with approved IAM → full dashboard access
+- [ ] Dashboard member with pending IAM → redirected to pending screen
+
+### Responsive
+- [ ] iPhone SE (375px): no horizontal scroll, BottomNav visible, Hero renders
+- [ ] iPhone 14 Pro (393px): drawer slides from right, safe-area respected
+- [ ] iPad (768px): IAMOnboarding stats don't overflow, sidebar collapses
+- [ ] Desktop (1440px): sidebar always visible, full layout intact
+
+### Admin Portal
+- [ ] RequestCard status change → Convex mutation fires
+- [ ] ApplicationCard approve/decline → Convex mutation + email notification
+- [ ] DetailsModal opens with correct data, closes on Escape and backdrop
+- [ ] Settings toggles (maintenance mode, registration open) persist to Convex
+
+---
+
+## Next Steps (Post-Deployment)
+
+1. **Run `npx convex dev`** — authenticate to Convex, push schema + functions, populate `_generated/api.ts`
+2. **Set environment variables** — `SESSION_SECRET` in Cloudflare Pages, `RESEND_API_KEY` in Convex dashboard
+3. **Deploy to Cloudflare Pages** — `pnpm build` output is already adapter-cloudflare compatible
+4. **Run Lighthouse audit** — target Performance ≥ 85, A11y ≥ 95, SEO = 100
+5. **End-to-end smoke test** — complete the functional checklist above in staging

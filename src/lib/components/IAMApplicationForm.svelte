@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { convex, getSessionId } from '$lib/convex';
-	import { api } from '../../../convex/_generated/api';
+	import { convex, getClientSessionContext } from '$lib/convex';
+	import { api } from '$convex/_generated/api';
 	import { ui } from '$lib/stores/ui';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
@@ -120,8 +120,7 @@
 			);
 			await convex.mutation(api.functions.submitApplicationWorkflow, {
 				...clean as any,
-				sessionId: getSessionId(),
-				firebaseUid: $currentUser?.uid
+				...getClientSessionContext()
 			});
 			submitted = true;
 			ui.success('Your application was submitted! We\'ll contact you within 3–5 business days.');

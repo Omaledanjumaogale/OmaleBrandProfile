@@ -37,3 +37,10 @@ export function getSessionId(): string {
     }
     return sessionId;
 }
+
+export function getClientSessionContext() {
+    return {
+        sessionId: getSessionId(),
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined
+    };
+}

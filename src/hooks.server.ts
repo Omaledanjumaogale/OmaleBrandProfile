@@ -1,5 +1,10 @@
 import { type Handle, type HandleServerError } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import {
+	getPublicRuntimeFlags,
+	shouldBypassMaintenance,
+	shouldProtectRegistration
+} from '$lib/server/platformRuntime';
 
 // ── Main Handle hook ───────────────────────────────────────────────
 export const handle: Handle = async ({ event, resolve }) => {
@@ -12,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	// Domain Standardization (SEO — canonical domain)
-	const targetDomain = 'omaledanjumaogale.ewinproject.org';
+	const targetDomain = 'danjumaomaleogale.dev';
 	if (
 		event.url.hostname.startsWith('www.') &&
 		!event.url.hostname.includes('localhost') &&
@@ -21,6 +26,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const newUrl = new URL(event.url.href);
 		newUrl.hostname = targetDomain;
 		throw redirect(301, newUrl.toString());
+	}
+
+	const runtimeFlags = await getPublicRuntimeFlags();
+	event.locals.runtimeFlags = runtimeFlags;
+
+	if (runtimeFlags.maintenance_mode && !shouldBypassMaintenance(pathname)) {
+		throw redirect(307, '/?maintenance=1');
+	}
+
+	if (!runtimeFlags.registration_open && shouldProtectRegistration(pathname)) {
+		throw redirect(307, '/?registration=closed');
 	}
 
 	// Resolve request

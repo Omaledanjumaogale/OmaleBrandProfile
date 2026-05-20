@@ -46,7 +46,10 @@
 				Let's discuss how we can bring your vision to life.
 			</p>
 			<button 
-				onclick={() => document.getElementById('service-modal')?.showModal()}
+				onclick={() => {
+					const modal = document.getElementById('service-modal');
+					if (modal instanceof HTMLDialogElement) modal.showModal();
+				}}
 				class="px-10 py-4 bg-[#0b0a07] text-[var(--gold)] font-bold rounded-xl uppercase tracking-widest hover:scale-105 transition-transform"
 			>
 				Request a Consultation

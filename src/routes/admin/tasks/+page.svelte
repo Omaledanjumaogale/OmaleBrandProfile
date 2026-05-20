@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { convex } from '$lib/convex';
-	import { api } from '../../../../../convex/_generated/api';
-	import { currentUser } from '$lib/stores/auth';
+	import { api } from '$convex/_generated/api';
 	import { ui } from '$lib/stores/ui';
 
 	let tasks: any[]    = $state([]);

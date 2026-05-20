@@ -1,26 +1,31 @@
 <script lang="ts">
-    import { fade, scale } from 'svelte/transition';
-    
-    let { text, position = 'top' } = $props<{ 
-        text: string; 
-        position?: 'top' | 'bottom' | 'left' | 'right' 
-    }>();
+	import { fade, scale } from 'svelte/transition';
 
-    let visible = $state(false);
+	type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
-    const positionClasses = {
-        top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-        bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-        left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-        right: 'left-full top-1/2 -translate-y-1/2 ml-2'
-    };
+	let { text, position = 'top' } = $props<{
+		text: string;
+		position?: TooltipPosition;
+	}>();
 
-    const arrowClasses = {
-        top: 'bottom-[-4px] left-1/2 -translate-x-1/2 border-t-[#c9a84c]/20 border-l-transparent border-r-transparent',
-        bottom: 'top-[-4px] left-1/2 -translate-x-1/2 border-b-[#c9a84c]/20 border-l-transparent border-r-transparent',
-        left: 'right-[-4px] top-1/2 -translate-y-1/2 border-l-[#c9a84c]/20 border-t-transparent border-b-transparent',
-        right: 'left-[-4px] top-1/2 -translate-y-1/2 border-r-[#c9a84c]/20 border-t-transparent border-b-transparent'
-    };
+	let visible = $state(false);
+
+	const positionClasses: Record<TooltipPosition, string> = {
+		top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
+		bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
+		left: 'right-full top-1/2 -translate-y-1/2 mr-2',
+		right: 'left-full top-1/2 -translate-y-1/2 ml-2'
+	};
+
+	const arrowClasses: Record<TooltipPosition, string> = {
+		top: 'bottom-[-4px] left-1/2 -translate-x-1/2 border-t-[#c9a84c]/20 border-l-transparent border-r-transparent',
+		bottom: 'top-[-4px] left-1/2 -translate-x-1/2 border-b-[#c9a84c]/20 border-l-transparent border-r-transparent',
+		left: 'right-[-4px] top-1/2 -translate-y-1/2 border-l-[#c9a84c]/20 border-t-transparent border-b-transparent',
+		right: 'left-[-4px] top-1/2 -translate-y-1/2 border-r-[#c9a84c]/20 border-t-transparent border-b-transparent'
+	};
+
+	const currentPositionClass = $derived(positionClasses[(position ?? 'top') as TooltipPosition]);
+	const currentArrowClass = $derived(arrowClasses[(position ?? 'top') as TooltipPosition]);
 </script>
 
 <div 
@@ -38,15 +43,15 @@
     </div>
 
     {#if visible}
-        <div 
-            in:scale={{ duration: 150, start: 0.95 }}
-            out:fade={{ duration: 100 }}
-            class="absolute {positionClasses[position]} z-[50] w-max max-w-[200px] px-3 py-2 bg-[#0b0a07] border border-[#c9a84c]/20 rounded-lg shadow-2xl backdrop-blur-xl pointer-events-none"
-        >
-            <p class="text-[11px] font-['Space_Mono'] text-white/80 leading-relaxed text-center">
-                {text}
-            </p>
-            <div class="absolute w-0 h-0 border-4 {arrowClasses[position]}"></div>
-        </div>
-    {/if}
+		<div
+			in:scale={{ duration: 150, start: 0.95 }}
+			out:fade={{ duration: 100 }}
+			class="absolute {currentPositionClass} z-[50] w-max max-w-[200px] px-3 py-2 bg-[#0b0a07] border border-[#c9a84c]/20 rounded-lg shadow-2xl backdrop-blur-xl pointer-events-none"
+		>
+			<p class="text-[11px] font-['Space_Mono'] text-white/80 leading-relaxed text-center">
+				{text}
+			</p>
+			<div class="absolute w-0 h-0 border-4 {currentArrowClass}"></div>
+		</div>
+	{/if}
 </div>

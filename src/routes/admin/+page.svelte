@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { convex } from '$lib/convex';
-    import { api } from '../../../../convex/_generated/api';
+    import { api } from '$convex/_generated/api';
     import { fade, fly, scale } from 'svelte/transition';
     import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
@@ -9,6 +9,7 @@
         totalUsers: 0,
         pendingApps: 0,
         activeRequests: 0,
+        activeSessions: 0,
         systemHealth: 100
     });
 
@@ -25,7 +26,7 @@
         const unsubLogs = convex.onUpdate(api.functions.getAuditLogs, { 
             paginationOpts: { numItems: 8, cursor: null } 
         }, (data) => {
-            recentActivity = data?.page ?? [];
+            recentActivity = Array.isArray(data) ? data : data?.page ?? [];
             loading = false;
         });
 
@@ -165,10 +166,10 @@
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-3 h-3 rounded-full bg-[#14b8a6] animate-pulse shadow-[0_0_8px_#14b8a6]"></div>
-                        <h4 class="text-[11px] font-bold text-[#14b8a6] uppercase tracking-[3px]">Nodes Nominal</h4>
+                        <h4 class="text-[11px] font-bold text-[#14b8a6] uppercase tracking-[3px]">Live Operations Status</h4>
                     </div>
                     <p class="text-[13px] text-white/60 leading-relaxed font-medium">
-                        All Convex edge functions and Firebase clusters are operating at zero reported latency.
+                        Health score is currently {stats.systemHealth}% with {stats.activeSessions ?? 0} active sessions and {stats.activeRequests} open intake items requiring administrative attention.
                     </p>
                 </div>
             </div>

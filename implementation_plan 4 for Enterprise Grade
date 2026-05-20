@@ -1,0 +1,353 @@
+# OmaleBrandProfile — Enterprise-Grade Upgrade Plan
+
+> **Full codebase audit completed 2026-05-13.** This plan covers every finding, prioritised by severity.
+
+## Current State Summary
+
+The application is a **personal brand portfolio** for Omale Danjuma Ogale, built with **SvelteKit 2 + Svelte 5** (runes mode), **Tailwind CSS 4**, **Convex** backend, and **Cloudflare Pages** deployment. It currently has:
+
+- **1 route** (`/`) with 12 portfolio sections rendered as components
+- **1 error page** (`+error.svelte`)
+- **Convex backend** with 11 tables (many are E-WIN leftovers)
+- **Firebase** SDK installed but only used for deleted auth features
+- **Service Request Form** — the only interactive feature (submits to Convex)
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **E-WIN Leftovers Still Present:** Several files, schemas, and dependencies from the E-WIN admin portal are still in the codebase even after the route/component deletions. These create dead code, bloated bundles, and potential security risks.
+
+> [!WARNING]
+> **IAMOnboarding component** links to `/register/iam` which was deleted. This will produce a 404 error for visitors. It needs to be either removed or repurposed as a CTA to an external E-WIN site.
+
+> [!CAUTION]
+> **`app.d.ts` imports from `$lib/server/session`** which was deleted. This will cause TypeScript errors on clean builds if type checking runs in strict mode.
+
+---
+
+## Proposed Changes
+
+### Phase 1 — Critical Fixes (Broken Code & Dead References)
+
+These must be fixed first as they cause runtime errors or 404s.
+
+---
+
+#### 1.1 Fix `app.d.ts` — Broken Import
+
+##### [MODIFY] [app.d.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/app.d.ts)
+- Remove `import type { SessionPayload } from '$lib/server/session'` (file was deleted)
+- Remove `user: SessionPayload | null` from `Locals` (no auth in personal brand)
+- Keep `Error` interface with `errorId`
+
+#### 1.2 Fix IAMOnboarding — Broken `/register/iam` Link
+
+##### [MODIFY] [IAMOnboarding.svelte](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/lib/components/IAMOnboarding.svelte)
+- The "Submit Application" button links to `/register/iam` — that route was deleted
+- **Option A:** Change link to external E-WIN site (e.g. `https://ewinproject.org/register`)
+- **Option B:** Remove the IAMOnboarding component entirely from the page
+- Fix hardcoded dark background `bg-[#0d0d12ee]` on floating stats → use `bg-[var(--surface)]/95`
+
+#### 1.3 Fix Ecosystem — Broken Internal Links
+
+##### [MODIFY] [Ecosystem.svelte](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/lib/components/Ecosystem.svelte)
+- I-AM Network card links to `/register/iam` (deleted route) → fix to external URL or `#iam-onboarding`
+- Hardcoded dark shadow `rgba(0,0,0,0.4)` in hover state → lighten for light mode
+
+#### 1.4 Fix Error Page Title
+
+##### [MODIFY] [+error.svelte](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/routes/+error.svelte)
+- Title says `Page Not Found · E-WIN Project` → change to `Page Not Found · Omale Danjuma Ogale`
+
+---
+
+### Phase 2 — Dead Code & Dependency Cleanup
+
+Remove all E-WIN infrastructure that no longer serves any purpose.
+
+---
+
+#### 2.1 Remove Firebase Dependency
+
+##### [MODIFY] [package.json](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/package.json)
+- Remove `"firebase": "^12.11.0"` from dependencies (no auth needed; saves ~300KB from bundle)
+
+##### [DELETE] [firebase.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/lib/services/firebase.ts)
+- Firebase config file — no longer used after auth removal
+
+#### 2.2 Clean Convex Schema — Remove E-WIN Admin Tables
+
+##### [MODIFY] [schema.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/convex/schema.ts)
+
+**Tables to KEEP** (used by the personal brand):
+| Table | Purpose |
+|-------|---------|
+| `serviceRequests` | Visitors submit service requests via the Contact form |
+| `settings` | Controls `registration_open` flag checked by IAMOnboarding |
+| `rateLimits` | Protects form submissions from spam |
+| `sessions` | Anonymous session tracking for analytics |
+
+**Tables to REMOVE** (E-WIN admin infrastructure — no frontend consumes them):
+| Table | Reason |
+|-------|--------|
+| `users` | E-WIN admin/member user accounts |
+| `transactions` | E-WIN member financial transactions |
+| `metrics` | E-WIN member performance metrics |
+| `announcements` | E-WIN admin announcements |
+| `applications` | I-AM Network applications (registration page deleted) |
+| `auditLogs` | E-WIN admin audit trail |
+| `tasks` | E-WIN assigned member tasks |
+| `broadcasts` | E-WIN admin broadcast messages |
+
+#### 2.3 Clean Convex Functions — Remove E-WIN Admin Functions
+
+##### [MODIFY] [functions.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/convex/functions.ts)
+- Keep: `submitServiceRequest`, `getSetting`, `getMaintenanceMode`, rate limit helpers
+- Remove: All admin queries/mutations (`listApplications`, `updateApplicationStatus`, `listUsers`, `lockUser`, `getAuditLogs`, `assignTask`, `sendBroadcast`, `orchestrateBackgroundTasks`, etc.)
+- Remove: All I-AM application functions (`submitApplication`, etc.)
+
+#### 2.4 Clean Convex Session Key
+
+##### [MODIFY] [convex.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/lib/convex.ts)
+- Rename localStorage key from `ewin_session_id` → `omale_session_id`
+
+#### 2.5 Remove Stale Constants
+
+##### [MODIFY] [constants.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/lib/constants.ts)
+- Remove all `APPLICATION_STATUS_*`, `USER_STATUS_*`, `TASK_STATUS_*` maps (admin UI deleted)
+- Keep only `SERVICE_REQUEST_STATUSES` if used by the ServiceRequestForm
+
+#### 2.6 Remove Root `index.html`
+
+##### [DELETE] [index.html](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/index.html)
+- This is a 604KB legacy HTML file sitting in the project root — not used by SvelteKit
+
+---
+
+### Phase 3 — SEO & Meta Data Corrections
+
+Fix all references to the wrong domain and E-WIN branding.
+
+---
+
+#### 3.1 Fix `app.html` — Wrong Domain & E-WIN Branding
+
+##### [MODIFY] [app.html](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/app.html)
+
+| Issue | Current | Fix |
+|-------|---------|-----|
+| Canonical URL | `danjumaomaleogale.ewinproject.org` | `danjumaomaleogale.dev` |
+| OG Title | E-WIN Hub branding | Omale Danjuma Ogale — ProfileX |
+| OG Description | E-WIN Hub training tools | Personal brand description |
+| OG URL | `ewinproject.org` | `danjumaomaleogale.dev` |
+| OG Image URL | `ewinproject.org` domain | `danjumaomaleogale.dev` domain |
+| Twitter Title | E-WIN Hub | Omale Danjuma Ogale |
+| Twitter Description | E-WIN training pitch | Personal brand pitch |
+| Twitter Image URL | `ewinproject.org` | `danjumaomaleogale.dev` |
+| JSON-LD URL | `ewinproject.org` | `danjumaomaleogale.dev` |
+
+#### 3.2 Fix `hooks.server.ts` — Wrong Canonical Domain
+
+##### [MODIFY] [hooks.server.ts](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/hooks.server.ts)
+- Domain redirect target is `danjumaomaleogale.dev` (already partially fixed, verify)
+
+#### 3.3 Fix `robots.txt` — Remove Deleted Routes
+
+##### [MODIFY] [robots.txt](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/static/robots.txt)
+- Remove `Disallow: /admin`, `/dashboard`, `/api` (routes no longer exist)
+
+#### 3.4 Fix `sitemap.xml` — Remove Deleted Route
+
+##### [MODIFY] [sitemap.xml](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/static/sitemap.xml)
+- Remove `/register/iam` entry (route deleted)
+- Update `lastmod` dates
+
+---
+
+### Phase 4 — Light Mode Text Readability Across All Components
+
+Ensure **all text is dark, bold, and perfectly readable** on the cream `#f7f5f0` background.
+
+---
+
+#### 4.1 Strengthen Text Across All Sections
+
+Every component currently uses `text-muted2` (now `#1e1a12`) for body text, which is strong. However, several components use `font-light` weight which weakens readability. Changes:
+
+| Component | Issue | Fix |
+|-----------|-------|-----|
+| About | Body text `font-light` | Change to `font-normal` or `font-medium` |
+| Services | Card descriptions `font-light` | Change to `font-normal` |
+| Expertise | Descriptions `font-light` | Change to `font-normal` |
+| Career | Description/org `font-light` | Change to `font-normal` |
+| Philosophy | Principle text `font-light` | Change to `font-normal` |
+| ThoughtLeadership | Body `font-light` | Change to `font-normal` |
+| Contact | Description `font-light` | Change to `font-normal` |
+| IAMOnboarding | Description `font-light` | Change to `font-normal` |
+
+#### 4.2 Fix Responsive `text-sm md:text-[Xpx]` Pattern
+
+Multiple components use `text-sm md:text-[10px]` which is **backwards** — `text-sm` (14px) is larger than `text-[10px]`. On mobile, text appears at 14px, then shrinks to 10px on desktop. This should be:
+- Labels: `text-[10px] md:text-xs` (small → slightly larger)
+- Body: `text-sm md:text-[15px]` (keep current if intentional)
+
+**Components affected:** About, Services, Expertise, Career, Certifications, Philosophy, ThoughtLeadership, Contact, Ecosystem
+
+---
+
+### Phase 5 — Performance & Bundle Optimisation
+
+---
+
+#### 5.1 Remove Firebase from Bundle
+
+After Phase 2.1, run `pnpm install` to remove the Firebase SDK from `node_modules`. This saves **~300KB** from the client bundle.
+
+#### 5.2 Add Image Optimisation
+
+##### [NEW] Optimised Founder Image
+- Current `danjuma-ogale.jpg` is 208KB JPEG
+- Create a WebP version at ~60KB for modern browsers
+- Add `<picture>` element with WebP + JPEG fallback in Hero
+
+#### 5.3 Font Loading Optimisation
+
+##### [MODIFY] [app.html](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/app.html)
+- Add `font-display: swap` is already in the Google Fonts URL (`&display=swap`) ✓
+- Add `preload` for the most critical font (Bebas Neue) for LCP improvement
+
+---
+
+### Phase 6 — New Features for Enterprise-Grade Portfolio
+
+These are **new additions** that elevate the site from a basic portfolio to a premium personal brand experience.
+
+---
+
+#### 6.1 Blog / Insights Page
+
+##### [NEW] `src/routes/insights/+page.svelte`
+- Full dedicated page for ThoughtLeadership essays (currently just static text blocks)
+- Each article gets its own card with read time, date, category tags
+- Connects to a `blogPosts` Convex table for dynamic content management
+- Clean URL structure: `/insights/the-agentic-shift`
+
+#### 6.2 Testimonials / Social Proof Section
+
+##### [NEW] `src/lib/components/Testimonials.svelte`
+- Client/collaborator testimonials with names, roles, and organisations
+- Animated carousel or grid layout
+- Stores in Convex for easy management
+
+#### 6.3 Resume / CV Download
+
+##### [NEW] Add a "Download CV" button in the About or Career section
+- Link to a PDF stored in `/static/omale-ogale-cv.pdf`
+- Track downloads via Convex analytics
+
+#### 6.4 Project Portfolio / Case Studies
+
+##### [NEW] `src/lib/components/Projects.svelte`
+- Detailed case studies of key projects (not just platform names)
+- Before/after metrics, tech stack used, business impact
+- Screenshot previews for each project
+
+#### 6.5 Animated Statistics Counter
+
+##### [MODIFY] Hero + About stats
+- Replace static numbers with animated count-up on scroll-reveal
+- Numbers animate from 0 to target value over ~2 seconds
+- Uses `IntersectionObserver` (already in place for `.reveal`)
+
+#### 6.6 Back-to-Top Button
+
+##### [NEW] `src/lib/components/ui/BackToTop.svelte`
+- Floating button appears after scrolling past hero
+- Smooth scroll to `#hero`
+- Accessible with keyboard and screen readers
+
+#### 6.7 Skip Navigation Link
+
+##### [MODIFY] [+layout.svelte](file:///c:/Users/OMALE%20DANJUMA%20OGALE/Downloads/E-WIN%20APPLICATIONS%20IN%20DEVELOPMENT/TRAE%20EXTRACTION%20STAGE/Danjumaomaleogale.dev/OmaleBrandProfile-1/src/routes/+layout.svelte)
+- Add `<a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>` for accessibility
+- Add `id="main"` to `<main>` element
+
+#### 6.8 Loading Skeleton / Page Transition
+
+##### [NEW] `src/lib/components/ui/PageLoader.svelte`
+- Elegant branded loading state for initial page render
+- Gold-themed progress bar or brand logo pulse animation
+- Prevents flash of unstyled content on slow connections
+
+---
+
+### Phase 7 — Accessibility & Standards Compliance
+
+---
+
+#### 7.1 WCAG AA Compliance Audit
+
+| Issue | Location | Fix |
+|-------|----------|-----|
+| Missing `alt` text adequacy | Platform HTML files in `/static/platforms/` | Add descriptive alt text to all images |
+| Colour contrast on gold text | `text-gold` on light background | Verify 4.5:1 ratio; darken gold if needed |
+| Focus visible styles | All interactive elements | Add `:focus-visible` ring styles in `app.css` |
+| `aria-label` on decorative links | Ecosystem platform cards | Add proper labels |
+| Language attribute | `app.html` | Already `lang="en"` ✓ |
+
+#### 7.2 Keyboard Navigation
+
+- Ensure all drawer/modal interactions are keyboard-trappable
+- Add `Escape` key handler for ServiceRequestModal (verify)
+- Ensure focus returns to trigger element when modal closes
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. `npx svelte-check --tsconfig ./tsconfig.json` — 0 errors, 0 warnings
+2. `npm run build` — exit code 0
+3. Verify image serves: `curl -I http://localhost:5173/danjuma-ogale.jpg` → 200
+4. Verify no 404 links: check all internal `href` values in components
+
+### Manual Verification
+1. Open `http://localhost:5173/` in browser
+2. Verify founder image displays with proper scaling on mobile + desktop
+3. Verify all text is dark and readable on cream background
+4. Toggle theme — verify dark mode still works
+5. Submit a test service request via the Contact form
+6. Click every navigation link — confirm no 404s
+7. Test on mobile viewport (375px width) — verify BottomNav, image sizing, text scaling
+
+---
+
+## Execution Order
+
+| Priority | Phase | Items | Effort |
+|----------|-------|-------|--------|
+| 🔴 P0 | Phase 1 | Fix broken imports, dead links, 404 routes | ~30 min |
+| 🟠 P1 | Phase 2 | Remove dead code, Firebase, E-WIN schema | ~45 min |
+| 🟠 P1 | Phase 3 | Fix all SEO meta, domains, sitemap | ~20 min |
+| 🟡 P2 | Phase 4 | Text readability improvements | ~30 min |
+| 🟡 P2 | Phase 5 | Performance: image, fonts, bundle | ~30 min |
+| 🟢 P3 | Phase 6 | New features (blog, testimonials, etc.) | ~3–4 hrs |
+| 🟢 P3 | Phase 7 | Accessibility & WCAG compliance | ~1 hr |
+
+**Total estimated time: ~6–7 hours across all phases.**
+
+---
+
+## Open Questions
+
+1. **IAMOnboarding section:** Should it remain on the personal brand site (linking to external E-WIN for registration), or should it be removed entirely? It's the only section that promotes joining a network rather than showcasing Omale's personal brand.
+
+2. **Canonical domain:** Is the correct production domain `danjumaomaleogale.dev` or something else? All SEO meta will be updated to this domain.
+
+3. **Platform showcase pages** (`/static/platforms/*.html`): These are 11 standalone HTML files totalling ~1MB. Should they remain as-is, be converted to SvelteKit routes for consistency, or be removed and linked externally?
+
+4. **Phase 6 new features:** Which features are highest priority for you? (Blog, Testimonials, Projects, CV Download, Animated Counters, Back-to-Top, Page Loader)
+
+5. **Convex backend cleanup:** Removing the 8 E-WIN tables from the schema will require a Convex migration. Are you comfortable with this, or should we keep the schema as-is and only clean the frontend?

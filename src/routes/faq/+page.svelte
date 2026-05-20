@@ -36,7 +36,10 @@
                 If you can't find the answer you're looking for, please feel free to reach out to our team directly.
             </p>
             <button 
-                onclick={() => document.getElementById('service-modal')?.showModal()}
+                onclick={() => {
+                    const modal = document.getElementById('service-modal');
+                    if (modal instanceof HTMLDialogElement) modal.showModal();
+                }}
                 class="px-10 py-4 bg-[var(--gold)] text-[#0b0a07] font-bold rounded-xl uppercase tracking-widest hover:scale-105 transition-transform"
             >
                 Contact Our Team

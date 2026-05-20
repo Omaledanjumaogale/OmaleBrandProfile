@@ -1,0 +1,307 @@
+# OmaleBrandProfile-1 — Enterprise-Grade Upgrade Plan
+
+## Overview
+
+This plan upgrades the **E-WIN ProfileX** SvelteKit 5 + Convex + Firebase application from a functional prototype to a production-ready, enterprise-grade platform. The audit identified **critical security gaps, broken mobile responsiveness, missing routes, Convex backend weaknesses, and UI/design inconsistencies** that must all be resolved.
+
+---
+
+## Critical Findings Summary
+
+> [!CAUTION]
+> **Admin and Dashboard routes have ZERO server-side auth protection.** Any user can visit `/admin` and see all applications, service requests, and audit logs without logging in.
+
+> [!WARNING]
+> **Google Fonts (Bebas Neue, Space Mono) are never loaded in `app.html`** — they silently fall back to system fonts across the entire UI.
+
+> [!WARNING]
+> **Mobile layout is broken** — IAMOnboarding floating stats overflow viewport, Hero image column is fixed-height and clips on small screens, DashboardLayout sidebar doesn't restore scroll, BottomNav is hidden at md but dashboard routes need it.
+
+> [!IMPORTANT]
+> **`/register/iam`, `/admin/settings`, `/dashboard/profile` are referenced in nav but do not exist as SvelteKit routes.**
+
+---
+
+## Open Questions
+
+1. Should `/register/iam` be a full SvelteKit page (replacing the legacy HTML files in `/static/platforms/`)?
+2. Should the light mode theme be a full toggle (stored in localStorage) or system-preference-only?
+3. Do you want email notifications (e.g. via Resend/Mailgun) triggered when a service request is submitted?
+4. Should Convex queries be paginated, or is a hard limit (e.g. take 200) acceptable for now?
+5. Should the Member Dashboard (`/dashboard`) require a completed IAM application (approved status) to access, or just any Firebase login?
+
+---
+
+## Proposed Changes
+
+### Phase 1 — Foundation & Critical Security Fixes
+
+---
+
+#### [MODIFY] `src/app.html`
+- Add Google Fonts preconnect + stylesheet for **Bebas Neue** and **Space Mono**
+- Remove duplicate `<link rel="icon">` (lines 10 and 26)
+- Remove duplicate JSON-LD (keep only in `+page.svelte`)
+- Add `<link rel="canonical">` tag
+- Add `<meta name="theme-color">` for dark/light mode
+
+---
+
+#### [NEW] `src/hooks.server.ts` — Auth Session Middleware
+- Extend existing `handle` hook to read Firebase ID token from cookies
+- Protect `/admin` and `/dashboard` routes — redirect unauthenticated users to `/admin/login`
+- Keep existing security headers and cache-control logic
+
+---
+
+#### [NEW] `src/routes/admin/+layout.server.ts`
+- Server-side auth guard: verify session cookie, redirect to `/admin/login` if missing
+- Set `locals.user` for downstream pages
+
+---
+
+#### [NEW] `src/routes/dashboard/+layout.server.ts`
+- Same auth guard pattern as admin, redirect to `/admin/login` if unauthenticated
+
+---
+
+#### [NEW] `src/routes/admin/+layout.svelte`
+- Wrap admin pages in auth-aware layout
+- Show loading state while Firebase hydrates
+
+---
+
+#### [NEW] `src/routes/admin/settings/+page.svelte`
+- Settings page: maintenance mode toggle, registration toggle, platform settings
+- Extracted from the bottom of the current monolithic admin page
+
+---
+
+#### [NEW] `src/routes/dashboard/profile/+page.svelte`
+- Member profile page showing application status, personal details, trust score
+
+---
+
+#### [NEW] `src/routes/register/iam/+page.svelte`
+- Full SvelteKit IAM application form (replaces legacy `/static/platforms/` HTML reference)
+- Reuses existing `submitApplicationWorkflow` Convex mutation
+- Shows "registration closed" state when `registration_open = false`
+
+---
+
+#### [NEW] `src/routes/+error.svelte`
+- Branded 404/500 error page with E-WIN gold theme and back navigation
+
+---
+
+### Phase 2 — Mobile Responsiveness Full Fix
+
+---
+
+#### [MODIFY] `src/lib/components/Hero.svelte`
+- Fix image column: change `h-[450px]` to responsive `min-h-[300px] sm:h-[500px] lg:h-auto`
+- Ensure `order-first lg:order-none` works without overflow on 320px–375px devices
+- Add `pb-[80px] md:pb-0` to hero content to account for BottomNav on mobile
+- Fix stat row: ensure 3 stat blocks wrap gracefully on 320px screens
+
+#### [MODIFY] `src/lib/components/IAMOnboarding.svelte`
+- Fix floating stat cards: `absolute -bottom-8 -left-8` overflows on mobile — change to `relative` positioning with `flex` row on mobile, float only on `lg:` screens
+- Ensure the orbit animation visual degrades gracefully on mobile (reduce size)
+
+#### [MODIFY] `src/lib/components/Header.svelte`
+- Add `safe-area-inset-top` padding for notch devices
+- Ensure menu dropdown doesn't overflow on 320px screens
+
+#### [MODIFY] `src/lib/components/BottomNav.svelte`
+- Fix: currently hidden at `md:hidden` — dashboard/admin routes need bottom nav on tablets too
+- Change to route-aware: hide on `/admin` and `/dashboard` routes, show on public pages
+- Ensure `safe-area-inset-bottom` is applied correctly for iOS
+
+#### [MODIFY] `src/lib/components/Footer.svelte`
+- Fix `mb-[72px] md:mb-0` — align with BottomNav visibility logic to prevent gap issues
+
+#### [MODIFY] `src/lib/components/dashboard/DashboardLayout.svelte`
+- Fix: sidebar uses `-translate-x-full` default but `lg:ml-72` on content — needs `lg:translate-x-0` on sidebar and matching margin
+- Fix sidebar overlay: currently `z-40` backdrop is behind `z-50` sidebar — correct layering
+- Replace hardcoded `"Danjuma O."` with `$user?.displayName` from auth store
+- Add mobile bottom padding to main content area
+
+#### [MODIFY] `src/routes/admin/+page.svelte`
+- **Split 579-line monolith** into focused sub-components:
+  - `src/lib/components/admin/RequestCard.svelte`
+  - `src/lib/components/admin/ApplicationCard.svelte`
+  - `src/lib/components/admin/TaskCard.svelte`
+  - `src/lib/components/admin/DetailsModal.svelte`
+  - `src/lib/components/admin/ControlBar.svelte`
+- Fix tab bar overflow on mobile: use `flex-wrap` or horizontal scroll with snap
+
+---
+
+### Phase 3 — Convex Backend Hardening
+
+---
+
+#### [MODIFY] `convex/schema.ts`
+- Add `updatedAt` field to `applications` table for tracking
+- Fix `tasks.status` — change `v.string()` to proper `v.union(v.literal(...))` matching schema
+- Add `ipAddress` optional field to `sessions` for security tracking
+- Add `adminId` optional field to `auditLogs` to track who performed each action
+
+#### [MODIFY] `convex/functions.ts`
+- **Add pagination** to `getApplications`, `getServiceRequests`, `getActiveSessions` — use `.paginate()` or `.take(100)` with cursor support
+- **Fix `orchestrateBackgroundTasks`**: remove the external reference in `Hero.svelte` (it's `internalMutation`, not callable from client)
+- **Add Convex auth context** to admin mutations (`updateApplicationStatus`, `updateServiceRequestStatus`, `createTask`, `createBroadcast`) — validate caller identity via HTTP action
+- **Add rate limiting** to `submitServiceRequest` and `submitApplicationWorkflow` — check for duplicate email within last 60 seconds
+- **Remove fake `+1284` offset** from `refreshStats()` in `convex.ts` store
+- **Add `convex/crons.ts`** to schedule `cleanupOldSessions` daily
+
+#### [NEW] `convex/crons.ts`
+- Schedule `cleanupOldSessions` to run daily at midnight UTC
+
+---
+
+### Phase 4 — State Management & Store Modernization
+
+---
+
+#### [MODIFY] `src/lib/stores/auth.ts`
+- Migrate from `writable` to Svelte 5 runes pattern using `$state` in a class-based store
+- Add `isAdmin` derived state based on Firebase custom claims or Convex user role
+
+#### [MODIFY] `src/lib/stores/convex.ts`
+- Remove `setInterval` polling from layout — use Convex's built-in `onUpdate` subscription instead
+- Remove fake data offset
+
+#### [MODIFY] `src/lib/stores/ui.ts`
+- Add `theme` store: `'dark' | 'light'` with localStorage persistence
+- Add `toastQueue` store for non-blocking notifications
+
+#### [MODIFY] `src/lib/convex.ts`
+- Add Firebase token auth bridge: pass Firebase ID token to Convex client for authenticated queries
+- Handle auth token refresh
+
+---
+
+### Phase 5 — Design System & Visual Upgrade
+
+---
+
+#### [MODIFY] `src/app.css`
+- **Add Google Fonts import** (Bebas Neue, Space Mono) — fix the critical font loading failure
+- **Add light mode CSS variables** under `@media (prefers-color-scheme: light)` and `.light` class:
+  - `--bg: #f8f7f4`, `--surface: #ffffff`, `--text: #0d0d12`, `--muted: #5a5650`
+  - All gold/teal accents remain, adjusted for light contrast
+- **Fix dynamic Tailwind classes** in `Ecosystem.svelte` — replace `delay-{(i % 6) * 100}` with explicit safelist or inline styles
+- Add `--font-display: 'Bebas Neue'` and `--font-mono: 'Space Mono'` CSS variables
+- Add `scrollbar-hide` utility
+- Add focus-visible ring styles for keyboard accessibility
+
+#### [NEW] `src/lib/components/ui/Toast.svelte`
+- Non-blocking toast notification system
+- Success (gold), Error (red), Info (teal) variants
+- Auto-dismiss after 4 seconds
+
+#### [NEW] `src/lib/components/ui/ThemeToggle.svelte`
+- Sun/Moon toggle button
+- Reads/writes to `ui` store and applies `.light` class to `<html>`
+
+#### [MODIFY] `src/lib/components/dashboard/StatCard.svelte`
+- Add animated counter on mount
+- Add color-coded border glow per `color` prop
+- Improve mobile sizing
+
+#### [MODIFY] `src/lib/components/Contact.svelte`
+- Add social links (LinkedIn, Twitter/X)
+- Improve mobile layout stacking
+
+#### [MODIFY] `src/lib/components/Services.svelte`
+- Add "Connect Now" CTA button per service card linking to `openServiceModal()`
+
+---
+
+### Phase 6 — SEO, Performance & Accessibility
+
+---
+
+#### [MODIFY] `src/app.html`
+- Add `<link rel="preconnect" href="https://fonts.googleapis.com">`
+- Add `<link rel="preload">` for hero image
+- Fix duplicate favicon
+
+#### [MODIFY] `src/routes/+page.svelte`
+- Remove duplicate JSON-LD (keep only one, in `app.html`)
+- Add `<link rel="canonical" href="...">` via `svelte:head`
+
+#### [MODIFY] `src/hooks.server.ts`
+- Add `Link: </danjuma-ogale.jpg>; rel=preload; as=image` header for LCP optimization
+
+#### Across all components:
+- Add `aria-hidden="true"` to all decorative emoji
+- Add `aria-label` to all icon-only buttons
+- Add `role="status"` to loading spinners
+- Add `focus-visible` styles on all interactive elements
+- Ensure color contrast ≥ 4.5:1 for all text/muted combos in both themes
+
+#### [MODIFY] `static/robots.txt`
+- Disallow `/admin` and `/dashboard` from crawlers
+
+#### [MODIFY] `static/sitemap.xml`
+- Add `/register/iam` to sitemap
+- Ensure lastmod dates are accurate
+
+---
+
+### Phase 7 — Admin Portal Modularization
+
+---
+
+#### [NEW] `src/lib/components/admin/RequestCard.svelte`
+- Service request card with status badge, action buttons, detail trigger
+
+#### [NEW] `src/lib/components/admin/ApplicationCard.svelte`
+- IAM application card with approve/decline actions
+
+#### [NEW] `src/lib/components/admin/DetailsModal.svelte`
+- Shared modal for both service requests and IAM applications
+- Focus trap on open, close on Escape key
+- Bottom sheet on mobile, centered modal on desktop
+
+#### [NEW] `src/lib/components/admin/ControlBar.svelte`
+- Maintenance toggle, registration toggle, broadcast input — extracted from admin page
+
+#### [NEW] `src/lib/components/admin/TaskCard.svelte`
+- Task management card with report viewer
+
+---
+
+## Verification Plan
+
+### Automated Checks
+- `pnpm check` — TypeScript + Svelte type checking passes with zero errors
+- `pnpm build` — Cloudflare adapter build completes successfully
+
+### Manual Verification
+- [ ] Open on iPhone SE (375px) — no horizontal scroll, BottomNav visible, Hero renders properly
+- [ ] Open on iPad (768px) — IAMOnboarding floats don't overflow, dashboard sidebar collapses correctly
+- [ ] Navigate to `/admin` without logging in — should redirect to `/admin/login`
+- [ ] Navigate to `/dashboard` without logging in — should redirect to `/admin/login`
+- [ ] Submit a service request form — Convex mutation succeeds, success toast shows
+- [ ] Submit IAM application — routes to new `/register/iam` SvelteKit page
+- [ ] Admin: approve/decline an application — data updates live, audit log entry created
+- [ ] Admin: toggle maintenance mode — IAMOnboarding section reflects change
+- [ ] Theme toggle — light mode applies across all sections with readable contrast
+- [ ] Run Lighthouse on `/` — target: Performance ≥ 85, Accessibility ≥ 95, SEO = 100
+
+---
+
+## Implementation Order (Phased)
+
+| Phase | Priority | Est. Files Changed |
+|-------|----------|--------------------|
+| 1 — Security & Auth Guards | 🔴 Critical | 6 new, 2 modified |
+| 2 — Mobile Responsiveness | 🔴 Critical | 8 modified |
+| 3 — Convex Hardening | 🟠 High | 3 modified, 1 new |
+| 4 — Store Modernization | 🟠 High | 4 modified |
+| 5 — Design System | 🟡 Medium | 6 modified, 3 new |
+| 6 — SEO & Accessibility | 🟡 Medium | 8 modified |
+| 7 — Admin Modularization | 🟢 Enhancement | 5 new, 1 modified |

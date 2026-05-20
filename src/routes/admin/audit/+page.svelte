@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { convex } from '$lib/convex';
-    import { api } from '../../../../convex/_generated/api';
+    import { api } from '$convex/_generated/api';
     import { fade, fly } from 'svelte/transition';
     import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
@@ -12,7 +12,7 @@
 
     onMount(() => {
         const unsubscribe = convex.onUpdate(api.functions.getAuditLogs, {}, (data) => {
-            logs = data ?? [];
+            logs = Array.isArray(data) ? data : data?.page ?? [];
             loading = false;
         });
         return unsubscribe;

@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CollegeCBT — Interactive Platform Lesson | E-WIN Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════ */
+:root{
+  --ink:#07030F;--ink2:#110c28;--card:#160f33;
+  --v:#6D28D9;--v2:#7C3AED;--v3:#A78BFA;--v4:#DDD6FE;
+  --lime:#65A30D;--lime2:#84CC16;--lime3:#BEF264;
+  --amb:#D97706;--amb2:#F59E0B;--gold:#F5C842;
+  --rose:#BE123C;--rose2:#E11D48;
+  --sky:#0EA5E9;--cyan:#22D3EE;
+  --g:rgba(255,255,255,.06);--gb:rgba(255,255,255,.1);
+  --mut:#94A3B8;--white:#FFFFFF;
+  --r:16px;--sh:0 24px 80px rgba(0,0,0,.55);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden;line-height:1.6;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink);}::-webkit-scrollbar-thumb{background:var(--v);border-radius:2px;}
+::selection{background:rgba(109,40,217,.35);color:#fff;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+
+/* ═══════════════════════════════════════════
+   AMBIENT BG
+═══════════════════════════════════════════ */
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:drift 20s ease-in-out infinite alternate;}
+.o1{width:700px;height:700px;background:rgba(109,40,217,.18);top:-200px;left:-200px;}
+.o2{width:500px;height:500px;background:rgba(132,204,22,.08);bottom:-100px;right:-100px;animation-delay:-7s;}
+.o3{width:400px;height:400px;background:rgba(245,158,11,.07);top:40%;left:55%;animation-delay:-13s;}
+.o4{width:350px;height:350px;background:rgba(14,165,233,.06);top:10%;right:5%;animation-delay:-4s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(40px,30px) scale(1.12);}}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:64px 64px;}
+
+/* ═══════════════════════════════════════════
+   SCROLL PROGRESS
+═══════════════════════════════════════════ */
+#sprog{position:fixed;top:0;left:0;z-index:999;height:3px;
+  background:linear-gradient(90deg,var(--v),var(--lime2),var(--amb2));
+  width:0%;transition:width .08s;}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{position:fixed;top:0;left:0;right:0;z-index:200;height:66px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(24px);background:rgba(7,3,15,.8);}
+.hdr{max-width:1120px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:center;padding:0 1.5rem;}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;letter-spacing:-.03em;}
+.logo-ico{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--v),var(--v2));
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  box-shadow:0 0 24px rgba(109,40,217,.55);animation:ipulse 3s ease-in-out infinite;}
+@keyframes ipulse{0%,100%{box-shadow:0 0 24px rgba(109,40,217,.5);}50%{box-shadow:0 0 48px rgba(109,40,217,.9);}}
+.logo-text{background:linear-gradient(135deg,#fff 35%,var(--v3),var(--lime3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-text em{font-style:normal;-webkit-text-fill-color:var(--lime2);}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem;position:relative;z-index:1;}
+section{position:relative;z-index:1;}
+.sec{padding:6rem 1.5rem;}
+.sec-alt{padding:6rem 1.5rem;background:rgba(0,0,0,.25);}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);margin:0 1.5rem;}
+
+/* ═══════════════════════════════════════════
+   REVEAL ANIMATIONS
+═══════════════════════════════════════════ */
+.rv{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+.rl{opacity:0;transform:translateX(-36px);transition:opacity .75s ease,transform .75s ease;}
+.rl.on{opacity:1;transform:translateX(0);}
+.rr{opacity:0;transform:translateX(36px);transition:opacity .75s ease,transform .75s ease;}
+.rr.on{opacity:1;transform:translateX(0);}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY HELPERS
+═══════════════════════════════════════════ */
+.sec-tag{display:inline-flex;align-items:center;gap:.5rem;color:var(--v3);font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;}
+.sec-h{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.2vw,3.2rem);line-height:1.08;letter-spacing:-.025em;margin-bottom:1rem;}
+.hl{background:linear-gradient(135deg,var(--v3),var(--lime3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hl-amb{background:linear-gradient(135deg,var(--amb2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hl-sky{background:linear-gradient(135deg,var(--sky),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sec-sub{color:var(--mut);font-size:1rem;max-width:640px;line-height:1.78;}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.875rem 2rem;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;border:none;transition:all .25s;text-decoration:none;}
+.btn-v{background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;box-shadow:0 0 32px rgba(109,40,217,.45);}
+.btn-v:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(109,40,217,.7);}
+.btn-ghost{background:transparent;color:var(--mut);border:1px solid rgba(255,255,255,.15);}
+.btn-ghost:hover{background:var(--g);color:#fff;border-color:var(--v3);}
+.btn-lime{background:rgba(132,204,22,.15);color:var(--lime2);border:1px solid rgba(132,204,22,.3);}
+.btn-lime:hover{background:rgba(132,204,22,.25);transform:translateY(-2px);}
+.btn-wa{background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.3);}
+.btn-wa:hover{background:rgba(37,211,102,.22);}
+.btn-sm{padding:.6rem 1.2rem;font-size:.82rem;border-radius:9px;}
+
+/* ═══════════════════════════════════════════
+   ① HERO — CINEMATIC OPENER
+═══════════════════════════════════════════ */
+.hero{min-height:100vh;display:flex;align-items:center;padding:90px 1.5rem 60px;overflow:hidden;}
+.hero-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;width:100%;}
+
+.hook-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.38rem 1rem;border-radius:100px;
+  border:1px solid rgba(132,204,22,.3);background:rgba(132,204,22,.07);
+  color:var(--lime3);font-size:.74rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:1.5rem;animation:pill-glow 3s ease-in-out infinite;}
+.hook-pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--lime2);animation:blink 1.6s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.15;}}
+@keyframes pill-glow{0%,100%{box-shadow:none;}50%{box-shadow:0 0 20px rgba(132,204,22,.2);}}
+
+.hero-h{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,5.5vw,4.4rem);line-height:1.06;letter-spacing:-.03em;margin-bottom:1.5rem;}
+.hero-h span{display:block;}
+.hero-h .l1{color:#fff;}
+.hero-h .l2{background:linear-gradient(135deg,var(--v3),var(--lime3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-h .l3{color:rgba(255,255,255,.82);}
+
+.hero-desc{color:var(--mut);font-size:1.05rem;line-height:1.78;margin-bottom:2rem;max-width:500px;}
+.hero-desc strong{color:#fff;}
+.hero-ctas{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem;}
+
+/* LIVE STAT CARDS */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.sc{padding:1.2rem;border-radius:14px;background:var(--g);border:1px solid var(--gb);backdrop-filter:blur(10px);position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc-ac,linear-gradient(90deg,var(--v),var(--v3)));}
+.sc-num{font-family:'Bebas Neue',sans-serif;font-size:2.3rem;line-height:1;background:var(--sc-nc,linear-gradient(135deg,var(--v3),var(--lime3)));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sc-lbl{font-size:.76rem;color:var(--mut);margin-top:.25rem;}
+.sc-d{font-size:.7rem;color:var(--lime2);margin-top:.35rem;font-weight:600;}
+
+/* HERO DEVICE MOCKUP */
+.hero-right{position:relative;display:flex;justify-content:center;}
+.device{width:100%;max-width:400px;background:linear-gradient(145deg,#1a1040,#0d0820);
+  border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:1.4rem;
+  box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 70px rgba(109,40,217,.18);
+  animation:float 6s ease-in-out infinite;position:relative;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+.device::before{content:'';position:absolute;top:-1px;left:25%;right:25%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--v3),var(--lime2),transparent);border-radius:100px;}
+.dev-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.dev-dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#FF5F57;}.dot.y{background:#FEBC2E;}.dot.g{background:#28C840;}
+.dev-url{font-family:'JetBrains Mono',monospace;font-size:.64rem;color:var(--mut);
+  background:rgba(255,255,255,.06);padding:.28rem .65rem;border-radius:5px;border:1px solid rgba(255,255,255,.07);}
+.dev-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .6rem;border-radius:100px;
+  background:rgba(132,204,22,.13);border:1px solid rgba(132,204,22,.28);color:var(--lime2);
+  font-size:.67rem;font-weight:600;margin-bottom:.9rem;}
+.q-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:.9rem;margin-bottom:.7rem;}
+.q-lbl{font-size:.67rem;color:var(--v3);font-weight:700;margin-bottom:.4rem;letter-spacing:.05em;}
+.q-txt{font-size:.82rem;color:#e2e8f0;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.35rem;margin-top:.65rem;}
+.qo{display:flex;align-items:center;gap:.45rem;padding:.45rem .65rem;border-radius:7px;
+  font-size:.75rem;border:1px solid;transition:all .2s;cursor:pointer;}
+.qo.c{background:rgba(132,204,22,.12);border-color:rgba(132,204,22,.38);color:var(--lime3);}
+.qo.w{background:rgba(225,29,72,.09);border-color:rgba(225,29,72,.3);color:#fb7185;}
+.qo.n{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);color:var(--mut);}
+.ok{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;
+  font-size:.64rem;font-weight:700;border:1px solid currentColor;flex-shrink:0;}
+.dev-score{display:flex;justify-content:space-between;align-items:center;padding:.65rem .85rem;border-radius:9px;
+  background:linear-gradient(135deg,rgba(109,40,217,.2),rgba(132,204,22,.07));border:1px solid rgba(109,40,217,.3);}
+.ds-lbl{font-size:.73rem;color:var(--mut);}
+.ds-val{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--lime2);}
+
+.fb{position:absolute;padding:.55rem .9rem;border-radius:11px;background:var(--card);border:1px solid var(--gb);
+  box-shadow:0 8px 30px rgba(0,0,0,.45);font-size:.74rem;font-weight:600;white-space:nowrap;
+  animation:fbob 4s ease-in-out infinite;}
+.fb1{top:-18px;right:0;color:var(--amb2);animation-delay:0s;}
+.fb2{bottom:-14px;left:-18px;color:var(--lime2);animation-delay:-2s;}
+@keyframes fbob{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+
+/* ═══════════════════════════════════════════
+   ② PAIN POINTS
+═══════════════════════════════════════════ */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem;}
+.pc{padding:1.75rem;border-radius:var(--r);background:var(--g);border:1px solid rgba(255,255,255,.06);
+  position:relative;overflow:hidden;cursor:default;transition:all .35s;}
+.pc:hover{transform:translateY(-6px);border-color:rgba(225,29,72,.4);box-shadow:0 20px 50px rgba(225,29,72,.1);}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--rose2),transparent);opacity:0;transition:opacity .35s;}
+.pc:hover::before{opacity:1;}
+.pc-ico{font-size:1.9rem;margin-bottom:.9rem;}
+.pc-title{font-weight:700;font-size:1rem;margin-bottom:.45rem;}
+.pc-desc{color:var(--mut);font-size:.86rem;line-height:1.65;}
+.pc-persona{margin-top:.9rem;padding:.55rem .7rem;border-radius:7px;
+  background:rgba(225,29,72,.07);border:1px solid rgba(225,29,72,.14);
+  font-size:.76rem;color:#fb7185;font-style:italic;line-height:1.5;}
+
+.turn-banner{margin:2.5rem 0;padding:2.25rem;border-radius:18px;
+  background:linear-gradient(135deg,rgba(109,40,217,.18),rgba(132,204,22,.06));
+  border:1px solid rgba(109,40,217,.28);display:flex;align-items:center;gap:1.75rem;flex-wrap:wrap;
+  position:relative;overflow:hidden;}
+.turn-banner::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 25% 50%,rgba(109,40,217,.1),transparent 65%);}
+.tb-ico{font-size:3.2rem;flex-shrink:0;position:relative;}
+.tb-body{position:relative;}
+.tb-body h3{font-family:'Playfair Display',serif;font-size:1.65rem;margin-bottom:.45rem;}
+.tb-body p{color:var(--mut);font-size:.93rem;line-height:1.72;}
+.tb-body strong{color:var(--lime3);}
+
+/* PERSONA SCROLL */
+.persona-scroll{display:flex;gap:1.1rem;overflow-x:auto;padding-bottom:.9rem;margin-top:1.75rem;scroll-snap-type:x mandatory;}
+.persona-scroll::-webkit-scrollbar{height:3px;}
+.persona-scroll::-webkit-scrollbar-thumb{background:var(--v);border-radius:2px;}
+.pcard{min-width:255px;padding:1.4rem;border-radius:15px;background:var(--g);border:1px solid var(--gb);
+  scroll-snap-align:start;flex-shrink:0;transition:all .3s;}
+.pcard:hover{border-color:var(--v3);transform:translateY(-4px);}
+.pav{width:56px;height:56px;border-radius:50%;background:var(--avbg,rgba(109,40,217,.15));
+  border:3px solid var(--avb,rgba(109,40,217,.5));
+  display:flex;align-items:center;justify-content:center;font-size:1.65rem;margin-bottom:.85rem;position:relative;}
+.av-ring{position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--avb,rgba(109,40,217,.5));
+  opacity:.35;animation:spinr 9s linear infinite;}
+@keyframes spinr{to{transform:rotate(360deg);}}
+.p-name{font-weight:700;font-size:.92rem;margin-bottom:.1rem;}
+.p-role{font-size:.72rem;color:var(--mut);margin-bottom:.65rem;}
+.p-quote{font-size:.8rem;font-style:italic;color:#e2e8f0;padding:.6rem;border-radius:7px;
+  background:rgba(255,255,255,.04);border-left:3px solid var(--avb,rgba(109,40,217,.5));line-height:1.55;}
+.p-badge{display:inline-flex;align-items:center;gap:.3rem;margin-top:.7rem;padding:.22rem .6rem;
+  border-radius:100px;background:var(--avbg2,rgba(109,40,217,.14));border:1px solid var(--avb,rgba(109,40,217,.4));
+  font-size:.68rem;font-weight:600;color:var(--avbc,var(--v3));}
+
+/* ═══════════════════════════════════════════
+   ③ HOW IT WORKS — STEP SIMULATOR
+═══════════════════════════════════════════ */
+.steps-outer{margin-top:2.75rem;}
+.spbar{display:flex;align-items:flex-start;gap:0;margin-bottom:2.75rem;}
+.sp{display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;position:relative;z-index:1;}
+.sp-n{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.35rem;
+  border:2px solid rgba(255,255,255,.1);background:var(--card);color:var(--mut);transition:all .4s;}
+.sp.act .sp-n{background:linear-gradient(135deg,var(--v),var(--v2));border-color:var(--v3);color:#fff;box-shadow:0 0 28px rgba(109,40,217,.5);}
+.sp.done .sp-n{background:rgba(132,204,22,.18);border-color:var(--lime2);color:var(--lime2);}
+.sp-l{font-size:.68rem;color:var(--mut);margin-top:.45rem;text-align:center;font-weight:600;max-width:72px;line-height:1.3;}
+.sp.act .sp-l{color:var(--v3);}
+.spc{flex:1;height:2px;background:rgba(255,255,255,.07);position:relative;top:24px;z-index:0;}
+.spc::after{content:'';position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--v),var(--lime2));
+  width:0%;transition:width .9s ease;border-radius:1px;}
+.spc.fill::after{width:100%;}
+
+.step-panel{display:none;animation:spi .5s ease;}
+.step-panel.act{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+@keyframes spi{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.sp-text .snb{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--v),var(--v2));font-family:'Bebas Neue',sans-serif;font-size:1.15rem;
+  margin-bottom:.9rem;box-shadow:0 0 18px rgba(109,40,217,.4);}
+.sp-text h3{font-family:'Playfair Display',serif;font-size:1.65rem;margin-bottom:.65rem;}
+.sp-text p{color:var(--mut);font-size:.93rem;line-height:1.75;}
+.sp-text ul{margin-top:.9rem;display:flex;flex-direction:column;gap:.55rem;list-style:none;}
+.sp-text ul li{display:flex;align-items:flex-start;gap:.55rem;font-size:.88rem;color:#e2e8f0;}
+.sp-text ul li::before{content:'✓';color:var(--lime2);font-weight:700;flex-shrink:0;}
+.snav{display:flex;gap:.65rem;margin-top:1.5rem;}
+.snb-next{padding:.65rem 1.2rem;border-radius:9px;border:none;background:var(--v);color:#fff;
+  font-size:.86rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  box-shadow:0 0 20px rgba(109,40,217,.3);transition:all .2s;}
+.snb-next:hover{background:var(--v2);transform:translateY(-2px);}
+.snb-prev{padding:.65rem 1.1rem;border-radius:9px;border:1px solid rgba(255,255,255,.14);
+  background:transparent;color:var(--mut);font-size:.86rem;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;}
+.snb-prev:hover{background:var(--g);color:#fff;}
+
+/* SIM CARDS */
+.sim{background:var(--card);border:1px solid var(--gb);border-radius:18px;padding:1.4rem;
+  box-shadow:var(--sh);position:relative;overflow:hidden;}
+.sim::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--v),var(--lime2));}
+
+/* step 1 — curriculum browser */
+.itabs{display:flex;gap:.4rem;margin-bottom:.9rem;overflow-x:auto;padding-bottom:2px;}
+.itab{padding:.35rem .8rem;border-radius:7px;font-size:.72rem;font-weight:600;border:1px solid rgba(255,255,255,.09);
+  background:transparent;color:var(--mut);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.itab.on{background:rgba(109,40,217,.22);border-color:var(--v3);color:var(--v3);}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;}
+.cgi{padding:.65rem .75rem;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  font-size:.76rem;display:flex;align-items:center;gap:.45rem;cursor:pointer;transition:all .2s;color:var(--mut);}
+.cgi:hover,.cgi.sel{border-color:var(--v3);background:rgba(109,40,217,.11);color:#fff;}
+.cgi.sel::after{content:'✓';color:var(--lime2);margin-left:auto;font-weight:700;}
+.sel-confirm{margin-top:.9rem;padding:.65rem .8rem;border-radius:9px;
+  background:rgba(132,204,22,.07);border:1px solid rgba(132,204,22,.2);
+  font-size:.78rem;color:var(--lime3);}
+
+/* step 2 — AI generator */
+.genbar{display:flex;gap:.45rem;margin-bottom:.9rem;align-items:center;}
+.gsel{flex:1;padding:.5rem .7rem;border-radius:7px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(0,0,0,.3);color:#fff;font-size:.76rem;font-family:'DM Sans',sans-serif;appearance:none;}
+.gbtn{padding:.5rem .95rem;border-radius:7px;background:var(--v);color:#fff;font-size:.76rem;font-weight:700;
+  border:none;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;}
+.gbtn:hover{background:var(--v2);}
+.aiload{display:none;align-items:center;gap:.5rem;padding:.85rem .5rem;color:var(--mut);font-size:.8rem;}
+.aid{display:flex;gap:4px;}
+.aidt{width:6px;height:6px;border-radius:50%;background:var(--v3);animation:ald 1.2s infinite;}
+.aidt:nth-child(2){animation-delay:.2s;}.aidt:nth-child(3){animation-delay:.4s;}
+@keyframes ald{0%,80%,100%{transform:scale(.75);opacity:.4;}40%{transform:scale(1.2);opacity:1;}}
+.genout{display:none;}
+.gqt{font-size:.86rem;color:#e2e8f0;line-height:1.58;margin-bottom:.9rem;font-weight:500;}
+.gopts{display:flex;flex-direction:column;gap:.38rem;}
+.gopt{display:flex;align-items:center;gap:.45rem;padding:.48rem .7rem;border-radius:7px;
+  font-size:.78rem;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  color:var(--mut);transition:all .2s;cursor:pointer;}
+.gopt:hover{border-color:var(--v3);color:#fff;}
+.gopt.gc{border-color:rgba(132,204,22,.5)!important;background:rgba(132,204,22,.1)!important;color:var(--lime3)!important;}
+.gopt.gw{border-color:rgba(225,29,72,.4)!important;background:rgba(225,29,72,.08)!important;color:#fb7185!important;}
+.gexp{display:none;margin-top:.65rem;padding:.7rem;border-radius:8px;
+  background:rgba(132,204,22,.07);border:1px solid rgba(132,204,22,.2);font-size:.76rem;color:var(--lime3);line-height:1.58;}
+
+/* step 3 — mock exam */
+.mhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
+.minfo{font-size:.74rem;color:var(--mut);}
+.timer-ring{position:relative;width:60px;height:60px;flex-shrink:0;}
+.timer-ring svg{transform:rotate(-90deg);}
+.tr-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:5;}
+.tr-fill{fill:none;stroke:var(--lime2);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .5s;}
+.tr-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:var(--lime2);}
+.qstrip{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:.85rem;}
+.qn{width:26px;height:26px;border-radius:5px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:var(--mut);font-size:.68rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:'JetBrains Mono',monospace;}
+.qn.ac{background:rgba(132,204,22,.2);border-color:var(--lime2);color:var(--lime2);}
+.qn.aw{background:rgba(225,29,72,.2);border-color:var(--rose2);color:#fb7185;}
+.qn.cur{background:var(--v);border-color:var(--v3);color:#fff;}
+
+/* step 4 — results */
+.mini-gauge{position:relative;width:130px;height:75px;margin:0 auto .5rem;}
+.mg-bg{width:130px;height:65px;border-radius:130px 130px 0 0;border:9px solid rgba(255,255,255,.05);border-bottom:none;position:absolute;bottom:0;}
+.mg-fill{width:130px;height:65px;border-radius:130px 130px 0 0;border:9px solid var(--lime2);border-bottom:none;
+  position:absolute;bottom:0;transform-origin:bottom center;transform:rotate(-0.81turn);
+  transition:transform 1.5s cubic-bezier(.34,1.56,.64,1);}
+.mg-val{position:absolute;bottom:0;left:0;right:0;text-align:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--lime2);}
+.mkpi{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;}
+.mk{padding:.7rem;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);}
+.mk-v{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--v3);}
+.mk-l{font-size:.66rem;color:var(--mut);}
+
+/* ═══════════════════════════════════════════
+   ④ ANIMATED CHARTS
+═══════════════════════════════════════════ */
+.chart-box{padding:1.75rem;border-radius:18px;background:var(--g);border:1px solid var(--gb);margin-top:2.5rem;position:relative;overflow:hidden;}
+.chart-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem;}
+.chart-ttl{font-weight:700;font-size:1rem;}
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:.35rem;font-size:.74rem;color:var(--mut);}
+.ld{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:.65rem;height:190px;padding:0 .25rem;position:relative;}
+.bar-chart::before{content:'75%';position:absolute;right:100%;top:calc(25% - 8px);font-size:.68rem;color:var(--lime2);white-space:nowrap;padding-right:.5rem;}
+.target-line{position:absolute;left:0;right:0;top:25%;border-top:2px dashed rgba(132,204,22,.3);pointer-events:none;}
+.target-line::after{content:'Target: 75%';position:absolute;right:0;top:-18px;font-size:.66rem;color:var(--lime2);}
+.bg{flex:1;display:flex;flex-direction:column;align-items:center;gap:.35rem;}
+.bc{width:100%;border-radius:5px 5px 0 0;position:relative;cursor:pointer;transition:height 1.2s cubic-bezier(.34,1.56,.64,1),opacity .3s;min-width:18px;}
+.bc:hover{opacity:.8;}
+.bc::after{content:attr(data-v);position:absolute;top:-19px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--v3);white-space:nowrap;}
+.bl{font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--mut);}
+.bsub{font-size:.62rem;color:var(--mut);}
+
+/* Donut */
+.donut-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;margin-top:2.5rem;}
+.dw{position:relative;width:190px;height:190px;margin:0 auto;}
+.dw svg{transform:rotate(-90deg);}
+.dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.dc-pct{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--lime2);line-height:1;}
+.dc-sub{font-size:.7rem;color:var(--mut);margin-top:.15rem;}
+.di{display:flex;align-items:center;gap:.65rem;margin-bottom:.6rem;}
+.di-bar{flex:1;height:7px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.di-fill{height:100%;border-radius:3px;transition:width 1.6s ease;}
+.di-pct{font-family:'JetBrains Mono',monospace;font-size:.75rem;width:34px;text-align:right;flex-shrink:0;}
+.di-lbl{font-size:.78rem;color:#e2e8f0;min-width:130px;}
+
+/* ═══════════════════════════════════════════
+   ⑤ BENEFITS & COMPETITIVE EDGE
+═══════════════════════════════════════════ */
+.ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem;}
+.bcard{padding:1.65rem;border-radius:var(--r);background:var(--g);border:1px solid var(--gb);
+  transition:all .35s;position:relative;overflow:hidden;cursor:default;}
+.bcard:hover{transform:translateY(-6px);border-color:var(--v3);box-shadow:0 20px 60px rgba(109,40,217,.12);}
+.bcard:hover .bglow{opacity:1;}
+.bglow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:radial-gradient(ellipse at 50% 0%,rgba(109,40,217,.13),transparent 65%);}
+.b-ico{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:1.1rem;background:var(--bib);border:1px solid var(--bibr);}
+.b-title{font-weight:700;font-size:.97rem;margin-bottom:.4rem;}
+.b-desc{color:var(--mut);font-size:.84rem;line-height:1.63;}
+.b-tag{display:inline-block;margin-top:.85rem;padding:.2rem .6rem;border-radius:100px;font-size:.68rem;font-weight:600;}
+
+/* Competition table */
+.ct{margin-top:2.5rem;border-radius:15px;overflow:hidden;border:1px solid var(--gb);}
+.cth{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;background:linear-gradient(135deg,var(--v),var(--v2));padding:.9rem 1.1rem;}
+.cth span{font-size:.76rem;font-weight:700;color:#fff;text-align:center;}
+.cth span:first-child{text-align:left;}
+.ctr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:.8rem 1.1rem;
+  border-bottom:1px solid rgba(255,255,255,.04);align-items:center;transition:background .2s;}
+.ctr:hover{background:rgba(255,255,255,.018);}
+.ctr.hl{background:rgba(132,204,22,.05);border-bottom-color:rgba(132,204,22,.13);}
+.ctr span{font-size:.8rem;text-align:center;color:var(--mut);}
+.ctr span:first-child{text-align:left;color:#fff;font-weight:600;}
+.ctr .yes{color:var(--lime2);}
+.ctr .no{color:rgba(255,255,255,.18);}
+.ctr .brand{color:var(--v3);font-weight:700;}
+
+/* ═══════════════════════════════════════════
+   ⑥ ANNOTATED SVG — ECOSYSTEM MAP
+═══════════════════════════════════════════ */
+.eco-svg-wrap{margin-top:2.5rem;padding:1.75rem;border-radius:18px;background:var(--g);border:1px solid var(--gb);overflow-x:auto;}
+
+/* ═══════════════════════════════════════════
+   ⑦ QUOTES TICKER
+═══════════════════════════════════════════ */
+.quote-sec{padding:5rem 1.5rem;text-align:center;background:rgba(0,0,0,.2);}
+.q-display{font-family:'Playfair Display',serif;font-size:clamp(1.35rem,3.2vw,2.1rem);
+  font-style:italic;line-height:1.42;color:rgba(255,255,255,.9);max-width:740px;margin:0 auto 1.25rem;
+  min-height:85px;transition:all .6s ease;}
+.q-author{font-size:.82rem;color:var(--v3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.q-dots{display:flex;gap:.45rem;justify-content:center;margin-top:1.4rem;}
+.qd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.14);cursor:pointer;transition:all .3s;}
+.qd.on{background:var(--v3);width:22px;border-radius:3px;}
+
+/* ═══════════════════════════════════════════
+   ⑧ E-WIN ECOSYSTEM CARDS
+═══════════════════════════════════════════ */
+.eco-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:2.25rem;}
+.ecard{padding:1.4rem;border-radius:13px;background:var(--g);border:1px solid var(--gb);transition:all .3s;}
+.ecard:hover{border-color:var(--v3);transform:translateY(-3px);}
+.ecard.main{border-color:rgba(109,40,217,.45);background:linear-gradient(135deg,rgba(109,40,217,.18),rgba(132,204,22,.05));
+  box-shadow:0 0 35px rgba(109,40,217,.13);}
+.ec-ico{font-size:1.65rem;margin-bottom:.7rem;}
+.ec-name{font-weight:700;font-size:.92rem;margin-bottom:.2rem;}
+.ec-desc{font-size:.76rem;color:var(--mut);line-height:1.58;}
+.ec-tag{display:inline-block;margin-top:.55rem;padding:.18rem .55rem;border-radius:100px;font-size:.66rem;font-weight:600;}
+
+/* ═══════════════════════════════════════════
+   ⑨ REVENUE STREAMS
+═══════════════════════════════════════════ */
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:2.25rem;}
+.rcard{padding:1.6rem;border-radius:15px;background:var(--g);border:1px solid var(--gb);
+  display:flex;gap:1.1rem;align-items:flex-start;transition:all .3s;}
+.rcard:hover{border-color:var(--amb2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(245,158,11,.08);}
+.r-ico{width:46px;height:46px;border-radius:11px;background:rgba(245,158,11,.13);border:1px solid rgba(245,158,11,.22);
+  display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.r-body h4{font-weight:700;margin-bottom:.35rem;font-size:.94rem;}
+.r-body p{color:var(--mut);font-size:.82rem;line-height:1.58;}
+.r-amt{display:inline-flex;align-items:baseline;gap:.2rem;margin-top:.65rem;
+  font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:700;color:var(--amb2);}
+
+/* REVENUE PROJECTION CHART */
+.proj-bars{display:flex;gap:1.5rem;align-items:flex-end;height:150px;margin-top:1.5rem;padding:0 .5rem;}
+.pb-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+.pb-bar{width:100%;border-radius:7px 7px 0 0;position:relative;transition:height 1.3s cubic-bezier(.34,1.56,.64,1);}
+.pb-val{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--amb2);}
+.pb-yr{font-size:.72rem;color:var(--mut);}
+
+/* ═══════════════════════════════════════════
+   ⑩ CLOSING CTA
+═══════════════════════════════════════════ */
+.closing{padding:8rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+.closing::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(109,40,217,.22),transparent 62%);pointer-events:none;}
+.cl-inner{position:relative;max-width:720px;margin:0 auto;}
+.cl-ico{font-size:3.75rem;display:block;margin-bottom:1.4rem;animation:rise 3.5s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.06);}}
+.cl-h{font-family:'Playfair Display',serif;font-size:clamp(2.1rem,5vw,3.8rem);line-height:1.08;
+  letter-spacing:-.03em;margin-bottom:1.1rem;}
+.cl-sub{color:var(--mut);font-size:1rem;line-height:1.78;margin-bottom:2.25rem;}
+.cl-ctas{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.25rem;}
+.contact-bar{display:flex;align-items:center;justify-content:center;gap:2rem;padding:1.1rem 1.5rem;
+  border-radius:13px;background:var(--g);border:1px solid var(--gb);flex-wrap:wrap;gap:.75rem 2rem;}
+.ci{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--mut);}
+.ci strong{color:#fff;}
+.ci a{color:var(--v3);font-weight:600;transition:color .2s;}
+.ci a:hover{color:var(--lime3);}
+
+/* FOOTER */
+footer{padding:1.75rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);text-align:center;position:relative;z-index:1;}
+.fl{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--v3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:inline-block;margin-bottom:.4rem;}
+.fc{color:rgba(255,255,255,.18);font-size:.73rem;}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:920px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;}
+  .hero-desc{margin:0 auto 2rem;}
+  .hero-ctas{justify-content:center;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .hero-right{display:none;}
+  .step-panel.act{grid-template-columns:1fr;}
+  .sp-visual{display:none;}
+  .pain-grid{grid-template-columns:1fr 1fr;}
+  .ben-grid{grid-template-columns:1fr 1fr;}
+  .eco-cards{grid-template-columns:1fr 1fr;}
+  .donut-grid{grid-template-columns:1fr;}
+  .dw{margin-bottom:1.5rem;}
+  .cth,.ctr{grid-template-columns:2fr 1fr 1fr;}
+  .cth span:last-child,.ctr span:last-child{display:none;}
+}
+@media(max-width:600px){
+  .sec,.sec-alt{padding:4rem 1.25rem;}
+  .pain-grid,.ben-grid,.eco-cards,.rev-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .spbar{flex-wrap:wrap;gap:.5rem;}
+  .spc{display:none;}
+  .sp{width:auto;flex:none;}
+  .bar-chart{height:140px;}
+  .cth,.ctr{grid-template-columns:1.8fr 1fr 1fr;font-size:.72rem;}
+  .closing{padding:5rem 1.25rem;}
+  .proj-bars{gap:.75rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- AMBIENT -->
+<div class="mesh">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="orb o3"></div><div class="orb o4"></div>
+</div>
+<div class="grid-bg"></div>
+<div id="sprog"></div>
+
+<!-- ══════════════════════ HEADER ══════════════════════ -->
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-ico">🎓</div>
+      <span class="logo-text">College<em>CBT</em></span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════
+     ① HERO — CINEMATIC OPENER
+══════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <!-- LEFT COPY -->
+    <div>
+      <div class="hook-pill rv" style="transition-delay:.1s">
+        🇳🇬 E-WIN Project · Nigeria's #1 Results-as-a-Service Platform
+      </div>
+      <h1 class="hero-h rv" style="transition-delay:.2s">
+        <span class="l1">Two Million Students.</span>
+        <span class="l2">One Broken System.</span>
+        <span class="l3">One AI Guarantee.</span>
+      </h1>
+      <p class="hero-desc rv" style="transition-delay:.35s">
+        Every semester, <strong>over 2 million Nigerian undergraduates</strong> walk into exam halls underprepared — not because they didn't study, but because the tools available were built for a different era. Stale past-question booklets. Zero explanations. No readiness feedback. No accountability.<br><br>
+        <strong>CollegeCBT ends that cycle permanently.</strong> Nigeria's first AI-powered <strong>Results-as-a-Service (RaaS)</strong> exam intelligence engine — we don't just give you questions. <strong>We guarantee your grade.</strong>
+      </p>
+      <div class="hero-ctas rv" style="transition-delay:.5s">
+        <a href="https://collegecbt.ewinproject.org" target="_blank" class="btn btn-v">🚀 Start Free Today →</a>
+        <button class="btn btn-ghost" onclick="scrollTo('how')">▶ How It Works</button>
+      </div>
+      <div class="stat-row rv" style="transition-delay:.65s">
+        <div class="sc" style="--sc-ac:linear-gradient(90deg,var(--v),var(--v3));--sc-nc:linear-gradient(135deg,var(--v3),var(--lime3));">
+          <div class="sc-num" id="s1">0</div>
+          <div class="sc-lbl">Higher Institutions Covered</div>
+          <div class="sc-d">↑ NUC · NBTE · NCCE · IEI Aligned</div>
+        </div>
+        <div class="sc" style="--sc-ac:linear-gradient(90deg,var(--lime),var(--lime2));--sc-nc:linear-gradient(135deg,var(--lime2),var(--lime3));">
+          <div class="sc-num" id="s2">0</div>
+          <div class="sc-lbl">Annual Candidates Underserved</div>
+          <div class="sc-d">↑ ₦40 Billion+ Market Opportunity</div>
+        </div>
+        <div class="sc" style="--sc-ac:linear-gradient(90deg,var(--amb),var(--amb2));--sc-nc:linear-gradient(135deg,var(--amb2),var(--gold));">
+          <div class="sc-num" id="s3">0</div>
+          <div class="sc-lbl">Grade Guarantee Threshold</div>
+          <div class="sc-d">↑ WAEC A1 or We Keep Practising</div>
+        </div>
+        <div class="sc" style="--sc-ac:linear-gradient(90deg,var(--rose),var(--rose2));--sc-nc:linear-gradient(135deg,var(--v3),#c084fc);">
+          <div class="sc-num" id="s4">0</div>
+          <div class="sc-lbl">Starting Price Per Semester</div>
+          <div class="sc-d">↑ Less Than One Textbook</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — DEVICE MOCKUP -->
+    <div class="hero-right rr" style="transition-delay:.4s">
+      <div style="position:relative;">
+        <div class="fb fb1">🔥 14-Day Streak Active</div>
+        <div class="device">
+          <div class="dev-bar">
+            <div class="dev-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+            <div class="dev-url">collegecbt.ewinproject.org</div>
+          </div>
+          <div class="dev-badge">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--lime2);animation:blink 1.5s infinite;"></span>
+            🤖 Claude AI · Live Question
+          </div>
+          <div class="q-card">
+            <div class="q-lbl">300L · COMPUTER SCIENCE · DBMS</div>
+            <div class="q-txt">Which Normal Form eliminates transitive functional dependencies from a relational table?</div>
+            <div class="q-opts">
+              <div class="qo w"><span class="ok">A</span> First Normal Form (1NF)</div>
+              <div class="qo w"><span class="ok">B</span> Second Normal Form (2NF)</div>
+              <div class="qo c"><span class="ok">C</span> Third Normal Form (3NF) ✓</div>
+              <div class="qo n"><span class="ok">D</span> Boyce-Codd Normal Form</div>
+            </div>
+          </div>
+          <div class="dev-score">
+            <div><div class="ds-lbl">AI Readiness Score</div><div style="font-size:.68rem;color:var(--mut);">Based on 342 questions</div></div>
+            <div class="ds-val">78/100</div>
+          </div>
+        </div>
+        <div class="fb fb2">🏆 Grade: B2 → A1 Predicted</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ② PAIN POINTS
+══════════════════════════════════════════════════════ -->
+<section class="sec" id="problem">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">🔴 The Real Problem</div>
+      <h2 class="sec-h">The System That Has Been <span class="hl">Failing Students</span></h2>
+      <p class="sec-sub">Nigerian students are not failing because they lack brilliance. They are failing because the tools available were built for a different era — and no one measures their actual readiness before exam day.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pc rv" style="transition-delay:.1s">
+        <div class="pc-ico">📚</div>
+        <div class="pc-title">No Contextual Practice Questions</div>
+        <div class="pc-desc">Past-question booklets from 2015–2019 bear no relation to what a 300L DBMS or Organic Chemistry lecturer tests today. They are outdated, generic, and not aligned to your specific institution's curriculum or lecturer focus areas.</div>
+        <div class="pc-persona">"Chiamaka, 400L Pharmacy, UNN: I read every past question available. The exam had completely different topics."</div>
+      </div>
+      <div class="pc rv" style="transition-delay:.2s">
+        <div class="pc-ico">🤯</div>
+        <div class="pc-title">Bare Answers — No Explanation</div>
+        <div class="pc-desc">Even when students find questions, they get answers without understanding. They learn what is correct — never WHY it is correct, and never why each wrong option fails. Memorisation replaces mastery. Exam day exposes the gap.</div>
+        <div class="pc-persona">"Musa, 100L CS, BUK: I kept picking the same wrong option in every mock. Nobody told me why it was wrong."</div>
+      </div>
+      <div class="pc rv" style="transition-delay:.3s">
+        <div class="pc-ico">📉</div>
+        <div class="pc-title">Zero Readiness Feedback</div>
+        <div class="pc-desc">Students study for weeks with no feedback on actual preparedness. No grade prediction. No readiness score. No weak-topic alert. They walk into the hall uncertain — and that uncertainty costs them grades they genuinely deserved.</div>
+        <div class="pc-persona">"Adaobi, 300L Mass Comm, LASU: I studied 12 hours a day. I still failed. I didn't know I had blind spots."</div>
+      </div>
+    </div>
+
+    <!-- TURNING POINT -->
+    <div class="turn-banner rv" style="transition-delay:.4s">
+      <div class="tb-ico">⚡</div>
+      <div class="tb-body">
+        <h3>The <span class="hl">Turning Point</span> Is Here</h3>
+        <p>CollegeCBT doesn't just give you questions — it gives you a <strong>system</strong>. Powered by Anthropic's Claude AI, it generates unlimited, contextual, curriculum-aligned practice questions <em>on demand</em> for every course in Nigeria's 309+ universities, 78+ polytechnics and 163+ colleges of education. It tracks your performance, predicts your grade, and keeps going <strong>until you hit A1</strong>. That is not preparation. <strong>That is a guarantee.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONA SCROLL -->
+<section style="padding:0 0 5rem;position:relative;z-index:1;">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">👥 Who CollegeCBT Serves</div>
+      <h2 class="sec-h" style="font-size:clamp(1.5rem,3vw,2.1rem);">Real Students. <span class="hl">Real Stakes.</span></h2>
+    </div>
+    <div class="persona-scroll">
+      <div class="pcard" style="--avbg:rgba(109,40,217,.15);--avb:rgba(109,40,217,.5);--avbg2:rgba(109,40,217,.13);--avbc:var(--v3);">
+        <div class="pav" style="--avbg:rgba(109,40,217,.18);--avb:rgba(109,40,217,.55);">😰<div class="av-ring"></div></div>
+        <div class="p-name">Chiamaka Okonkwo</div>
+        <div class="p-role">400L Pharmacy · UNN · South-East Nigeria</div>
+        <div class="p-quote">"Four years invested. Final exams in 6 weeks. I need to know exactly when I'm truly ready — not guess and hope."</div>
+        <div class="p-badge">😰 The Anxious Finisher</div>
+      </div>
+      <div class="pcard" style="--avbg:rgba(132,204,22,.1);--avb:rgba(132,204,22,.45);--avbg2:rgba(132,204,22,.1);--avbc:var(--lime2);">
+        <div class="pav" style="--avbg:rgba(132,204,22,.14);--avb:rgba(132,204,22,.5);">🔥<div class="av-ring" style="border-color:rgba(132,204,22,.5);"></div></div>
+        <div class="p-name">Musa Abubakar</div>
+        <div class="p-role">100L Computer Science · BUK · Kano</div>
+        <div class="p-quote">"My family sold land to pay my school fees. I cannot let them down. This degree is not just mine — it belongs to all of us."</div>
+        <div class="p-badge">🔥 First-Gen Trailblazer</div>
+      </div>
+      <div class="pcard" style="--avbg:rgba(245,158,11,.1);--avb:rgba(245,158,11,.45);--avbg2:rgba(245,158,11,.1);--avbc:var(--amb2);">
+        <div class="pav" style="--avbg:rgba(245,158,11,.14);--avb:rgba(245,158,11,.5);">📈<div class="av-ring" style="border-color:rgba(245,158,11,.5);"></div></div>
+        <div class="p-name">Adaobi Chukwuma</div>
+        <div class="p-role">300L Mass Comm · LASU · Lagos</div>
+        <div class="p-quote">"I'm not trying to pass. I'm trying to be first class. GPA is my currency. Every single mark counts toward my future."</div>
+        <div class="p-badge">📈 Strategic Climber</div>
+      </div>
+      <div class="pcard" style="--avbg:rgba(34,211,238,.09);--avb:rgba(34,211,238,.38);--avbg2:rgba(34,211,238,.09);--avbc:#22d3ee;">
+        <div class="pav" style="--avbg:rgba(34,211,238,.13);--avb:rgba(34,211,238,.42);">⚙️<div class="av-ring" style="border-color:rgba(34,211,238,.42);"></div></div>
+        <div class="p-name">Emeka Eze</div>
+        <div class="p-role">HND Civil Engineering · Yaba Tech · Lagos</div>
+        <div class="p-quote">"People underestimate polytechnic students. I will show them what competence actually looks like. Watch me."</div>
+        <div class="p-badge">⚙️ Polytechnic Pragmatist</div>
+      </div>
+      <div class="pcard" style="--avbg:rgba(168,85,247,.1);--avb:rgba(168,85,247,.42);--avbg2:rgba(168,85,247,.1);--avbc:#c084fc;">
+        <div class="pav" style="--avbg:rgba(168,85,247,.14);--avb:rgba(168,85,247,.48);">🏛️<div class="av-ring" style="border-color:rgba(168,85,247,.45);"></div></div>
+        <div class="p-name">Dr. Bello Idris</div>
+        <div class="p-role">Head of Department · Ahmadu Bello University</div>
+        <div class="p-quote">"My department's pass rate dropped 12% last session. I need a tool that works at scale — for 200 students at once."</div>
+        <div class="p-badge">🏛️ Institutional Decision-Maker</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ③ HOW IT WORKS — INTERACTIVE STEP SIMULATOR
+══════════════════════════════════════════════════════ -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">🔄 Step-by-Step Walkthrough</div>
+      <h2 class="sec-h">From Zero to <span class="hl">A1 Grade</span> in 4 Steps</h2>
+      <p class="sec-sub">Click through each step to explore the CollegeCBT platform in action — an interactive simulation of exactly how it works.</p>
+    </div>
+    <div class="steps-outer rv" style="transition-delay:.2s">
+      <!-- PROGRESS BAR -->
+      <div class="spbar" id="spbar">
+        <div class="sp act" id="sp_s1" onclick="gotoStep(1)"><div class="sp-n">1</div><div class="sp-l">Choose Course</div></div>
+        <div class="spc" id="con1"></div>
+        <div class="sp" id="sp_s2" onclick="gotoStep(2)"><div class="sp-n">2</div><div class="sp-l">AI Generates</div></div>
+        <div class="spc" id="con2"></div>
+        <div class="sp" id="sp_s3" onclick="gotoStep(3)"><div class="sp-n">3</div><div class="sp-l">Mock Exam</div></div>
+        <div class="spc" id="con3"></div>
+        <div class="sp" id="sp_s4" onclick="gotoStep(4)"><div class="sp-n">4</div><div class="sp-l">View Results</div></div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step-panel act" id="sp1">
+        <div class="sp-text">
+          <div class="snb">1</div>
+          <h3>Choose Your Institution &amp; Course</h3>
+          <p>Browse the complete catalogue of Nigerian higher education — 550+ institutions across four categories. Select your institution type, faculty, department, course and academic level. CollegeCBT maps directly to your curriculum.</p>
+          <ul>
+            <li>309+ universities (NUC-accredited · Federal, State &amp; Private)</li>
+            <li>78+ polytechnics (NBTE · ND, HND, Post-HND, NID programs)</li>
+            <li>163+ colleges of education (NCCE · NCE &amp; B.Ed.)</li>
+            <li>IEIs &amp; Technical Colleges (Oil &amp; Gas, ICT, Aviation, Film)</li>
+          </ul>
+          <div class="snav">
+            <button class="snb-next" onclick="gotoStep(2)">Next: AI Generates Question →</button>
+          </div>
+        </div>
+        <div class="sp-visual">
+          <div class="sim">
+            <div class="itabs">
+              <button class="itab on" onclick="switchITab(this)">🎓 Universities</button>
+              <button class="itab" onclick="switchITab(this)">⚙️ Polytechnics</button>
+              <button class="itab" onclick="switchITab(this)">📖 COEs</button>
+              <button class="itab" onclick="switchITab(this)">🔬 IEIs</button>
+            </div>
+            <div style="font-size:.72rem;color:var(--mut);margin-bottom:.65rem;">300 Level · Computer Science → Select your course:</div>
+            <div class="cg" id="cgrid">
+              <div class="cgi" onclick="selC(this)">💻 Data Structures</div>
+              <div class="cgi sel" onclick="selC(this)">🗄️ DBMS ✓</div>
+              <div class="cgi" onclick="selC(this)">🌐 Computer Networks</div>
+              <div class="cgi" onclick="selC(this)">🤖 AI &amp; Machine Learning</div>
+              <div class="cgi" onclick="selC(this)">⚙️ Software Engineering</div>
+              <div class="cgi" onclick="selC(this)">🔐 Cyber Security</div>
+            </div>
+            <div class="sel-confirm">✓ Course selected: <strong>DBMS · 300L · University of Nigeria, Nsukka</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="sp2">
+        <div class="sp-text">
+          <div class="snb">2</div>
+          <h3>AI Generates Contextual Questions</h3>
+          <p>Claude AI — one of the world's most capable language models — generates fresh, curriculum-aligned questions tailored to your exact course, topic, level and difficulty. Every question is unique. No repetition. No recycled content.</p>
+          <ul>
+            <li>Unlimited MCQs with full 4-option answer sets</li>
+            <li>Distractor analysis: why each wrong option fails</li>
+            <li>Theory questions with model answers &amp; mark schemes</li>
+            <li>Examiner notes: the deeper concept being tested</li>
+          </ul>
+          <div class="snav">
+            <button class="snb-prev" onclick="gotoStep(1)">← Back</button>
+            <button class="snb-next" onclick="gotoStep(3)">Next: Mock Exam →</button>
+          </div>
+        </div>
+        <div class="sp-visual">
+          <div class="sim">
+            <div class="genbar">
+              <select class="gsel"><option>DBMS · 300L · Medium Difficulty</option></select>
+              <button class="gbtn" onclick="runGen()">🤖 Generate</button>
+            </div>
+            <div class="aiload" id="aiload">
+              <div class="aid"><div class="aidt"></div><div class="aidt"></div><div class="aidt"></div></div>
+              <span>Claude AI generating question…</span>
+            </div>
+            <div class="genout" id="genout">
+              <div class="gqt">In relational database design, which key constraint ensures that a combination of attributes uniquely identifies every row in a table?</div>
+              <div class="gopts">
+                <div class="gopt" onclick="pickOpt(this,'w')"><span class="ok">A</span>Foreign Key</div>
+                <div class="gopt" onclick="pickOpt(this,'c')"><span class="ok">B</span>Composite Primary Key</div>
+                <div class="gopt" onclick="pickOpt(this,'w')"><span class="ok">C</span>Candidate Key</div>
+                <div class="gopt" onclick="pickOpt(this,'w')"><span class="ok">D</span>Index Key</div>
+              </div>
+              <div class="gexp" id="gexp">✅ <strong>B is correct.</strong> A Composite Primary Key uses two or more columns together to uniquely identify each row. ❌ A is a reference key to another table. ❌ C is a candidate — not yet designated primary. ❌ D is a performance optimiser, not a uniqueness enforcer.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" id="sp3">
+        <div class="sp-text">
+          <div class="snb">3</div>
+          <h3>Take a Timed Mock Exam</h3>
+          <p>Simulate real exam pressure with configurable mock sessions. Choose 5–30 questions, set your timer (60/90/120s per question), and receive your official WAEC grade the moment you finish.</p>
+          <ul>
+            <li>Live countdown ring — turns amber at 20s, red at 10s</li>
+            <li>Question navigation strip with colour-coded status</li>
+            <li>Auto-advance on timeout — just like the real CBT</li>
+            <li>WAEC grades: A1 ≥75% through F9 &lt;40%</li>
+          </ul>
+          <div class="snav">
+            <button class="snb-prev" onclick="gotoStep(2)">← Back</button>
+            <button class="snb-next" onclick="gotoStep(4)">Next: View Results →</button>
+          </div>
+        </div>
+        <div class="sp-visual">
+          <div class="sim">
+            <div class="mhd">
+              <div>
+                <div class="minfo">DBMS · 10 Questions · 90s/q</div>
+                <div class="qstrip" id="qstrip"></div>
+              </div>
+              <div class="timer-ring">
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                  <circle class="tr-bg" cx="30" cy="30" r="26"/>
+                  <circle class="tr-fill" id="tring" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="40"/>
+                </svg>
+                <div class="tr-val" id="tval">1:22</div>
+              </div>
+            </div>
+            <div class="q-card" style="margin-bottom:.65rem;">
+              <div class="q-lbl" style="font-size:.66rem;">Q3 OF 10 · DBMS · 300L</div>
+              <div class="q-txt" style="font-size:.8rem;">What does ACID stand for in the context of database transactions?</div>
+              <div class="q-opts" style="margin-top:.55rem;">
+                <div class="qo n" style="font-size:.72rem;"><span class="ok">A</span>Access, Control, Index, Data</div>
+                <div class="qo c" style="font-size:.72rem;"><span class="ok">B</span>Atomicity, Consistency, Isolation, Durability ✓</div>
+                <div class="qo n" style="font-size:.72rem;"><span class="ok">C</span>Accuracy, Clarity, Integrity, Design</div>
+                <div class="qo n" style="font-size:.72rem;"><span class="ok">D</span>Authentication, Cipher, Indexing, Distribution</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-panel" id="sp4">
+        <div class="sp-text">
+          <div class="snb">4</div>
+          <h3>Your AI Grade Report &amp; Readiness Score</h3>
+          <p>The moment your mock ends, CollegeCBT delivers a complete intelligence report — WAEC grade, AI Readiness Score, topic heatmap, national benchmark, and a personalised AI recommendation for precisely what to practise next.</p>
+          <ul>
+            <li>AI Readiness Score (0–100) — composite mastery metric</li>
+            <li>Real exam grade prediction with confidence level</li>
+            <li>Topic heatmap: red = urgent, green = mastered</li>
+            <li>Downloadable Performance Certificate for your portfolio</li>
+          </ul>
+          <div class="snav">
+            <button class="snb-prev" onclick="gotoStep(3)">← Back</button>
+            <button class="snb-next" onclick="scrollTo('benefits')">See Platform Benefits ↓</button>
+          </div>
+        </div>
+        <div class="sp-visual">
+          <div class="sim">
+            <div style="text-align:center;margin-bottom:.9rem;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:.78rem;color:var(--mut);letter-spacing:.1em;">YOUR WAEC GRADE</div>
+              <div id="gradeDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:4rem;color:var(--lime2);line-height:1;">A1</div>
+              <div style="font-size:.8rem;color:var(--mut);">82% · 8 of 10 Correct</div>
+            </div>
+            <div class="mini-gauge" id="gaugeWrap">
+              <div class="mg-bg"></div>
+              <div class="mg-fill" id="mgfill"></div>
+              <div class="mg-val">82</div>
+            </div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut);margin-bottom:.85rem;">AI Readiness Score / 100</div>
+            <div class="mkpi">
+              <div class="mk"><div class="mk-v" style="color:var(--v3);">Top 12%</div><div class="mk-l">National Rank</div></div>
+              <div class="mk"><div class="mk-v" style="color:var(--lime2);">A1</div><div class="mk-l">Predicted Exam Grade</div></div>
+            </div>
+            <div style="padding:.6rem;border-radius:8px;background:rgba(109,40,217,.1);border:1px solid rgba(109,40,217,.2);font-size:.73rem;color:var(--v3);line-height:1.55;">
+              🤖 <strong>AI Insight:</strong> Normalisation (45%) is your only weak spot. 3 focused sessions will lock in your A1.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /steps-outer -->
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ④ ANIMATED LIVE CHARTS
+══════════════════════════════════════════════════════ -->
+<section class="sec-alt" id="data">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">📊 Live Performance Intelligence</div>
+      <h2 class="sec-h">What <span class="hl">Consistent AI Practice</span> Does</h2>
+      <p class="sec-sub">Real performance trajectories from the CollegeCBT RaaS engine — the data behind the guarantee.</p>
+    </div>
+
+    <!-- BAR CHART — Grade Trajectory -->
+    <div class="chart-box rv" style="transition-delay:.15s">
+      <div class="chart-meta">
+        <div class="chart-ttl">📈 Grade Trajectory — 10-Week Mock Exam History</div>
+        <div class="legend">
+          <div class="li"><div class="ld" style="background:var(--v3);"></div>Mock Score</div>
+          <div class="li"><div class="ld" style="background:var(--lime2);opacity:.5;border:1px dashed var(--lime2);"></div>75% A1 Target</div>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <div class="target-line"></div>
+        <div class="bar-chart" id="barChart">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:0 .25rem;margin-top:1.75rem;flex-wrap:wrap;gap:.5rem;">
+        <div style="font-size:.74rem;color:var(--mut);">Week 1: 41% (D7) → Week 10: 82% (A1) — <span style="color:var(--lime2);font-weight:600;">+41% improvement in 10 weeks</span></div>
+        <div style="font-size:.74rem;color:var(--v3);font-weight:600;">Powered by Claude AI · Unlimited Practice</div>
+      </div>
+    </div>
+
+    <!-- DONUT — Topic Mastery Breakdown -->
+    <div class="rv" style="transition-delay:.25s">
+      <div class="donut-grid">
+        <div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1.1rem;">🎯 Topic Mastery Breakdown — DBMS 300L</div>
+          <div class="di" v-for="t in topics">
+            <div class="di-lbl" id="dl0">Database Normalization</div>
+            <div class="di-bar"><div class="di-fill" id="df0" style="width:0%;background:var(--rose2);"></div></div>
+            <div class="di-pct" id="dp0" style="color:var(--rose2);">45%</div>
+          </div>
+          <div class="di">
+            <div class="di-lbl">SQL Queries</div>
+            <div class="di-bar"><div class="di-fill" id="df1" style="width:0%;background:var(--amb2);"></div></div>
+            <div class="di-pct" id="dp1" style="color:var(--amb2);">61%</div>
+          </div>
+          <div class="di">
+            <div class="di-lbl">ACID Properties</div>
+            <div class="di-bar"><div class="di-fill" id="df2" style="width:0%;background:var(--lime2);"></div></div>
+            <div class="di-pct" id="dp2" style="color:var(--lime2);">88%</div>
+          </div>
+          <div class="di">
+            <div class="di-lbl">ER Diagram Design</div>
+            <div class="di-bar"><div class="di-fill" id="df3" style="width:0%;background:var(--lime2);"></div></div>
+            <div class="di-pct" id="dp3" style="color:var(--lime2);">80%</div>
+          </div>
+          <div class="di">
+            <div class="di-lbl">Indexing &amp; Optimisation</div>
+            <div class="di-bar"><div class="di-fill" id="df4" style="width:0%;background:var(--amb2);"></div></div>
+            <div class="di-pct" id="dp4" style="color:var(--amb2);">67%</div>
+          </div>
+          <div class="di">
+            <div class="di-lbl">Transaction Management</div>
+            <div class="di-bar"><div class="di-fill" id="df5" style="width:0%;background:var(--lime2);"></div></div>
+            <div class="di-pct" id="dp5" style="color:var(--lime2);">91%</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1rem;text-align:center;">Overall Readiness</div>
+          <div class="dw">
+            <svg width="190" height="190" viewBox="0 0 190 190">
+              <circle cx="95" cy="95" r="80" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
+              <circle id="donutRing" cx="95" cy="95" r="80" fill="none" stroke="var(--lime2)" stroke-width="14" stroke-linecap="round"
+                stroke-dasharray="502.7" stroke-dashoffset="502.7" style="transition:stroke-dashoffset 1.8s ease;"/>
+            </svg>
+            <div class="dc">
+              <div class="dc-pct" id="donutPct">0%</div>
+              <div class="dc-sub">AI Readiness</div>
+            </div>
+          </div>
+          <div style="padding:.9rem;border-radius:12px;background:rgba(132,204,22,.06);border:1px solid rgba(132,204,22,.18);font-size:.82rem;color:#a3e635;line-height:1.6;text-align:center;">
+            📈 At current pace you'll reach <strong>85+</strong> Readiness Score within <strong>2 weeks</strong> of consistent daily practice.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑤ BENEFITS & COMPETITIVE EDGE
+══════════════════════════════════════════════════════ -->
+<section class="sec" id="benefits">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">💎 Platform Benefits</div>
+      <h2 class="sec-h">Why CollegeCBT Is <span class="hl">Incomparable</span></h2>
+      <p class="sec-sub">Every feature is built around a single obsession: getting you to 75% and beyond — not someday, but before your exam date.</p>
+    </div>
+    <div class="ben-grid">
+      <div class="bcard rv" style="--bib:rgba(109,40,217,.15);--bibr:rgba(109,40,217,.28);transition-delay:.05s">
+        <div class="bglow"></div>
+        <div class="b-ico">🤖</div>
+        <div class="b-title">Claude AI — World-Class Intelligence</div>
+        <div class="b-desc">Powered by Anthropic's Claude — one of the most advanced AI models on earth. Every question is generated with pedagogical precision, Bloom's Taxonomy alignment, and examiner-level insight. No template recycling. Ever.</div>
+        <div class="b-tag" style="background:rgba(109,40,217,.15);color:var(--v3);border:1px solid rgba(109,40,217,.25);">Infinite Questions</div>
+      </div>
+      <div class="bcard rv" style="--bib:rgba(132,204,22,.12);--bibr:rgba(132,204,22,.25);transition-delay:.1s">
+        <div class="bglow"></div>
+        <div class="b-ico">🎯</div>
+        <div class="b-title">The 75% Grade Guarantee</div>
+        <div class="b-desc">No other Nigerian platform makes this commitment. CollegeCBT tracks your Readiness Score and keeps generating targeted practice until you clear the A1 threshold. The guarantee is not marketing — it is the product.</div>
+        <div class="b-tag" style="background:rgba(132,204,22,.12);color:var(--lime2);border:1px solid rgba(132,204,22,.22);">Results-as-a-Service</div>
+      </div>
+      <div class="bcard rv" style="--bib:rgba(245,158,11,.12);--bibr:rgba(245,158,11,.25);transition-delay:.15s">
+        <div class="bglow"></div>
+        <div class="b-ico">📊</div>
+        <div class="b-title">Real-Time Grade Prediction</div>
+        <div class="b-desc">Your AI Readiness Score (0–100) updates after every session. It tells you not just your current level but your predicted exam grade — and the exact number of correct answers standing between you and A1.</div>
+        <div class="b-tag" style="background:rgba(245,158,11,.12);color:var(--amb2);border:1px solid rgba(245,158,11,.22);">Predictive Analytics</div>
+      </div>
+      <div class="bcard rv" style="--bib:rgba(14,165,233,.12);--bibr:rgba(14,165,233,.25);transition-delay:.2s">
+        <div class="bglow"></div>
+        <div class="b-ico">📚</div>
+        <div class="b-title">Full Nigerian Curriculum Coverage</div>
+        <div class="b-desc">550+ institutions. Every course. Every level. Whether you're a 100L student at BUK, an HND candidate at Yaba Tech, or a postgraduate at OAU — your exact curriculum is already mapped and live inside CollegeCBT.</div>
+        <div class="b-tag" style="background:rgba(14,165,233,.12);color:var(--sky);border:1px solid rgba(14,165,233,.22);">550+ Institutions</div>
+      </div>
+      <div class="bcard rv" style="--bib:rgba(168,85,247,.12);--bibr:rgba(168,85,247,.25);transition-delay:.25s">
+        <div class="bglow"></div>
+        <div class="b-ico">📝</div>
+        <div class="b-title">Theory Questions + Model Answers</div>
+        <div class="b-desc">Beyond MCQ. CollegeCBT generates full theory questions with structured model answers, key marking points, mark schemes, and examiner commentary. Preparation for every question type your lecturer can throw at you.</div>
+        <div class="b-tag" style="background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.22);">MCQ + Theory</div>
+      </div>
+      <div class="bcard rv" style="--bib:rgba(225,29,72,.1);--bibr:rgba(225,29,72,.22);transition-delay:.3s">
+        <div class="bglow"></div>
+        <div class="b-ico">💰</div>
+        <div class="b-title">₦0 to Start — Nigeria-Native Payments</div>
+        <div class="b-desc">Start completely free. Upgrade for ₦5,000/semester — less than a single textbook. Pay via Paystack: card, bank transfer, or USSD. No dollar conversion. No international card required. Built for Nigerian students, not around them.</div>
+        <div class="b-tag" style="background:rgba(225,29,72,.1);color:#fb7185;border:1px solid rgba(225,29,72,.2);">₦5,000/semester</div>
+      </div>
+    </div>
+
+    <!-- COMPETITIVE TABLE -->
+    <div class="rv" style="transition-delay:.35s">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-top:3rem;margin-bottom:0;">CollegeCBT vs. <span class="hl-amb">The Alternatives</span></h3>
+      <div class="ct">
+        <div class="cth">
+          <span>Feature</span>
+          <span>CollegeCBT</span>
+          <span>Past Questions</span>
+          <span>Generic Apps</span>
+        </div>
+        <div class="ctr hl"><span>AI-Generated Questions</span><span class="brand">✓ Unlimited</span><span class="no">✗</span><span class="no">✗</span></div>
+        <div class="ctr"><span>Distractor Explanations</span><span class="brand">✓ Full</span><span class="no">✗</span><span class="no">Partial</span></div>
+        <div class="ctr hl"><span>Theory + Model Answers</span><span class="brand">✓</span><span class="no">✗</span><span class="no">✗</span></div>
+        <div class="ctr"><span>AI Readiness Score</span><span class="brand">✓ Live</span><span class="no">✗</span><span class="no">✗</span></div>
+        <div class="ctr hl"><span>Grade Prediction</span><span class="brand">✓</span><span class="no">✗</span><span class="no">✗</span></div>
+        <div class="ctr"><span>Nigerian Curriculum Aligned</span><span class="brand">✓ 550+</span><span class="yes">Partial</span><span class="no">✗</span></div>
+        <div class="ctr hl"><span>WAEC-Style Mock Exams</span><span class="brand">✓</span><span class="no">✗</span><span class="yes">Partial</span></div>
+        <div class="ctr"><span>Paystack / USSD Payment</span><span class="brand">✓</span><span class="no">N/A</span><span class="no">✗</span></div>
+        <div class="ctr hl"><span>Free Starting Tier</span><span class="brand">✓ Forever Free</span><span class="yes">Free</span><span class="yes">Free</span></div>
+        <div class="ctr"><span>Grade Guarantee</span><span class="brand">✓ 75%+</span><span class="no">✗</span><span class="no">✗</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑥ ANNOTATED SVG — PLATFORM ECOSYSTEM ARCHITECTURE
+══════════════════════════════════════════════════════ -->
+<section class="sec-alt" id="architecture">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">🏗️ Platform Architecture</div>
+      <h2 class="sec-h">How CollegeCBT <span class="hl">Works Inside</span></h2>
+      <p class="sec-sub">A live annotated view of the CollegeCBT intelligence pipeline — from student input to AI-generated outcome.</p>
+    </div>
+    <div class="eco-svg-wrap rv" style="transition-delay:.2s">
+      <svg class="eco-svg" viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" style="max-width:780px;width:100%;">
+        <defs>
+          <linearGradient id="gv" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6D28D9"/><stop offset="100%" style="stop-color:#7C3AED"/></linearGradient>
+          <linearGradient id="gl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#65A30D"/><stop offset="100%" style="stop-color:#84CC16"/></linearGradient>
+          <linearGradient id="ga" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#D97706"/><stop offset="100%" style="stop-color:#F59E0B"/></linearGradient>
+          <linearGradient id="gs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0EA5E9"/><stop offset="100%" style="stop-color:#22D3EE"/></linearGradient>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="rgba(167,139,250,.6)"/></marker>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="780" height="420" rx="16" fill="rgba(22,15,51,.6)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+
+        <!-- ── STUDENT NODE ── -->
+        <rect x="20" y="155" width="130" height="110" rx="12" fill="url(#gv)" filter="url(#glow)" opacity=".9"/>
+        <text x="85" y="195" text-anchor="middle" fill="white" font-size="22">👤</text>
+        <text x="85" y="218" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">STUDENT</text>
+        <text x="85" y="234" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9" font-family="DM Sans,sans-serif">Selects course</text>
+        <text x="85" y="248" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9" font-family="DM Sans,sans-serif">&amp; difficulty</text>
+
+        <!-- ── CURRICULUM ENGINE ── -->
+        <rect x="190" y="60" width="145" height="100" rx="12" fill="rgba(14,165,233,.2)" stroke="rgba(14,165,233,.4)" stroke-width="1.5"/>
+        <text x="262" y="96" text-anchor="middle" fill="white" font-size="18">📚</text>
+        <text x="262" y="116" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">CURRICULUM</text>
+        <text x="262" y="131" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">ENGINE</text>
+        <text x="262" y="148" text-anchor="middle" fill="#22D3EE" font-size="8.5" font-family="DM Sans,sans-serif">550+ Institutions</text>
+
+        <!-- ── CLAUDE AI ENGINE ── -->
+        <rect x="310" y="155" width="160" height="110" rx="14" fill="rgba(109,40,217,.3)" stroke="rgba(167,139,250,.5)" stroke-width="2"/>
+        <rect x="310" y="155" width="160" height="3" rx="1.5" fill="url(#gv)"/>
+        <text x="390" y="197" text-anchor="middle" fill="white" font-size="22">🤖</text>
+        <text x="390" y="218" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">CLAUDE AI</text>
+        <text x="390" y="233" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">Question Generation</text>
+        <text x="390" y="248" text-anchor="middle" fill="#A78BFA" font-size="8.5" font-family="DM Sans,sans-serif">Anthropic · claude-sonnet</text>
+
+        <!-- ── WAEC GRADER ── -->
+        <rect x="190" y="260" width="145" height="100" rx="12" fill="rgba(132,204,22,.15)" stroke="rgba(132,204,22,.35)" stroke-width="1.5"/>
+        <text x="262" y="299" text-anchor="middle" fill="white" font-size="18">🏆</text>
+        <text x="262" y="319" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">WAEC GRADER</text>
+        <text x="262" y="334" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">A1 → F9 Scale</text>
+        <text x="262" y="350" text-anchor="middle" fill="#BEF264" font-size="8.5" font-family="DM Sans,sans-serif">WAEC · NECO · JAMB</text>
+
+        <!-- ── RESULTS INTELLIGENCE ── -->
+        <rect x="520" y="60" width="145" height="100" rx="12" fill="rgba(245,158,11,.15)" stroke="rgba(245,158,11,.35)" stroke-width="1.5"/>
+        <text x="592" y="96" text-anchor="middle" fill="white" font-size="18">📊</text>
+        <text x="592" y="116" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">RESULTS</text>
+        <text x="592" y="131" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">INTELLIGENCE</text>
+        <text x="592" y="148" text-anchor="middle" fill="#F59E0B" font-size="8.5" font-family="DM Sans,sans-serif">Grade Prediction</text>
+
+        <!-- ── DASHBOARD ── -->
+        <rect x="520" y="260" width="145" height="100" rx="12" fill="rgba(168,85,247,.15)" stroke="rgba(168,85,247,.35)" stroke-width="1.5"/>
+        <text x="592" y="299" text-anchor="middle" fill="white" font-size="18">📱</text>
+        <text x="592" y="319" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">STUDENT</text>
+        <text x="592" y="334" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">DASHBOARD</text>
+        <text x="592" y="350" text-anchor="middle" fill="#c084fc" font-size="8.5" font-family="DM Sans,sans-serif">Heatmap · Readiness</text>
+
+        <!-- ── PAYSTACK ── -->
+        <rect x="650" y="155" width="115" height="110" rx="12" fill="rgba(37,211,102,.12)" stroke="rgba(37,211,102,.3)" stroke-width="1.5"/>
+        <text x="707" y="197" text-anchor="middle" fill="white" font-size="18">💳</text>
+        <text x="707" y="218" text-anchor="middle" fill="white" font-size="11" font-family="DM Sans,sans-serif" font-weight="700">PAYSTACK</text>
+        <text x="707" y="233" text-anchor="middle" fill="rgba(255,255,255,.65)" font-size="9" font-family="DM Sans,sans-serif">Card · Bank</text>
+        <text x="707" y="248" text-anchor="middle" fill="#25d366" font-size="8.5" font-family="DM Sans,sans-serif">Transfer · USSD</text>
+
+        <!-- ── ARROWS ── -->
+        <!-- Student → Curriculum -->
+        <path d="M150,175 L188,130" stroke="rgba(167,139,250,.55)" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <!-- Student → AI Claude -->
+        <path d="M150,210 L308,210" stroke="rgba(167,139,250,.7)" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+        <!-- Curriculum → Claude -->
+        <path d="M262,160 L312,190" stroke="rgba(34,211,238,.5)" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <!-- Claude → Results Intelligence -->
+        <path d="M470,185 L518,115" stroke="rgba(167,139,250,.6)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+        <!-- Claude → WAEC Grader -->
+        <path d="M470,235 L310,290" stroke="rgba(132,204,22,.55)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+        <!-- WAEC → Dashboard -->
+        <path d="M335,310 L518,310" stroke="rgba(132,204,22,.5)" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <!-- Results → Dashboard -->
+        <path d="M592,160 L592,258" stroke="rgba(245,158,11,.5)" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <!-- Dashboard → Paystack -->
+        <path d="M665,310 L707,267" stroke="rgba(37,211,102,.5)" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <!-- Student → Paystack (subscription) -->
+        <path d="M150,245 L648,245" stroke="rgba(37,211,102,.3)" stroke-width="1" fill="none" marker-end="url(#arr)" stroke-dasharray="5,4"/>
+
+        <!-- Annotation labels -->
+        <text x="213" y="210" fill="rgba(167,139,250,.8)" font-size="8" font-family="DM Sans,sans-serif">Course Request</text>
+        <text x="400" y="173" fill="rgba(245,158,11,.8)" font-size="8" font-family="DM Sans,sans-serif">AI Output</text>
+        <text x="340" y="268" fill="rgba(132,204,22,.8)" font-size="8" font-family="DM Sans,sans-serif">Graded Result</text>
+        <text x="160" y="252" fill="rgba(37,211,102,.6)" font-size="7.5" font-family="DM Sans,sans-serif">Subscription (₦5k)</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑦ INSPIRATIONAL QUOTES TICKER
+══════════════════════════════════════════════════════ -->
+<section class="quote-sec" id="quotes">
+  <div class="wrap">
+    <div class="sec-tag" style="justify-content:center;">💬 Words That Move Mountains</div>
+    <div class="q-display" id="qdisplay"></div>
+    <div class="q-author" id="qauthor"></div>
+    <div class="q-dots" id="qdots"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑧ E-WIN ECOSYSTEM
+══════════════════════════════════════════════════════ -->
+<section class="sec" id="ecosystem">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">🌍 E-WIN Project Ecosystem</div>
+      <h2 class="sec-h">CollegeCBT Is One <span class="hl">Powerful Node</span> in a Larger Vision</h2>
+      <p class="sec-sub">The E-WIN Project is Nigeria's most ambitious digital empowerment network — six interconnected platforms creating education, income, and opportunity at scale.</p>
+    </div>
+    <div class="eco-cards">
+      <div class="ecard main rv" style="transition-delay:.05s">
+        <div class="ec-ico">🎓</div>
+        <div class="ec-name">CollegeCBT</div>
+        <div class="ec-desc">Nigeria's #1 AI exam intelligence platform for higher education. RaaS-powered. Grade-guaranteed. Curriculum-aligned.</div>
+        <div class="ec-tag" style="background:rgba(109,40,217,.2);color:var(--v3);border:1px solid rgba(109,40,217,.35);">★ Featured Platform</div>
+      </div>
+      <div class="ecard rv" style="transition-delay:.1s">
+        <div class="ec-ico">📝</div>
+        <div class="ec-name">DealxTest</div>
+        <div class="ec-desc">AI-powered CBT engine for Nigerian secondary school students. WAEC · NECO · JAMB preparation with live results tracking.</div>
+        <div class="ec-tag" style="background:rgba(14,165,233,.1);color:var(--sky);border:1px solid rgba(14,165,233,.25);">Secondary Education</div>
+      </div>
+      <div class="ecard rv" style="transition-delay:.15s">
+        <div class="ec-ico">🏫</div>
+        <div class="ec-name">DealxExam</div>
+        <div class="ec-desc">Undergraduate exam preparation platform — the predecessor engine that powers CollegeCBT's AI question infrastructure.</div>
+        <div class="ec-tag" style="background:rgba(132,204,22,.1);color:var(--lime2);border:1px solid rgba(132,204,22,.22);">Undergraduate</div>
+      </div>
+      <div class="ecard rv" style="transition-delay:.2s">
+        <div class="ec-ico">📄</div>
+        <div class="ec-name">DealxAkademyxWritin</div>
+        <div class="ec-desc">Academic writing intelligence for Nigerian scholars — thesis, FYP, lab reports. Five specialised AI agents. APA/MLA/IEEE formatting.</div>
+        <div class="ec-tag" style="background:rgba(245,158,11,.1);color:var(--amb2);border:1px solid rgba(245,158,11,.22);">Academic Writing</div>
+      </div>
+      <div class="ecard rv" style="transition-delay:.25s">
+        <div class="ec-ico">💼</div>
+        <div class="ec-name">DealxBiznezWritin</div>
+        <div class="ec-desc">Business writing RaaS for Nigerian entrepreneurs. MACJ framework. Proposals, pitches, business plans — professionally written by AI.</div>
+        <div class="ec-tag" style="background:rgba(225,29,72,.1);color:#fb7185;border:1px solid rgba(225,29,72,.2);">Business Writing</div>
+      </div>
+      <div class="ecard rv" style="transition-delay:.3s">
+        <div class="ec-ico">🤝</div>
+        <div class="ec-name">NexusRaaS</div>
+        <div class="ec-desc">Business advisory and mentorship platform for Nigerian professionals. 8-panel mentee hub. NIN-verified mentors. NGN subscriptions.</div>
+        <div class="ec-tag" style="background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.22);">Mentorship</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑨ REVENUE STREAMS
+══════════════════════════════════════════════════════ -->
+<section class="sec-alt" id="revenue">
+  <div class="wrap">
+    <div class="rv">
+      <div class="sec-tag">💰 Revenue &amp; Earning Streams</div>
+      <h2 class="sec-h">Multiple <span class="hl-amb">Income Streams</span> — Scalable &amp; Sustainable</h2>
+      <p class="sec-sub">CollegeCBT generates recurring revenue through five distinct streams — and creates earning opportunities for educators, tutors and institutional partners across Nigeria.</p>
+    </div>
+    <div class="rev-grid">
+      <div class="rcard rv" style="transition-delay:.05s">
+        <div class="r-ico">📱</div>
+        <div class="r-body">
+          <h4>Student Subscriptions (B2C)</h4>
+          <p>Direct student plans — Free (₦0), Pro Student (₦5,000/semester), Annual Pro (₦8,500/year). Low barrier to entry, high conversion through the grade guarantee promise.</p>
+          <div class="r-amt">₦5,000 <span style="font-size:.7rem;color:var(--mut);font-family:'DM Sans',sans-serif;">per student/semester</span></div>
+        </div>
+      </div>
+      <div class="rcard rv" style="transition-delay:.1s">
+        <div class="r-ico">🏛️</div>
+        <div class="r-body">
+          <h4>Institutional Licensing (B2B)</h4>
+          <p>Department-level (₦25,000/200 students/year) and institution-wide (₦75,000/unlimited) licensing. Single contract = hundreds of paying student seats. Highest revenue per transaction.</p>
+          <div class="r-amt">₦75,000 <span style="font-size:.7rem;color:var(--mut);font-family:'DM Sans',sans-serif;">per institution/year</span></div>
+        </div>
+      </div>
+      <div class="rcard rv" style="transition-delay:.15s">
+        <div class="r-ico">🎓</div>
+        <div class="r-body">
+          <h4>Tutor &amp; Educator Partnerships</h4>
+          <p>Tutors and educators can become CollegeCBT Certified Partners — white-labelling the platform for their students and earning a revenue share on every subscription they generate.</p>
+          <div class="r-amt">30% <span style="font-size:.7rem;color:var(--mut);font-family:'DM Sans',sans-serif;">revenue share for partners</span></div>
+        </div>
+      </div>
+      <div class="rcard rv" style="transition-delay:.2s">
+        <div class="r-ico">📢</div>
+        <div class="r-body">
+          <h4>Referral &amp; Affiliate Programme</h4>
+          <p>Any student, parent or campus influencer can earn ₦1,500 per verified paid referral. Zero barrier. Zero cost. Built-in viral loop that rewards community-driven growth organically.</p>
+          <div class="r-amt">₦1,500 <span style="font-size:.7rem;color:var(--mut);font-family:'DM Sans',sans-serif;">per verified referral</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Projection Bars -->
+    <div class="rv" style="transition-delay:.3s">
+      <div style="font-weight:700;font-size:1rem;margin-top:2.5rem;margin-bottom:.5rem;">📈 3-Year Revenue Projection (ARR)</div>
+      <div style="font-size:.83rem;color:var(--mut);margin-bottom:1rem;">Conservative model based on 0.5% market penetration growing to 4% by Year 3.</div>
+      <div style="padding:1.5rem;border-radius:16px;background:var(--g);border:1px solid var(--gb);">
+        <div class="proj-bars" id="projBars">
+          <!-- rendered by JS -->
+        </div>
+        <div style="display:flex;justify-content:space-around;margin-top:.5rem;padding:0 .5rem;">
+          <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--mut);">Year 1</div><div style="font-size:.72rem;color:var(--mut);">~2,500 students</div></div>
+          <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--mut);">Year 2</div><div style="font-size:.72rem;color:var(--mut);">~24,000 students</div></div>
+          <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--mut);">Year 3</div><div style="font-size:.72rem;color:var(--mut);">~100,000 students</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ⑩ CLOSING CTA — CINEMATIC
+══════════════════════════════════════════════════════ -->
+<section class="closing" id="start">
+  <div class="cl-inner rv">
+    <span class="cl-ico">🚀</span>
+    <h2 class="cl-h">Your Grade Is Already<br/><span class="hl">Written.</span><br/>Go Unlock It.</h2>
+    <p class="cl-sub">
+      Two million Nigerian students compete for the same grades every semester. The ones who win are not simply the most intelligent — they are the best prepared.<br><br>
+      CollegeCBT gives you an unfair, AI-powered advantage. Unlimited practice. Real explanations. A grade prediction that tells you exactly where you stand. A guarantee that stays with you until you cross the finish line.<br><br>
+      <strong>This is not a study app. This is your results engine.</strong>
+    </p>
+    <div class="cl-ctas">
+      <a href="https://collegecbt.ewinproject.org" target="_blank" class="btn btn-v" style="font-size:1.05rem;padding:1rem 2.5rem;">
+        🎓 Start Free at collegecbt.ewinproject.org →
+      </a>
+      <a href="https://wa.me/2349025152818" target="_blank" class="btn btn-wa" style="font-size:1.05rem;padding:1rem 2rem;">
+        💬 WhatsApp Us
+      </a>
+    </div>
+    <div class="contact-bar">
+      <div class="ci">🌐 <strong>Platform:</strong> <a href="https://collegecbt.ewinproject.org" target="_blank">collegecbt.ewinproject.org</a></div>
+      <div class="ci">💬 <strong>WhatsApp Only:</strong> <a href="https://wa.me/2349025152818">+234-902-515-2818</a></div>
+      <div class="ci">🏢 <strong>Network:</strong> <span style="color:var(--lime3);">E-WIN Project · Nigeria</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════ -->
+<footer>
+  <div style="max-width:1120px;margin:0 auto;">
+    <div class="fl">CollegeCBT</div>
+    <div style="color:var(--mut);font-size:.8rem;margin-bottom:.5rem;">Results-as-a-Service · E-WIN Project Ecosystem · Nigeria</div>
+    <div class="fc">© 2025 CollegeCBT · collegecbt.ewinproject.org · All rights reserved · Powered by Anthropic Claude AI</div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+/* ── SCROLL PROGRESS ── */
+window.addEventListener('scroll',()=>{
+  const p=document.getElementById('sprog');
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  p.style.width=pct+'%';
+});
+
+/* ── SCROLL TO ── */
+function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+
+/* ── INTERSECTION OBSERVER — reveal animations ── */
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');triggerDataAnimations(e.target);}});
+},{threshold:0.12});
+document.querySelectorAll('.rv,.rl,.rr').forEach(el=>observer.observe(el));
+
+/* ── COUNTER ANIMATION ── */
+function animCounter(id,target,suffix,duration=1800){
+  const el=document.getElementById(id);if(!el)return;
+  let start=null;const startVal=0;
+  const step=(ts)=>{
+    if(!start)start=ts;
+    const prog=Math.min((ts-start)/duration,1);
+    const ease=1-Math.pow(1-prog,3);
+    const val=Math.round(startVal+(target-startVal)*ease);
+    el.textContent=val.toLocaleString()+suffix;
+    if(prog<1)requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ── BAR CHART ── */
+const grades=[41,48,53,59,62,67,70,74,78,82];
+const labels=['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8','Wk9','Wk10'];
+let barsDone=false;
+function buildBars(){
+  if(barsDone)return;barsDone=true;
+  const c=document.getElementById('barChart');
+  if(!c)return;
+  c.innerHTML='';
+  grades.forEach((g,i)=>{
+    const col=g>=75?'linear-gradient(0deg,#65A30D,#84CC16)':'linear-gradient(0deg,#6D28D9,#A78BFA)';
+    const gradeStr=g>=75?'A1':g>=70?'B2':g>=65?'B3':g>=60?'C4':g>=50?'C6':g>=45?'D7':'E8';
+    const div=document.createElement('div');
+    div.className='bg';
+    div.innerHTML=`<div class="bc" data-v="${g}% · ${gradeStr}" style="height:0%;background:${col};transition:height 1.2s cubic-bezier(.34,1.56,.64,1);transition-delay:${i*0.08}s;"></div>
+      <div class="bl">${labels[i]}</div><div class="bsub">${gradeStr}</div>`;
+    c.appendChild(div);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.bc').forEach((b,i)=>{
+      b.style.height=(grades[i]/100*100)+'%';
+    });
+  },100);
+}
+
+/* ── DONUT CHART ── */
+let donutDone=false;
+function animDonut(){
+  if(donutDone)return;donutDone=true;
+  const r=document.getElementById('donutRing');
+  const p=document.getElementById('donutPct');
+  if(!r||!p)return;
+  const circumference=502.7;
+  const pct=0.78;
+  setTimeout(()=>{
+    r.style.strokeDashoffset=circumference*(1-pct);
+  },200);
+  let count=0;
+  const interval=setInterval(()=>{
+    count+=1;
+    if(count>78){clearInterval(interval);return;}
+    p.textContent=count+'%';
+  },20);
+}
+
+/* ── TOPIC BARS ── */
+const topicData=[
+  {id:'df0',pct:45},{id:'df1',pct:61},{id:'df2',pct:88},
+  {id:'df3',pct:80},{id:'df4',pct:67},{id:'df5',pct:91}
+];
+let topicsDone=false;
+function animTopics(){
+  if(topicsDone)return;topicsDone=true;
+  topicData.forEach((t,i)=>{
+    const el=document.getElementById(t.id);
+    if(!el)return;
+    setTimeout(()=>{el.style.width=t.pct+'%';},i*120);
+  });
+}
+
+/* ── REVENUE PROJECTION BARS ── */
+const projData=[
+  {label:'Year 1',val:'₦12.5M',h:25,col:'linear-gradient(0deg,#D97706,#F59E0B)'},
+  {label:'Year 2',val:'₦120M',h:60,col:'linear-gradient(0deg,#D97706,#F59C2E)'},
+  {label:'Year 3',val:'₦500M+',h:100,col:'linear-gradient(0deg,#B45309,#FBBF24)'},
+];
+let projDone=false;
+function buildProjBars(){
+  if(projDone)return;projDone=true;
+  const c=document.getElementById('projBars');
+  if(!c)return;
+  c.innerHTML='';
+  projData.forEach((d,i)=>{
+    const g=document.createElement('div');
+    g.className='pb-group';
+    g.innerHTML=`<div class="pb-val">${d.val}</div>
+      <div class="pb-bar" style="height:0%;background:${d.col};transition:height 1.3s cubic-bezier(.34,1.56,.64,1);transition-delay:${i*0.15}s;border-radius:7px 7px 0 0;"></div>
+      <div class="pb-yr">${d.label}</div>`;
+    c.appendChild(g);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.pb-bar').forEach((b,i)=>{
+      b.style.height=projData[i].h+'%';
+    });
+  },100);
+}
+
+/* ── TRIGGER DATA ANIMATIONS ON SCROLL ── */
+function triggerDataAnimations(el){
+  if(el.id==='s1'||el.closest&&el.closest('#home')){
+    setTimeout(()=>{
+      animCounter('s1',550,'+');
+      animCounter('s2',2,'M+');
+      animCounter('s3',75,'%');
+      animCounter('s4',5,'K');
+    },300);
+  }
+  if(el.closest&&el.closest('#data')){
+    buildBars();animDonut();animTopics();
+  }
+  if(el.closest&&el.closest('#revenue')){buildProjBars();}
+}
+
+/* fire counters on page load for hero */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    animCounter('s1',550,'+');
+    animCounter('s2',2,'M+');
+    animCounter('s3',75,'%');
+    animCounter('s4',5,'K');
+  },800);
+});
+
+/* ── STEP SIMULATOR ── */
+let curStep=1;
+const totalSteps=4;
+function gotoStep(n){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('act'));
+  document.getElementById('sp'+n).classList.add('act');
+  for(let i=1;i<=totalSteps;i++){
+    const s=document.getElementById('sp_s'+i);
+    s.classList.remove('act','done');
+    if(i===n)s.classList.add('act');
+    else if(i<n)s.classList.add('done');
+  }
+  for(let i=1;i<totalSteps;i++){
+    const c=document.getElementById('con'+i);
+    if(c){c.classList.toggle('fill',i<n);}
+  }
+  curStep=n;
+  /* Trigger gauge on step 4 */
+  if(n===4){
+    setTimeout(()=>{
+      const m=document.getElementById('mgfill');
+      if(m)m.style.transform='rotate(calc(-0.9turn * (1 - 0.82)))';
+    },400);
+  }
+}
+
+/* ── CURRICULUM TAB SIM ── */
+function switchITab(el){
+  document.querySelectorAll('.itab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+function selC(el){
+  const parent=el.closest('.cg');
+  parent.querySelectorAll('.cgi').forEach(c=>{c.classList.remove('sel');c.textContent=c.textContent.replace(' ✓','');});
+  el.classList.add('sel');
+  const base=el.textContent.trim();
+  el.textContent=base+' ✓';
+}
+
+/* ── AI GEN SIMULATOR ── */
+function runGen(){
+  const load=document.getElementById('aiload');
+  const out=document.getElementById('genout');
+  const exp=document.getElementById('gexp');
+  load.style.display='flex';out.style.display='none';exp.style.display='none';
+  document.querySelectorAll('.gopt').forEach(o=>{o.classList.remove('gc','gw');});
+  setTimeout(()=>{load.style.display='none';out.style.display='block';},1600);
+}
+function pickOpt(el,type){
+  document.querySelectorAll('.gopt').forEach(o=>o.classList.remove('gc','gw'));
+  el.classList.add(type==='c'?'gc':'gw');
+  document.getElementById('gexp').style.display='block';
+}
+
+/* ── MOCK EXAM STRIP ── */
+(function buildStrip(){
+  const strip=document.getElementById('qstrip');
+  if(!strip)return;
+  const states=['ac','ac','cur','','','','','','',''];
+  states.forEach((st,i)=>{
+    const el=document.createElement('div');
+    el.className='qn'+(st?' '+st:'');
+    el.textContent=i+1;
+    strip.appendChild(el);
+  });
+})();
+
+/* ── MOCK TIMER ANIMATION ── */
+(function animTimer(){
+  const ring=document.getElementById('tring');
+  const val=document.getElementById('tval');
+  if(!ring||!val)return;
+  let seconds=82;
+  const total=90;
+  const circumference=163.4;
+  setInterval(()=>{
+    seconds--;
+    if(seconds<0)seconds=total;
+    const offset=circumference*(1-seconds/total);
+    ring.style.strokeDashoffset=offset;
+    const color=seconds<=10?'#E11D48':seconds<=20?'#F59E0B':'#84CC16';
+    ring.style.stroke=color;
+    val.style.color=color;
+    const m=Math.floor(seconds/60);
+    const s=seconds%60;
+    val.textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+})();
+
+/* ── QUOTES TICKER ── */
+const quotes=[
+  {text:"The students who pass are not necessarily the smartest in the room. They are the ones who prepared with the right system.",author:"CollegeCBT — Results-as-a-Service"},
+  {text:"Education is the most powerful weapon you can use to change your world. But only if you walk into the exam hall ready.",author:"Inspired by Nelson Mandela"},
+  {text:"Don't practise until you get it right. Practise until you can't get it wrong.",author:"Principle of Mastery Learning"},
+  {text:"Every question you answer today is a mark you have already secured for tomorrow's exam.",author:"CollegeCBT — Grade Guarantee"},
+  {text:"The Nigerian student who wins is not the one with the most time — it is the one who uses AI to practise smarter.",author:"E-WIN Project Vision"},
+  {text:"Your potential is not in question. The only question is whether your preparation matches it.",author:"CollegeCBT — AI Readiness Engine"},
+];
+let qi=0;
+function showQuote(i){
+  const d=document.getElementById('qdisplay');
+  const a=document.getElementById('qauthor');
+  const dots=document.getElementById('qdots');
+  if(!d||!a)return;
+  d.style.opacity=0;
+  setTimeout(()=>{
+    d.textContent='"'+quotes[i].text+'"';
+    a.textContent='— '+quotes[i].author;
+    d.style.opacity=1;
+    dots.querySelectorAll('.qd').forEach((dot,idx)=>dot.classList.toggle('on',idx===i));
+  },300);
+  qi=i;
+}
+(function initQuotes(){
+  const dots=document.getElementById('qdots');
+  quotes.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='qd'+(i===0?' on':'');
+    d.onclick=()=>showQuote(i);
+    dots.appendChild(d);
+  });
+  showQuote(0);
+  setInterval(()=>showQuote((qi+1)%quotes.length),4500);
+})();
+
+/* ── GAUGE STEP 4 init ── */
+setTimeout(()=>{
+  const m=document.getElementById('mgfill');
+  if(m&&curStep===4)m.style.transform='rotate(calc(-0.9turn * (1 - 0.82)))';
+},1000);
+</script>
+</body>
+</html>

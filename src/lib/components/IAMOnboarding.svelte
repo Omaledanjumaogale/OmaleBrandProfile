@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { convex } from '$lib/convex';
-	import { api } from '../../../convex/_generated/api';
+	import { api } from '$convex/_generated/api';
 	import { onMount } from 'svelte';
 
 	let registrationOpen = $state(true);
