@@ -19,6 +19,8 @@
 				convex: boolean;
 				firebase: boolean;
 				email: boolean;
+				push: boolean;
+				observability: boolean;
 			};
 		};
 	}>();
@@ -82,8 +84,10 @@
         {#each [
             { label: 'Admin Auth', value: data.runtimeStatus.adminAuth, detail: 'Signed Firebase-derived admin sessions' },
             { label: 'Convex', value: data.runtimeStatus.convex, detail: 'Realtime data backend URL detected' },
-            { label: 'Firebase', value: data.runtimeStatus.firebase, detail: 'Public auth environment configured' },
-            { label: 'Email', value: data.runtimeStatus.email, detail: 'Transactional delivery configured' }
+            { label: 'Firebase Admin', value: data.runtimeStatus.firebase, detail: 'Server-side token verification configured' },
+            { label: 'Email', value: data.runtimeStatus.email, detail: 'Transactional delivery configured' },
+            { label: 'Push', value: data.runtimeStatus.push, detail: 'VAPID-backed device notifications configured' },
+            { label: 'Observability', value: data.runtimeStatus.observability, detail: 'External incident reporting configured' }
         ] as integration}
             <div class="bg-[#0f0e0b] border border-white/5 rounded-2xl p-5">
                 <div class="flex items-center justify-between mb-3">

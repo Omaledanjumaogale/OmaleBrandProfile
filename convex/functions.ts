@@ -8,11 +8,14 @@ import { sessionTrackingMutation } from "./sessions";
 import {
 	buildAuditActor,
 	getOptionalActor,
+	hasRequiredRole,
 	PLATFORM_KEY,
 	requireActivePlatformActor,
 	requireActor,
 	requireAdminActor,
+	requireAuditorActor,
 	requireIdentity,
+	requireSuperadminActor,
 } from "./auth";
 import { withAuditLog } from "./triggers";
 
@@ -68,6 +71,17 @@ const taskCreationSchema = z.object({
 	title: z.string().min(3).max(140),
 	description: z.string().max(2000),
 	deadline: z.number().int().positive(),
+});
+
+const pushSubscriptionSchema = z.object({
+	endpoint: z.string().url(),
+	keys: z.object({
+		p256dh: z.string().min(16),
+		auth: z.string().min(8),
+	}),
+	expirationTime: z.number().nullable().optional(),
+	sessionId: z.string().uuid().optional(),
+	userAgent: z.string().max(300).optional(),
 });
 
 function normalizeObject<T extends Record<string, unknown>>(input: T) {
@@ -185,7 +199,7 @@ export const getUserByFirebaseUid = query({
 	args: { firebaseUid: v.string() },
 	handler: async (ctx, { firebaseUid }) => {
 		const actor = await requireActor(ctx);
-		if (actor.firebaseUid !== firebaseUid && actor.user.role !== "admin") {
+		if (actor.firebaseUid !== firebaseUid && !hasRequiredRole(actor.user.role, "auditor")) {
 			throw new Error("Forbidden: You can only access your own profile.");
 		}
 		return await ctx.db
@@ -407,7 +421,7 @@ export const getApplicationsPaginated = query({
 export const getUsers = query({
 	args: {},
 	handler: async (ctx) => {
-		await requireAdminActor(ctx);
+		await requireAuditorActor(ctx);
 		return await ctx.db.query("users").order("desc").collect();
 	},
 });
@@ -415,7 +429,7 @@ export const getUsers = query({
 export const getAuditLogs = query({
 	args: { paginationOpts: v.optional(paginationOptsValidator) },
 	handler: async (ctx, { paginationOpts }) => {
-		await requireAdminActor(ctx);
+		await requireAuditorActor(ctx);
 		if (paginationOpts) {
 			return ctx.db.query("auditLogs").order("desc").paginate(paginationOpts);
 		}
@@ -522,7 +536,7 @@ export const updateTaskStatus = mutation({
 		const task = await ctx.db.get(taskId);
 		if (!task) throw new Error("Task not found.");
 
-		if (actor.user.role !== "admin") {
+		if (!hasRequiredRole(actor.user.role, "admin")) {
 			const application = await ctx.db
 				.query("applications")
 				.withIndex("by_userId", (q) => q.eq("userId", actor.user._id))
@@ -598,7 +612,7 @@ export const updateServiceRequestStatus = mutation({
 export const updateSetting = mutation({
 	args: { key: v.string(), value: v.any() },
 	handler: async (ctx, args) => {
-		const actor = await requireAdminActor(ctx);
+		const actor = await requireSuperadminActor(ctx);
 		await withAuditLog(
 			ctx,
 			"ADMIN_SETTING_UPDATE",
@@ -650,7 +664,7 @@ export const consumeAdminLoginRateLimit = mutation({
 export const getAdminSettingsSnapshot = query({
 	args: {},
 	handler: async (ctx) => {
-		await requireAdminActor(ctx);
+		await requireAuditorActor(ctx);
 		const settings = await ctx.db.query("settings").collect();
 		const map = new Map(settings.map((setting) => [setting.key, setting]));
 
@@ -666,13 +680,13 @@ export const getAdminSettingsSnapshot = query({
 export const updateUserAdminState = mutation({
 	args: {
 		userId: v.id("users"),
-		role: v.union(v.literal("user"), v.literal("admin")),
+		role: v.union(v.literal("user"), v.literal("admin"), v.literal("auditor"), v.literal("superadmin")),
 		plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
 		subscriptionStatus: v.union(v.literal("active"), v.literal("inactive"), v.literal("pending")),
 		isLocked: v.boolean(),
 	},
 	handler: async (ctx, args) => {
-		const actor = await requireAdminActor(ctx);
+		const actor = await requireSuperadminActor(ctx);
 		await withAuditLog(
 			ctx,
 			"ADMIN_USER_STATE_UPDATE",
@@ -688,5 +702,102 @@ export const updateUserAdminState = mutation({
 			},
 			actor,
 		);
+	},
+});
+
+export const upsertPushSubscription = mutation({
+	args: {
+		subscription: v.object({
+			endpoint: v.string(),
+			keys: v.object({
+				p256dh: v.string(),
+				auth: v.string(),
+			}),
+			expirationTime: v.optional(v.union(v.number(), v.null())),
+		}),
+		sessionId: v.optional(v.string()),
+		userAgent: v.optional(v.string()),
+	},
+	handler: async (ctx, rawArgs) => {
+		const actor = await requireActivePlatformActor(ctx);
+		const args = pushSubscriptionSchema.parse({
+			...rawArgs.subscription,
+			sessionId: rawArgs.sessionId,
+			userAgent: rawArgs.userAgent,
+		});
+		const now = Date.now();
+		const existing = await ctx.db
+			.query("pushSubscriptions")
+			.withIndex("by_endpoint", (q) => q.eq("endpoint", args.endpoint))
+			.unique();
+
+		const payload = {
+			endpoint: args.endpoint,
+			p256dh: args.keys.p256dh,
+			auth: args.keys.auth,
+			expirationTime: args.expirationTime ?? undefined,
+			firebaseUid: actor.firebaseUid,
+			userId: actor.user._id,
+			platformKey: PLATFORM_KEY,
+			userAgent: args.userAgent,
+			sessionId: args.sessionId,
+			updatedAt: now,
+			lastUsedAt: now,
+			isActive: true,
+		};
+
+		if (existing) {
+			await ctx.db.patch(existing._id, payload);
+			return existing._id;
+		}
+
+		return await ctx.db.insert("pushSubscriptions", {
+			...payload,
+			createdAt: now,
+		});
+	},
+});
+
+export const removePushSubscription = mutation({
+	args: {
+		endpoint: v.string(),
+	},
+	handler: async (ctx, { endpoint }) => {
+		const actor = await requireActivePlatformActor(ctx);
+		const existing = await ctx.db
+			.query("pushSubscriptions")
+			.withIndex("by_endpoint", (q) => q.eq("endpoint", endpoint))
+			.unique();
+
+		if (!existing) {
+			return { removed: false };
+		}
+
+		if (existing.firebaseUid && existing.firebaseUid !== actor.firebaseUid && !hasRequiredRole(actor.user.role, "admin")) {
+			throw new Error("Forbidden: Cannot remove another user's push subscription.");
+		}
+
+		await ctx.db.patch(existing._id, {
+			isActive: false,
+			updatedAt: Date.now(),
+		});
+
+		return { removed: true };
+	},
+});
+
+export const getPushSubscriptionStatus = query({
+	args: {},
+	handler: async (ctx) => {
+		const actor = await requireActivePlatformActor(ctx);
+		const subscriptions = await ctx.db
+			.query("pushSubscriptions")
+			.withIndex("by_firebaseUid", (q) => q.eq("firebaseUid", actor.firebaseUid))
+			.collect();
+
+		return {
+			total: subscriptions.length,
+			active: subscriptions.filter((subscription) => subscription.isActive).length,
+		};
 	},
 });

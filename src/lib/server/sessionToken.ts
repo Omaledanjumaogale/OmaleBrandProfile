@@ -1,7 +1,7 @@
 export type SignedSessionPayload = {
 	uid: string;
 	email: string;
-	role: 'admin' | 'user';
+	role: 'user' | 'admin' | 'auditor' | 'superadmin';
 	exp: number;
 };
 

@@ -10,8 +10,10 @@ export const load: PageServerLoad = async () => {
 		runtimeStatus: {
 			adminAuth: adminRuntime.configured,
 			convex: Boolean(publicEnv.PUBLIC_CONVEX_URL),
-			firebase: Boolean(publicEnv.PUBLIC_FIREBASE_API_KEY && publicEnv.PUBLIC_FIREBASE_PROJECT_ID),
-			email: Boolean(privateEnv.RESEND_API_KEY)
+			firebase: adminRuntime.firebaseAdmin,
+			email: Boolean(privateEnv.RESEND_API_KEY),
+			push: adminRuntime.push,
+			observability: adminRuntime.observability
 		}
 	};
 };

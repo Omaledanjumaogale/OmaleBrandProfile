@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { buildAuditActor, PLATFORM_KEY, requireAdminActor } from "./auth";
+import { buildAuditActor, PLATFORM_KEY, requireAdminActor, requireAuditorActor, requireSuperadminActor } from "./auth";
 import { withAuditLog } from "./triggers";
 
 export const sendBroadcast = mutation({
@@ -11,7 +11,7 @@ export const sendBroadcast = mutation({
 		target: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
-		const actor = await requireAdminActor(ctx);
+		const actor = await requireSuperadminActor(ctx);
 		return await withAuditLog(
 			ctx,
 			"SYSTEM_BROADCAST_SENT",
@@ -50,6 +50,7 @@ export const getPlatformStats = query({
 		const requests = await ctx.db.query("serviceRequests").collect();
 		const sessions = await ctx.db.query("sessions").collect();
 		const broadcasts = await ctx.db.query("broadcasts").collect();
+		const pushSubscriptions = await ctx.db.query("pushSubscriptions").collect();
 
 		const pendingApps = apps.filter((a) => a.status === "pending").length;
 		const activeRequests = requests.filter((r) => r.status === "pending" || r.status === "contacted").length;
@@ -63,6 +64,7 @@ export const getPlatformStats = query({
 			pendingApps,
 			activeRequests,
 			activeSessions,
+			activePushEndpoints: pushSubscriptions.filter((subscription) => subscription.isActive).length,
 			lockedUsers,
 			criticalBroadcasts,
 			systemHealth: Math.max(78, 100 - healthPenalty),
@@ -74,13 +76,14 @@ export const getPlatformStats = query({
 export const getMonitoringSnapshot = query({
 	args: {},
 	handler: async (ctx) => {
-		await requireAdminActor(ctx);
+		await requireAuditorActor(ctx);
 		const now = Date.now();
 		const users = await ctx.db.query("users").collect();
 		const applications = await ctx.db.query("applications").collect();
 		const serviceRequests = await ctx.db.query("serviceRequests").collect();
 		const sessions = await ctx.db.query("sessions").collect();
 		const broadcasts = await ctx.db.query("broadcasts").collect();
+		const pushSubscriptions = await ctx.db.query("pushSubscriptions").collect();
 		const auditLogs = await ctx.db.query("auditLogs").order("desc").take(20);
 		const settings = await ctx.db.query("settings").collect();
 
@@ -94,9 +97,12 @@ export const getMonitoringSnapshot = query({
 		const activeBroadcasts = broadcasts.filter((broadcast) => broadcast.active).length;
 		const integrations = {
 			convex: true,
-			firebase: Boolean(process.env.PUBLIC_FIREBASE_API_KEY && process.env.PUBLIC_FIREBASE_PROJECT_ID),
+			firebase: Boolean(process.env.FIREBASE_ADMIN_PROJECT_ID && process.env.FIREBASE_ADMIN_CLIENT_EMAIL && process.env.FIREBASE_ADMIN_PRIVATE_KEY),
 			email: Boolean(process.env.RESEND_API_KEY),
 			adminAuth: Boolean(process.env.ADMIN_SESSION_SECRET),
+			push: Boolean(process.env.PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY && process.env.WEB_PUSH_VAPID_PRIVATE_KEY),
+			errorAggregation: Boolean(process.env.OBSERVABILITY_WEBHOOK_URL || process.env.SENTRY_DSN),
+			uptime: Boolean(process.env.UPTIME_WEBHOOK_URL || process.env.OBSERVABILITY_WEBHOOK_URL),
 		};
 		const integrationFailures = Object.values(integrations).filter((value) => !value).length;
 		const healthScore = Math.max(72, 100 - lockedUsers * 2 - Math.min(10, openRequests) - Math.min(6, integrationFailures * 3));
@@ -125,6 +131,11 @@ export const getMonitoringSnapshot = query({
 					value: activeBroadcasts,
 					detail: `${broadcasts.filter((broadcast) => broadcast.type === "critical" && broadcast.active).length} critical broadcasts currently active`,
 				},
+				{
+					name: "Push Endpoints",
+					value: pushSubscriptions.filter((subscription) => subscription.isActive).length,
+					detail: `${pushSubscriptions.length} registered devices with ${pushSubscriptions.filter((subscription) => subscription.lastUsedAt && now - subscription.lastUsedAt <= 24 * 60 * 60 * 1000).length} active in the last 24 hours`,
+				},
 			],
 			systems: [
 				{
@@ -143,10 +154,10 @@ export const getMonitoringSnapshot = query({
 				},
 				{
 					name: "Firebase Identity",
-					provider: "Firebase Auth",
+					provider: "Firebase Admin SDK",
 					location: "Global",
 					status: integrations.firebase ? "online" : "attention",
-					detail: integrations.firebase ? "Firebase identity configured" : "Firebase public keys missing",
+					detail: integrations.firebase ? "Secure server-side token verification enabled" : "Firebase admin credentials missing",
 				},
 				{
 					name: "Email Delivery",
@@ -161,6 +172,27 @@ export const getMonitoringSnapshot = query({
 					location: "Protected Routes",
 					status: integrations.adminAuth ? "online" : "attention",
 					detail: integrations.adminAuth ? "Signed Firebase-derived admin sessions enabled" : "Admin session secret missing",
+				},
+				{
+					name: "Push Delivery",
+					provider: "Web Push",
+					location: "PWA Devices",
+					status: integrations.push ? "online" : "attention",
+					detail: integrations.push ? "VAPID-backed push subscriptions enabled" : "Web push VAPID keys missing",
+				},
+				{
+					name: "Error Aggregation",
+					provider: "Webhook / Sentry",
+					location: "Ops",
+					status: integrations.errorAggregation ? "online" : "attention",
+					detail: integrations.errorAggregation ? "Server-side incident reporting configured" : "No external error aggregation configured",
+				},
+				{
+					name: "Uptime Signal",
+					provider: "Ops Health",
+					location: "/api/ops/health",
+					status: integrations.uptime ? "online" : "attention",
+					detail: integrations.uptime ? "External uptime notification channel configured" : "No uptime webhook configured",
 				},
 			],
 			recentEvents: auditLogs.map((log) => ({

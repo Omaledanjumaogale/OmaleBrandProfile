@@ -32,8 +32,10 @@ Enterprise-grade personal branding and workforce innovation platform for **Danju
 - **Enterprise Audit Logging**: High-fidelity forensic trail of all administrative actions, from credential verification to system-wide transmissions.
 - **Advanced Data Management**: Modular dashboards for managing I-AM applications, service requests, and task boards with zero-latency updates.
 - **Secure Session Gating**: Triple-layer authentication combining Firebase, Convex environment secrets, and cryptographic session signing.
-- **WCAG 2.2 AA+ Compliance**: Systematically remediated all administrative routes for perfect accessibility, including ARIA semantic roles, keyboard-navigable tooltips, and screen-reader optimized interfaces.
+- **Accessibility Hardening**: Administrative routes have been remediated for keyboard support, semantics, and screen-reader clarity, with automated accessibility audit coverage included in the repository.
 - **Enterprise Build Hardening**: Optimized Vite/SvelteKit compilation pipeline for Cloudflare Edge, resolving complex module resolution issues and ensuring 100% build reliability.
+- **Claims-Aware Admin Security**: Firebase Admin SDK verification, signed admin sessions, and platform RBAC now support `admin`, `auditor`, and `superadmin` controls.
+- **Operational Telemetry**: Health-check endpoints and external observability webhooks can be configured for uptime and incident reporting.
 
 ## Getting Started 🏗️
 

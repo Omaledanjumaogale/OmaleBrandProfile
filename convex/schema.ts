@@ -11,7 +11,12 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     image: v.optional(v.string()),
-    role: v.union(v.literal("user"), v.literal("admin")),
+    role: v.union(
+      v.literal("user"),
+      v.literal("admin"),
+      v.literal("auditor"),
+      v.literal("superadmin")
+    ),
     plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
     subscriptionStatus: v.union(v.literal("active"), v.literal("inactive"), v.literal("pending")),
     lastLogin: v.number(),
@@ -138,4 +143,23 @@ export default defineSchema({
     expiresAt: v.number(),
     updatedAt: v.number(),
   }).index("by_key", ["key"]).index("by_expiresAt", ["expiresAt"]),
+
+  pushSubscriptions: defineTable({
+    endpoint: v.string(),
+    p256dh: v.string(),
+    auth: v.string(),
+    expirationTime: v.optional(v.number()),
+    firebaseUid: v.optional(v.string()),
+    userId: v.optional(v.id("users")),
+    platformKey: v.string(),
+    userAgent: v.optional(v.string()),
+    sessionId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    lastUsedAt: v.optional(v.number()),
+    isActive: v.boolean(),
+  })
+    .index("by_endpoint", ["endpoint"])
+    .index("by_firebaseUid", ["firebaseUid"])
+    .index("by_userId", ["userId"]),
 });

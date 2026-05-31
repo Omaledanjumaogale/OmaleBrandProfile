@@ -47,7 +47,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🎓',
 		href: '/platforms/akademyx',
 		external: false,
-		prototypePath: '/platforms/AkademyxDraft.html',
+		prototypePath: '/prototypes/AkademyxDraft',
 		highlights: ['AI learning journeys', 'Digital economy skills', 'Scalable learning design']
 	},
 	{
@@ -60,7 +60,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '💡',
 		href: '/platforms/alternative-akademyx',
 		external: false,
-		prototypePath: '/platforms/AlternativeAkademy.html',
+		prototypePath: '/prototypes/AlternativeAkademy',
 		highlights: ['Alternative education', 'Outcome-first learning', 'Career acceleration']
 	},
 	{
@@ -73,7 +73,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '👤',
 		href: '/platforms/profilex',
 		external: false,
-		prototypePath: '/platforms/ProfileX.html',
+		prototypePath: '/prototypes/ProfileX',
 		highlights: ['Portfolio experiences', 'Service positioning', 'Digital identity presentation']
 	},
 	{
@@ -98,7 +98,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📋',
 		href: '/platforms/agentlistingx',
 		external: false,
-		prototypePath: '/platforms/AgentListingX.html',
+		prototypePath: '/prototypes/AgentListingX',
 		highlights: ['Talent discovery', 'Agent operations', 'B2B matching']
 	},
 	{
@@ -111,7 +111,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📣',
 		href: '/platforms/apexmarketer',
 		external: false,
-		prototypePath: '/platforms/ApexMarketer.html',
+		prototypePath: '/prototypes/ApexMarketer',
 		highlights: ['Campaign orchestration', 'Audience analytics', 'Growth operations']
 	},
 	{
@@ -124,7 +124,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📊',
 		href: '/platforms/biznexense',
 		external: false,
-		prototypePath: '/platforms/BizneXense.html',
+		prototypePath: '/prototypes/BizneXense',
 		highlights: ['Executive dashboards', 'Operational insight', 'Decision support']
 	},
 	{
@@ -137,7 +137,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '👔',
 		href: '/platforms/biznex-draft',
 		external: false,
-		prototypePath: '/platforms/BiznexDraft.html',
+		prototypePath: '/prototypes/BiznexDraft',
 		highlights: ['Business planning', 'Lean canvas support', 'Operational modelling']
 	},
 	{
@@ -150,7 +150,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '⚽',
 		href: '/platforms/betxpredicts',
 		external: false,
-		prototypePath: '/platforms/BetxPredicts.html',
+		prototypePath: '/prototypes/BetxPredicts',
 		highlights: ['Sports modelling', 'Prediction dashboards', 'Trend analysis']
 	},
 	{
@@ -163,7 +163,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🏛️',
 		href: '/platforms/college-cbt',
 		external: false,
-		prototypePath: '/platforms/CollegeCBT.html',
+		prototypePath: '/prototypes/CollegeCBT',
 		highlights: ['Assessment delivery', 'Institutional workflows', 'Examination scale']
 	},
 	{
@@ -176,7 +176,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📖',
 		href: '/platforms/school-cbt',
 		external: false,
-		prototypePath: '/platforms/SchoolCBT.html',
+		prototypePath: '/prototypes/SchoolCBT',
 		highlights: ['K-12 assessments', 'Modern evaluation', 'School operations']
 	},
 	{
@@ -189,7 +189,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🏦',
 		href: '/platforms/financial-auditor',
 		external: false,
-		prototypePath: '/platforms/FinancialAuditor.html',
+		prototypePath: '/prototypes/FinancialAuditor',
 		highlights: ['Audit automation', 'Compliance insight', 'Financial integrity']
 	},
 	{
@@ -202,7 +202,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🩺',
 		href: '/platforms/medpharmrx',
 		external: false,
-		prototypePath: '/platforms/MedPharmRx.html',
+		prototypePath: '/prototypes/MedPharmRx',
 		highlights: ['Inventory tracking', 'Supply chain visibility', 'Healthcare operations']
 	},
 	{
@@ -215,7 +215,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🤝',
 		href: '/platforms/mentorme',
 		external: false,
-		prototypePath: '/platforms/MentorMe.html',
+		prototypePath: '/prototypes/MentorMe',
 		highlights: ['Mentorship programmes', 'Talent development', 'Knowledge transfer']
 	},
 	{
@@ -228,7 +228,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📈',
 		href: '/platforms/marketintel',
 		external: false,
-		prototypePath: '/platforms/MarketIntel.html',
+		prototypePath: '/prototypes/MarketIntel',
 		highlights: ['Market signals', 'Trade insight', 'Real-time intelligence']
 	},
 	{
@@ -241,7 +241,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📰',
 		href: '/platforms/newstrade',
 		external: false,
-		prototypePath: '/platforms/NewsTrade.html',
+		prototypePath: '/prototypes/NewsTrade',
 		highlights: ['Economic coverage', 'Trade reporting', 'Insight distribution']
 	},
 	{
@@ -254,7 +254,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '📦',
 		href: '/platforms/insightstrade',
 		external: false,
-		prototypePath: '/platforms/InsightsTrade.html',
+		prototypePath: '/prototypes/InsightsTrade',
 		highlights: ['Marketplace concept', 'Vendor coordination', 'Secure transactions']
 	},
 	{
@@ -267,7 +267,7 @@ export const platforms: PlatformRecord[] = [
 		icon: '🔭',
 		href: '/platforms/vantagepoint',
 		external: false,
-		prototypePath: '/platforms/VantagePoint.html',
+		prototypePath: '/prototypes/VantagePoint',
 		highlights: ['Leadership reporting', 'Performance visibility', 'Strategic planning']
 	}
 ];

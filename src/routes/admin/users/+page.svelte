@@ -6,7 +6,7 @@
 	import { api } from '$convex/_generated/api';
 	import { ui } from '$lib/stores/ui';
 
-	type Role = 'user' | 'admin';
+	type Role = 'user' | 'admin' | 'auditor' | 'superadmin';
 	type Plan = 'free' | 'pro' | 'enterprise';
 	type SubscriptionStatus = 'active' | 'inactive' | 'pending';
 
@@ -42,6 +42,8 @@
 				u.email.toLowerCase().includes(searchTerm.toLowerCase())
 		)
 	);
+
+	const canManageUsers = $derived($page.data.adminRole === 'superadmin');
 
 	function getPlanColor(plan: Plan) {
 		switch (plan) {
@@ -135,11 +137,13 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="space-y-2 min-w-[180px]">
-                                        <select bind:value={user.role} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                        <select bind:value={user.role} disabled={!canManageUsers} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest disabled:opacity-50">
                                             <option value="user">User</option>
                                             <option value="admin">Admin</option>
+                                            <option value="auditor">Auditor</option>
+                                            <option value="superadmin">Superadmin</option>
                                         </select>
-                                        <select bind:value={user.subscriptionStatus} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                        <select bind:value={user.subscriptionStatus} disabled={!canManageUsers} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest disabled:opacity-50">
                                             <option value="active">Active</option>
                                             <option value="pending">Pending</option>
                                             <option value="inactive">Inactive</option>
@@ -151,7 +155,7 @@
                                         <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border {getPlanColor(user.plan)}">
                                             {user.plan}
                                         </span>
-                                        <select bind:value={user.plan} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest">
+                                        <select bind:value={user.plan} disabled={!canManageUsers} class="w-full bg-[#0b0a07] border border-white/10 rounded-xl px-3 py-2 text-[11px] text-white/70 uppercase tracking-widest disabled:opacity-50">
                                             <option value="free">Free</option>
                                             <option value="pro">Pro</option>
                                             <option value="enterprise">Enterprise</option>
@@ -167,7 +171,7 @@
                                     <div class="flex flex-col sm:flex-row gap-2 min-w-[220px]">
                                         <button
                                             onclick={() => persistUser(user, `Saved access profile for ${user.name}.`)}
-                                            disabled={savingUserId === String(user._id)}
+                                            disabled={savingUserId === String(user._id) || !canManageUsers}
                                             class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-[11px] uppercase tracking-[2px] font-bold disabled:opacity-50"
                                             title="Save User Access"
                                         >
@@ -181,7 +185,7 @@
                                                     `${user.isLocked ? 'Locked' : 'Unlocked'} ${user.name}'s account.`
                                                 );
                                             }}
-                                            disabled={savingUserId === String(user._id)}
+                                            disabled={savingUserId === String(user._id) || !canManageUsers}
                                             class="px-4 py-2 rounded-xl {user.isLocked ? 'bg-teal-500/10 text-teal-200 border border-teal-500/20' : 'bg-red-500/10 text-red-200 border border-red-500/20'} transition-all text-[11px] uppercase tracking-[2px] font-bold disabled:opacity-50"
                                             title={user.isLocked ? 'Unlock Account' : 'Lock Account'}
                                         >

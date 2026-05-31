@@ -7,7 +7,7 @@ describe('sessionToken', () => {
 			{
 				uid: 'uid_123',
 				email: 'admin@example.com',
-				role: 'admin'
+				role: 'superadmin'
 			},
 			'test-secret',
 			60_000
@@ -16,7 +16,7 @@ describe('sessionToken', () => {
 		const payload = await verifySignedSessionPayload(token, 'test-secret');
 		expect(payload?.uid).toBe('uid_123');
 		expect(payload?.email).toBe('admin@example.com');
-		expect(payload?.role).toBe('admin');
+		expect(payload?.role).toBe('superadmin');
 	});
 
 	it('rejects expired tokens', async () => {
@@ -24,7 +24,7 @@ describe('sessionToken', () => {
 			{
 				uid: 'uid_123',
 				email: 'admin@example.com',
-				role: 'admin'
+				role: 'auditor'
 			},
 			'test-secret',
 			-1

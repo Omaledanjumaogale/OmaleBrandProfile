@@ -5,27 +5,34 @@
     import Tooltip from '$lib/components/ui/Tooltip.svelte';
     import { subscribeToPush } from '$lib/push';
     
-    let { sidebarOpen = $bindable() } = $props<{ sidebarOpen: boolean }>();
+    type AdminRole = 'user' | 'admin' | 'auditor' | 'superadmin';
+
+    let { sidebarOpen = $bindable(), role = 'admin' as AdminRole } = $props<{ sidebarOpen: boolean; role?: AdminRole }>();
     let searchTerm = $state('');
 
+    const roleRank: Record<AdminRole, number> = { user: 0, admin: 1, auditor: 2, superadmin: 3 };
+    const getRoleLevel = (candidate: AdminRole) => roleRank[candidate];
+
     const adminDestinations = [
-        { label: 'Overview', href: '/admin' },
-        { label: 'Applications', href: '/admin/applications' },
-        { label: 'Service Requests', href: '/admin/service-requests' },
-        { label: 'User Directory', href: '/admin/users' },
-        { label: 'Task Board', href: '/admin/tasks' },
-        { label: 'Broadcasts', href: '/admin/broadcasts' },
-        { label: 'Monitoring', href: '/admin/monitoring' },
-        { label: 'Audit Logs', href: '/admin/audit' },
-        { label: 'Settings', href: '/admin/settings' }
-    ];
+        { label: 'Overview', href: '/admin', minRole: 'admin' },
+        { label: 'Applications', href: '/admin/applications', minRole: 'admin' },
+        { label: 'Service Requests', href: '/admin/service-requests', minRole: 'admin' },
+        { label: 'User Directory', href: '/admin/users', minRole: 'auditor' },
+        { label: 'Task Board', href: '/admin/tasks', minRole: 'admin' },
+        { label: 'Broadcasts', href: '/admin/broadcasts', minRole: 'superadmin' },
+        { label: 'Monitoring', href: '/admin/monitoring', minRole: 'auditor' },
+        { label: 'Audit Logs', href: '/admin/audit', minRole: 'auditor' },
+        { label: 'Settings', href: '/admin/settings', minRole: 'superadmin' }
+    ] as const;
 
     async function handleActivatePush() {
-        const sub = await subscribeToPush();
-        if (sub) {
-            toast.success("Real-time push notifications activated for this device.", "Push Active");
-        } else {
-            toast.info("Push subscription pending VAPID configuration.", "Push Protocol Status");
+        try {
+            const sub = await subscribeToPush();
+            if (sub) {
+                toast.success("Real-time push notifications activated for this device.", "Push Active");
+            }
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Unable to activate push notifications.', 'Push Protocol Status');
         }
     }
 
@@ -34,7 +41,7 @@
         const query = searchTerm.trim().toLowerCase();
         if (!query) return;
 
-        const match = adminDestinations.find((item) =>
+        const match = adminDestinations.filter((item) => getRoleLevel(role as AdminRole) >= getRoleLevel(item.minRole)).find((item) =>
             item.label.toLowerCase().includes(query) || item.href.toLowerCase().includes(query)
         );
 
@@ -98,7 +105,7 @@
         <div class="flex items-center gap-3 pl-2">
             <div class="text-right hidden sm:block">
                 <div class="text-[12px] font-bold text-white leading-none mb-1">{$page.data.adminEmail ?? 'Admin Session'}</div>
-                <div class="text-[10px] text-[var(--gold)] font-medium uppercase tracking-tighter">Protected Control Plane</div>
+                <div class="text-[10px] text-[var(--gold)] font-medium uppercase tracking-tighter">{role} Control Plane</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#b89844] flex items-center justify-center text-xl shadow-lg shadow-[#c9a84c]/20">
                 👨‍💻

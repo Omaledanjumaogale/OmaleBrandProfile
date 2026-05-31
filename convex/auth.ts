@@ -6,12 +6,23 @@ export const PLATFORM_KEY = 'ewinproject';
 
 type AnyCtx = MutationCtx | QueryCtx;
 type PlatformUser = Doc<'users'>;
+export type PlatformRole = PlatformUser['role'];
+export const roleRank: Record<PlatformRole, number> = {
+	user: 0,
+	admin: 1,
+	auditor: 2,
+	superadmin: 3,
+};
 
 export type AuthenticatedActor = {
 	identity: UserIdentity;
 	firebaseUid: string;
 	user: PlatformUser;
 };
+
+export function hasRequiredRole(role: PlatformRole, minimum: PlatformRole) {
+	return roleRank[role] >= roleRank[minimum];
+}
 
 function getFirebaseUid(identity: UserIdentity) {
 	return identity.subject ?? identity.tokenIdentifier;
@@ -60,11 +71,33 @@ export async function getOptionalActor(ctx: AnyCtx) {
 
 export async function requireAdminActor(ctx: AnyCtx) {
 	const actor = await requireActor(ctx);
-	if (actor.user.role !== 'admin') {
-		throw new Error('Forbidden: Admin privileges required.');
+	if (!hasRequiredRole(actor.user.role, 'admin')) {
+		throw new Error('Forbidden: Administrative privileges required.');
 	}
 	if (actor.user.subscriptionStatus !== 'active') {
 		throw new Error('Forbidden: Active admin subscription required.');
+	}
+	return actor;
+}
+
+export async function requireAuditorActor(ctx: AnyCtx) {
+	const actor = await requireActor(ctx);
+	if (!hasRequiredRole(actor.user.role, 'auditor')) {
+		throw new Error('Forbidden: Auditor privileges required.');
+	}
+	if (actor.user.subscriptionStatus !== 'active') {
+		throw new Error('Forbidden: Active auditor subscription required.');
+	}
+	return actor;
+}
+
+export async function requireSuperadminActor(ctx: AnyCtx) {
+	const actor = await requireActor(ctx);
+	if (!hasRequiredRole(actor.user.role, 'superadmin')) {
+		throw new Error('Forbidden: Superadmin privileges required.');
+	}
+	if (actor.user.subscriptionStatus !== 'active') {
+		throw new Error('Forbidden: Active superadmin subscription required.');
 	}
 	return actor;
 }

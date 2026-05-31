@@ -4,25 +4,42 @@
     import { logout } from '$lib/stores/auth';
     import { fade, slide } from 'svelte/transition';
 
-    let { isOpen = true } = $props<{ isOpen?: boolean }>();
+    type AdminRole = 'user' | 'admin' | 'auditor' | 'superadmin';
+
+    let { isOpen = true, role = 'admin' as AdminRole } = $props<{ isOpen?: boolean; role?: AdminRole }>();
+
+    const roleRank: Record<AdminRole, number> = {
+        user: 0,
+        admin: 1,
+        auditor: 2,
+        superadmin: 3
+    };
+
+    function getRoleLevel(candidate: AdminRole) {
+        return roleRank[candidate];
+    }
 
     const menuItems = [
         { group: 'Main', items: [
-            { name: 'Overview', icon: '📊', href: '/admin', roles: ['super-admin', 'admin'] },
-            { name: 'Applications', icon: '📋', href: '/admin/applications', roles: ['super-admin', 'admin'] },
-            { name: 'Service Requests', icon: '📥', href: '/admin/service-requests', roles: ['super-admin', 'admin'] },
+            { name: 'Overview', icon: '📊', href: '/admin', roles: ['admin', 'auditor', 'superadmin'] },
+            { name: 'Applications', icon: '📋', href: '/admin/applications', roles: ['admin', 'auditor', 'superadmin'] },
+            { name: 'Service Requests', icon: '📥', href: '/admin/service-requests', roles: ['admin', 'auditor', 'superadmin'] },
         ]},
         { group: 'Management', items: [
-            { name: 'User Directory', icon: '👥', href: '/admin/users', roles: ['super-admin'] },
-            { name: 'Task Board', icon: '⚡', href: '/admin/tasks', roles: ['super-admin', 'admin'] },
-            { name: 'Broadcasts', icon: '📢', href: '/admin/broadcasts', roles: ['super-admin'] },
+            { name: 'User Directory', icon: '👥', href: '/admin/users', roles: ['auditor', 'superadmin'] },
+            { name: 'Task Board', icon: '⚡', href: '/admin/tasks', roles: ['admin', 'superadmin'] },
+            { name: 'Broadcasts', icon: '📢', href: '/admin/broadcasts', roles: ['superadmin'] },
         ]},
         { group: 'System', items: [
-            { name: 'Monitoring', icon: '🛠️', href: '/admin/monitoring', roles: ['super-admin'] },
-            { name: 'Audit Logs', icon: '🛡️', href: '/admin/audit', roles: ['super-admin'] },
-            { name: 'Settings', icon: '⚙️', href: '/admin/settings', roles: ['super-admin'] },
+            { name: 'Monitoring', icon: '🛠️', href: '/admin/monitoring', roles: ['auditor', 'superadmin'] },
+            { name: 'Audit Logs', icon: '🛡️', href: '/admin/audit', roles: ['auditor', 'superadmin'] },
+            { name: 'Settings', icon: '⚙️', href: '/admin/settings', roles: ['superadmin'] },
         ]}
     ];
+
+    function canAccess(itemRoles: string[]) {
+        return itemRoles.some((itemRole) => getRoleLevel(role as AdminRole) >= getRoleLevel(itemRole as AdminRole));
+    }
 
     const isActive = (href: string) => $page.url.pathname === href;
 
@@ -57,7 +74,7 @@
                     </h3>
                 {/if}
                 <div class="space-y-1">
-                    {#each group.items as item}
+                    {#each group.items.filter((item) => canAccess(item.roles)) as item}
                         <a 
                             href={item.href}
                             class="flex items-center gap-4 px-3 py-3 rounded-xl transition-all group
