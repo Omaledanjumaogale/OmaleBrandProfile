@@ -4,7 +4,7 @@
     import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
 
-    let { children } = $props();
+    let { data, children } = $props();
     let sidebarOpen = $state(true);
 
     // Auto-collapse sidebar on smaller screens
@@ -17,14 +17,14 @@
 
 <div class="min-h-screen bg-[#0b0a07] text-white selection:bg-[var(--gold)] selection:text-[#0b0a07]">
     <!-- Navigation Layer -->
-    <AdminSidebar isOpen={sidebarOpen} />
+    <AdminSidebar isOpen={sidebarOpen} role={data.adminRole ?? 'admin'} />
 
     <!-- Content Layer -->
     <div 
         class="transition-all duration-300 min-h-screen flex flex-col"
         style="margin-left: {sidebarOpen ? '256px' : '80px'}"
     >
-        <AdminTopBar bind:sidebarOpen />
+        <AdminTopBar bind:sidebarOpen role={data.adminRole ?? 'admin'} />
 
         <main class="flex-grow p-6 lg:p-8" in:fade={{ duration: 400 }}>
             {@render children()}

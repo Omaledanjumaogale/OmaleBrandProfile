@@ -39,6 +39,34 @@
         if (action.includes('BROADCAST')) return 'text-amber-400';
         return 'text-white/70';
     }
+
+    function exportCsv() {
+        if (filteredLogs.length === 0) return;
+
+        const rows = [
+            ['timestamp', 'action', 'adminEmail', 'actorRole', 'actorUid', 'payload'],
+            ...filteredLogs.map((log) => [
+                new Date(log.timestamp).toISOString(),
+                log.action ?? '',
+                log.adminEmail ?? 'system',
+                log.actorRole ?? 'unknown',
+                log.actorUid ?? 'unknown',
+                JSON.stringify(log.payload ?? {})
+            ])
+        ];
+
+        const csv = rows
+            .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
+            .join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ewin-audit-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
 </script>
 
 <svelte:head>
@@ -60,6 +88,7 @@
 
         <div class="flex items-center gap-4">
             <button 
+                onclick={exportCsv}
                 aria-label="Export audit logs as CSV"
                 class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
             >

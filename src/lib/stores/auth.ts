@@ -5,6 +5,7 @@
 import { writable, derived, get } from 'svelte/store';
 import { convex, getClientSessionContext } from '$lib/convex';
 import { onAuthChange, signInEmail, signInGoogle, signOutUser, getIdToken } from '$lib/firebase';
+import { api } from '$convex/_generated/api';
 import type { User } from 'firebase/auth';
 
 // ── State ─────────────────────────────────────────────────────────────
@@ -15,7 +16,7 @@ export interface AuthUser {
 	displayName: string | null;
 	photoURL: string | null;
 	/** Role resolved from Convex — undefined while loading */
-	role?: 'admin' | 'user';
+	role?: 'user' | 'admin' | 'auditor' | 'superadmin';
 	plan?: 'free' | 'pro' | 'enterprise';
 	subscriptionStatus?: 'active' | 'inactive' | 'pending';
 	isLocked?: boolean;
@@ -78,7 +79,7 @@ export function initAuth(): () => void {
 				// ── Sync with Convex ──
 				// This ensures the Firebase identity exists in the platform database
 				const session = getClientSessionContext();
-				await (convex as any).mutation("functions:syncUser", {
+				await convex.mutation(api.functions.syncUser, {
 					email: firebaseUser.email ?? "",
 					name: firebaseUser.displayName ?? "User",
 					image: firebaseUser.photoURL ?? undefined,
@@ -86,7 +87,7 @@ export function initAuth(): () => void {
 				});
 
 				// Fetch full user record from Convex for roles/subscription
-				const platformUser = await (convex as any).query("functions:getCurrentUser", {});
+				const platformUser = await convex.query(api.functions.getCurrentUser, {});
 
 				const authUser: AuthUser = {
 					uid:         firebaseUser.uid,
@@ -148,7 +149,9 @@ export const currentUser    = derived(_auth, ($a) => $a.user);
 export const isLoggedIn     = derived(_auth, ($a) => !!$a.user);
 export const authLoading    = derived(_auth, ($a) => $a.loading);
 export const authReady      = derived(_auth, ($a) => $a.ready);
-export const isAdmin        = derived(_auth, ($a) => $a.user?.role === 'admin');
+export const isAdmin = derived(_auth, ($a) =>
+	$a.user?.role === 'admin' || $a.user?.role === 'auditor' || $a.user?.role === 'superadmin'
+);
 
 // ── Firebase Error → Human-Readable Message ────────────────────────
 

@@ -11,6 +11,11 @@ import { buildAdminLoginRateLimitKey } from '$lib/server/authRateLimit';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies, getClientAddress }) => {
+	const body = (await request.json()) as { idToken?: string };
+	if (!body.idToken) {
+		return json({ error: 'Missing Firebase ID token.' }, { status: 400 });
+	}
+
 	if (!getAdminRuntimeStatus().configured) {
 		return json(
 			{ error: 'Admin authentication is not configured in the deployment environment.' },
@@ -35,11 +40,6 @@ export const POST: RequestHandler = async ({ request, cookies, getClientAddress 
 				},
 				{ status: 429 }
 			);
-		}
-
-		const body = (await request.json()) as { idToken?: string };
-		if (!body.idToken) {
-			return json({ error: 'Missing Firebase ID token.' }, { status: 400 });
 		}
 
 		const token = await createAdminSessionFromFirebase(body.idToken);

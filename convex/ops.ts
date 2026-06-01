@@ -6,7 +6,7 @@ export const setPlatformUserAccess = internalMutation({
 	args: {
 		email: v.optional(v.string()),
 		firebaseUid: v.optional(v.string()),
-		role: v.union(v.literal("admin"), v.literal("user")),
+		role: v.union(v.literal("user"), v.literal("admin"), v.literal("auditor"), v.literal("superadmin")),
 		plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
 		subscriptionStatus: v.union(v.literal("active"), v.literal("inactive"), v.literal("pending")),
 		isLocked: v.optional(v.boolean()),

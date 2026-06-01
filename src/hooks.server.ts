@@ -5,6 +5,7 @@ import {
 	shouldBypassMaintenance,
 	shouldProtectRegistration
 } from '$lib/server/platformRuntime';
+import { reportServerError } from '$lib/server/observability';
 
 // ── Main Handle hook ───────────────────────────────────────────────
 export const handle: Handle = async ({ event, resolve }) => {
@@ -93,6 +94,8 @@ export const handleError: HandleServerError = ({ error, event }) => {
 	console.error(`Path:      ${event.url.pathname}`);
 	console.error(`Error:     `, error);
 	console.error('────────────────────────────────────────────────');
+
+	void reportServerError(errorId, error, event);
 
 	return {
 		message: 'An unexpected error occurred. Please try again.',

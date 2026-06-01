@@ -1,3 +1,5 @@
+import { getClaimedPlatformRole, hasClaimedPlatformAccess, verifyFirebaseIdToken } from './firebaseAdmin';
+
 export type FirebaseLookupUser = {
 	localId?: string;
 	email?: string;
@@ -15,6 +17,8 @@ export type VerifiedFirebaseIdentity = {
 	email: string | null;
 	emailVerified: boolean;
 	displayName: string | null;
+	claimedRole: string | null;
+	claimedPlatformAccess: boolean | null;
 };
 
 export type PlatformAccessInput = {
@@ -29,11 +33,12 @@ export type PlatformAccessResult = {
 		| 'authorized'
 		| 'locked'
 		| 'inactive_subscription'
-		| 'insufficient_role';
+		| 'insufficient_role'
+		| 'claims_restricted';
 };
 
 export function isAuthorizedPlatformRole(role: string | null | undefined) {
-	return role === 'admin';
+	return role === 'admin' || role === 'auditor' || role === 'superadmin';
 }
 
 export function resolvePlatformAccess(input: PlatformAccessInput): PlatformAccessResult {
@@ -49,34 +54,17 @@ export function resolvePlatformAccess(input: PlatformAccessInput): PlatformAcces
 	return { allowed: true, reason: 'authorized' };
 }
 
-export function extractFirebaseIdentity(payload: FirebaseLookupResponse): VerifiedFirebaseIdentity {
-	const user = payload.users?.[0];
-	if (!user?.localId) {
-		throw new Error('Invalid Firebase identity payload.');
-	}
-
+export async function verifyFirebaseIdentityToken(idToken: string, platformKey: string) {
+	const decodedToken = await verifyFirebaseIdToken(idToken);
 	return {
-		uid: user.localId,
-		email: user.email ?? null,
-		emailVerified: Boolean(user.emailVerified),
-		displayName: user.displayName ?? null
-	};
-}
-
-export async function verifyFirebaseIdentityToken(idToken: string, apiKey: string) {
-	const response = await fetch(
-		`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(apiKey)}`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ idToken })
-		}
-	);
-
-	if (!response.ok) {
-		throw new Error('Firebase token verification failed.');
-	}
-
-	const payload = (await response.json()) as FirebaseLookupResponse;
-	return extractFirebaseIdentity(payload);
+		uid: decodedToken.uid,
+		email: decodedToken.email ?? null,
+		emailVerified: Boolean(decodedToken.email_verified),
+		displayName: decodedToken.name ?? null,
+		claimedRole: getClaimedPlatformRole(decodedToken as Record<string, unknown> & { role?: string; platforms?: unknown }, platformKey),
+		claimedPlatformAccess: hasClaimedPlatformAccess(
+			decodedToken as Record<string, unknown> & { platforms?: unknown },
+			platformKey
+		)
+	} satisfies VerifiedFirebaseIdentity;
 }

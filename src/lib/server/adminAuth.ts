@@ -8,11 +8,14 @@ import {
 	verifyFirebaseIdentityToken,
 	type VerifiedFirebaseIdentity
 } from './firebaseIdentity';
+import { getFirebaseAdminRuntimeStatus } from './firebaseAdmin';
 import {
 	createSignedSessionPayload,
 	verifySignedSessionPayload,
 	type SignedSessionPayload
 } from './sessionToken';
+
+const PLATFORM_KEY = 'ewinproject';
 
 export const ADMIN_SESSION_COOKIE = 'admin_session';
 const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 6;
@@ -31,9 +34,12 @@ export function getAdminRuntimeStatus() {
 	return {
 		configured: Boolean(
 			env.ADMIN_SESSION_SECRET?.trim() &&
-				publicEnv.PUBLIC_FIREBASE_API_KEY?.trim() &&
+				getFirebaseAdminRuntimeStatus().configured &&
 				publicEnv.PUBLIC_CONVEX_URL?.trim()
-		)
+		),
+		firebaseAdmin: getFirebaseAdminRuntimeStatus().configured,
+		push: Boolean(process.env.PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY?.trim() && process.env.WEB_PUSH_VAPID_PRIVATE_KEY?.trim()),
+		observability: Boolean(process.env.OBSERVABILITY_WEBHOOK_URL?.trim() || process.env.SENTRY_DSN?.trim())
 	};
 }
 
@@ -61,12 +67,11 @@ export async function verifyAdminSessionToken(token: string | undefined) {
 }
 
 export async function verifyAdminLogin(idToken: string) {
-	const apiKey = publicEnv.PUBLIC_FIREBASE_API_KEY?.trim();
-	if (!apiKey) {
-		throw new Error('PUBLIC_FIREBASE_API_KEY is not configured.');
+	if (!getFirebaseAdminRuntimeStatus().configured) {
+		throw new Error('Firebase Admin SDK is not configured for secure server-side token verification.');
 	}
 
-	const identity = await verifyFirebaseIdentityToken(idToken, apiKey);
+	const identity = await verifyFirebaseIdentityToken(idToken, PLATFORM_KEY);
 	const convex = createServerConvexClient(idToken);
 	const platformUser = await convex.query(api.functions.getCurrentUser, {});
 	const access = resolvePlatformAccess({
@@ -75,6 +80,10 @@ export async function verifyAdminLogin(idToken: string) {
 		isLocked: platformUser?.isLocked
 	});
 
+	if (identity.claimedPlatformAccess === false) {
+		throw new Error('This Firebase account is restricted from accessing the E-WIN admin surface.');
+	}
+
 	if (!platformUser || !access.allowed) {
 		throw new Error(
 			access.reason === 'inactive_subscription'
@@ -82,6 +91,12 @@ export async function verifyAdminLogin(idToken: string) {
 				: access.reason === 'locked'
 					? 'This account is locked.'
 					: 'This Firebase account is not authorized for admin access.'
+		);
+	}
+
+	if (identity.claimedRole && identity.claimedRole !== platformUser.role) {
+		throw new Error(
+			`Role mismatch detected between Firebase claims (${identity.claimedRole}) and platform access (${platformUser.role}).`
 		);
 	}
 
@@ -97,7 +112,7 @@ export async function createAdminSessionFromFirebase(idToken: string) {
 	return createAdminSessionToken({
 		uid: identity.uid,
 		email: platformUser.email,
-		role: 'admin'
+		role: platformUser.role
 	});
 }
 

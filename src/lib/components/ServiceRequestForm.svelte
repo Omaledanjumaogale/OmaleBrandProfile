@@ -132,7 +132,14 @@
 	>
 		<!-- Honeypot Field (Hidden from users) -->
 		<div class="hidden" aria-hidden="true">
-			<input type="text" name="website_url" bind:value={honeypot} tabindex="-1" autocomplete="off" />
+			<input
+				type="text"
+				name="website_url"
+				aria-label="Leave this field empty"
+				bind:value={honeypot}
+				tabindex="-1"
+				autocomplete="off"
+			/>
 		</div>
 
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

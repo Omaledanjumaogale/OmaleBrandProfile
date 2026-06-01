@@ -29,17 +29,19 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 let googleProvider: GoogleAuthProvider;
+const firebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
 if (typeof window !== 'undefined') {
-	if (!firebaseConfig.apiKey) {
-		throw new Error('Firebase public configuration is missing.');
+	if (!firebaseConfigured) {
+		console.warn('[firebase] Public configuration is missing. Authentication features are disabled.');
+	} else {
+		app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+		auth = getAuth(app);
+		auth.languageCode = 'en';
+		googleProvider = new GoogleAuthProvider();
+		googleProvider.addScope('email');
+		googleProvider.addScope('profile');
 	}
-	app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-	auth = getAuth(app);
-	auth.languageCode = 'en';
-	googleProvider = new GoogleAuthProvider();
-	googleProvider.addScope('email');
-	googleProvider.addScope('profile');
 }
 
 // ── Auth Actions ───────────────────────────────────────────────────
