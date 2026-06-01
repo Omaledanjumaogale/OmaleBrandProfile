@@ -11,8 +11,15 @@ declare global {
 		interface Locals {
 			runtimeFlags: PublicRuntimeFlags;
 		}
-		// interface PageData {}
-		// interface Platform {}
+		// Cloudflare Workers environment bindings
+		// All vars set in Cloudflare Pages dashboard are accessible via event.platform.env
+		interface Platform {
+			env: Record<string, string | undefined>;
+			context: {
+				waitUntil(promise: Promise<unknown>): void;
+			};
+			caches: CacheStorage & { default: Cache };
+		}
 	}
 }
 

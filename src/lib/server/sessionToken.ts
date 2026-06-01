@@ -5,10 +5,13 @@ export type SignedSessionPayload = {
 	exp: number;
 };
 
-function toBase64Url(input: Uint8Array | string) {
-	const buffer = typeof input === 'string' ? Buffer.from(input, 'utf8') : Buffer.from(input);
-	return buffer
-		.toString('base64')
+function toBase64Url(input: Uint8Array | string): string {
+	let binary = '';
+	const bytes = typeof input === 'string' ? new TextEncoder().encode(input) : input;
+	for (let i = 0; i < bytes.byteLength; i++) {
+		binary += String.fromCharCode(bytes[i]);
+	}
+	return btoa(binary)
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
 		.replace(/=+$/g, '');

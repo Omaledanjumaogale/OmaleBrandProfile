@@ -6,9 +6,18 @@ import {
 	shouldProtectRegistration
 } from '$lib/server/platformRuntime';
 import { reportServerError } from '$lib/server/observability';
+import { initPlatformEnv } from '$lib/server/safeEnv';
 
 // ── Main Handle hook ───────────────────────────────────────────────
 export const handle: Handle = async ({ event, resolve }) => {
+	// ── CRITICAL: Prime env cache from Cloudflare platform bindings ──
+	// On Cloudflare Workers, environment variables are passed via
+	// event.platform.env — NOT via process.env or module-level imports.
+	// We must initialize safeEnv with this object BEFORE any other code
+	// attempts to read environment variables. This is the root cause fix
+	// for the 500 internal error on Cloudflare Pages.
+	initPlatformEnv(event.platform);
+
 	const pathname = event.url.pathname;
 
 	// URL Normalization — /platform/ → /platforms/ (SEO redirect)
@@ -44,17 +53,26 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 
 	// Technical SEO Headers (AEO/GEO Integration)
-	if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard') || pathname.startsWith('/auth')) {
+	if (
+		pathname.startsWith('/admin') ||
+		pathname.startsWith('/dashboard') ||
+		pathname.startsWith('/auth')
+	) {
 		response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
 	} else {
-		response.headers.set('X-Robots-Tag', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+		response.headers.set(
+			'X-Robots-Tag',
+			'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+		);
 	}
 
 	// Detect AI Agent User Agents (Observability)
 	const userAgent = event.request.headers.get('user-agent')?.toLowerCase() || '';
-	const isAIBot = /gptbot|claudebot|perplexitybot|google-extended|anthropic-ai|cohere-ai|applebot-extended/i.test(userAgent);
+	const isAIBot =
+		/gptbot|claudebot|perplexitybot|google-extended|anthropic-ai|cohere-ai|applebot-extended/i.test(
+			userAgent
+		);
 	if (isAIBot) {
-		// Potential: Log AI bot access to Convex analytics
 		response.headers.set('X-AI-Bot-Detected', 'true');
 	}
 

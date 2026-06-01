@@ -1,6 +1,4 @@
 import { dev } from '$app/environment';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
 import { api } from '$convex/_generated/api';
 import { createServerConvexClient } from './convexServer';
 import {
@@ -14,6 +12,7 @@ import {
 	verifySignedSessionPayload,
 	type SignedSessionPayload
 } from './sessionToken';
+import { getEnvVar } from './safeEnv';
 
 const PLATFORM_KEY = 'ewinproject';
 
@@ -33,18 +32,18 @@ export function getAdminSessionCookieOptions() {
 export function getAdminRuntimeStatus() {
 	return {
 		configured: Boolean(
-			env.ADMIN_SESSION_SECRET?.trim() &&
+			getEnvVar('ADMIN_SESSION_SECRET')?.trim() &&
 				getFirebaseAdminRuntimeStatus().configured &&
-				publicEnv.PUBLIC_CONVEX_URL?.trim()
+				getEnvVar('PUBLIC_CONVEX_URL')?.trim()
 		),
 		firebaseAdmin: getFirebaseAdminRuntimeStatus().configured,
-		push: Boolean(process.env.PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY?.trim() && process.env.WEB_PUSH_VAPID_PRIVATE_KEY?.trim()),
-		observability: Boolean(process.env.OBSERVABILITY_WEBHOOK_URL?.trim() || process.env.SENTRY_DSN?.trim())
+		push: Boolean(getEnvVar('PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY')?.trim() && getEnvVar('WEB_PUSH_VAPID_PRIVATE_KEY')?.trim()),
+		observability: Boolean(getEnvVar('OBSERVABILITY_WEBHOOK_URL')?.trim() || getEnvVar('SENTRY_DSN')?.trim())
 	};
 }
 
 async function getSecret() {
-	const secret = env.ADMIN_SESSION_SECRET?.trim();
+	const secret = getEnvVar('ADMIN_SESSION_SECRET')?.trim();
 	if (!secret) {
 		throw new Error('ADMIN_SESSION_SECRET is not configured.');
 	}

@@ -1,4 +1,5 @@
 import { jwtVerify, createRemoteJWKSet } from 'jose';
+import { getEnvVar } from './safeEnv';
 
 type PlatformClaims = {
 	[platformKey: string]:
@@ -15,15 +16,15 @@ const jwks = createRemoteJWKSet(new URL(JWKS_URL));
 
 function getFirebaseProjectId(): string | null {
 	// 1. Try FIREBASE_ADMIN_PROJECT_ID
-	let projectId = process.env.FIREBASE_ADMIN_PROJECT_ID?.trim();
+	let projectId = getEnvVar('FIREBASE_ADMIN_PROJECT_ID')?.trim();
 	if (projectId) return projectId;
 
 	// 2. Try PUBLIC_FIREBASE_PROJECT_ID
-	projectId = process.env.PUBLIC_FIREBASE_PROJECT_ID?.trim();
+	projectId = getEnvVar('PUBLIC_FIREBASE_PROJECT_ID')?.trim();
 	if (projectId) return projectId;
 
 	// 3. Try parsing service account JSON
-	const serviceAccountJson = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_JSON?.trim();
+	const serviceAccountJson = getEnvVar('FIREBASE_ADMIN_SERVICE_ACCOUNT_JSON')?.trim();
 	if (serviceAccountJson) {
 		try {
 			const parsed = JSON.parse(serviceAccountJson);

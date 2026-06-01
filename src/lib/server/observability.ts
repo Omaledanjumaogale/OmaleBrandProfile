@@ -1,4 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
+import { getEnvVar } from './safeEnv';
 
 type ObservabilityEvent = {
 	level: 'info' | 'warning' | 'error';
@@ -9,8 +10,8 @@ type ObservabilityEvent = {
 
 export function getObservabilityRuntimeStatus() {
 	return {
-		errorAggregation: Boolean(process.env.OBSERVABILITY_WEBHOOK_URL?.trim() || process.env.SENTRY_DSN?.trim()),
-		uptimeWebhook: Boolean(process.env.UPTIME_WEBHOOK_URL?.trim() || process.env.OBSERVABILITY_WEBHOOK_URL?.trim()),
+		errorAggregation: Boolean(getEnvVar('OBSERVABILITY_WEBHOOK_URL')?.trim() || getEnvVar('SENTRY_DSN')?.trim()),
+		uptimeWebhook: Boolean(getEnvVar('UPTIME_WEBHOOK_URL')?.trim() || getEnvVar('OBSERVABILITY_WEBHOOK_URL')?.trim()),
 	};
 }
 
@@ -23,7 +24,7 @@ async function postJson(url: string, body: Record<string, unknown>) {
 }
 
 export async function emitOperationalEvent(event: ObservabilityEvent) {
-	const endpoint = process.env.OBSERVABILITY_WEBHOOK_URL?.trim();
+	const endpoint = getEnvVar('OBSERVABILITY_WEBHOOK_URL')?.trim();
 	if (!endpoint) {
 		return;
 	}
@@ -55,7 +56,7 @@ export async function reportServerError(errorId: string, error: unknown, event: 
 }
 
 export async function emitUptimeHeartbeat(context: Record<string, unknown>) {
-	const endpoint = process.env.UPTIME_WEBHOOK_URL?.trim();
+	const endpoint = getEnvVar('UPTIME_WEBHOOK_URL')?.trim();
 	if (!endpoint) {
 		return;
 	}
