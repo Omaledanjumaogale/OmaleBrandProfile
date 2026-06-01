@@ -1,5 +1,4 @@
-import { getApps, initializeApp, cert, type App } from 'firebase-admin/app';
-import { getAuth, type DecodedIdToken } from 'firebase-admin/auth';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
 
 type PlatformClaims = {
 	[platformKey: string]:
@@ -10,72 +9,69 @@ type PlatformClaims = {
 		  };
 };
 
-function normalizePrivateKey(value: string) {
-	return value.replace(/\\n/g, '\n');
-}
+// Google JWKS URI for Firebase Auth
+const JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+const jwks = createRemoteJWKSet(new URL(JWKS_URL));
 
-function getServiceAccountConfig() {
+function getFirebaseProjectId(): string | null {
+	// 1. Try FIREBASE_ADMIN_PROJECT_ID
+	let projectId = process.env.FIREBASE_ADMIN_PROJECT_ID?.trim();
+	if (projectId) return projectId;
+
+	// 2. Try PUBLIC_FIREBASE_PROJECT_ID
+	projectId = process.env.PUBLIC_FIREBASE_PROJECT_ID?.trim();
+	if (projectId) return projectId;
+
+	// 3. Try parsing service account JSON
 	const serviceAccountJson = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_JSON?.trim();
 	if (serviceAccountJson) {
-		const parsed = JSON.parse(serviceAccountJson) as {
-			project_id: string;
-			client_email: string;
-			private_key: string;
-		};
-		return {
-			projectId: parsed.project_id,
-			clientEmail: parsed.client_email,
-			privateKey: normalizePrivateKey(parsed.private_key),
-		};
+		try {
+			const parsed = JSON.parse(serviceAccountJson);
+			if (parsed.project_id) {
+				return parsed.project_id;
+			}
+		} catch (e) {
+			// ignore
+		}
 	}
 
-	const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID?.trim();
-	const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL?.trim();
-	const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.trim();
-
-	if (!projectId || !clientEmail || !privateKey) {
-		return null;
-	}
-
-	return {
-		projectId,
-		clientEmail,
-		privateKey: normalizePrivateKey(privateKey),
-	};
+	return null;
 }
 
 export function getFirebaseAdminRuntimeStatus() {
 	return {
-		configured: Boolean(getServiceAccountConfig()),
+		configured: Boolean(getFirebaseProjectId())
 	};
 }
 
-let cachedApp: App | null = null;
-
-export function getFirebaseAdminApp() {
-	if (cachedApp) {
-		return cachedApp;
+export async function verifyFirebaseIdToken(idToken: string) {
+	const projectId = getFirebaseProjectId();
+	if (!projectId) {
+		throw new Error('Firebase Project ID is not configured.');
 	}
 
-	const serviceAccount = getServiceAccountConfig();
-	if (!serviceAccount) {
-		throw new Error(
-			'Firebase Admin SDK is not configured. Set FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, and FIREBASE_ADMIN_PRIVATE_KEY.'
-		);
-	}
+	const issuer = `https://securetoken.google.com/${projectId}`;
+	const audience = projectId;
 
-	cachedApp =
-		getApps()[0] ??
-		initializeApp({
-			credential: cert(serviceAccount),
+	try {
+		const { payload } = await jwtVerify(idToken, jwks, {
+			issuer,
+			audience,
+			algorithms: ['RS256']
 		});
 
-	return cachedApp;
-}
-
-export async function verifyFirebaseIdToken(idToken: string) {
-	const app = getFirebaseAdminApp();
-	return getAuth(app).verifyIdToken(idToken, true);
+		// Format output to match standard DecodedIdToken structure
+		return {
+			uid: payload.sub as string,
+			email: payload.email as string | undefined,
+			email_verified: payload.email_verified as boolean | undefined,
+			name: payload.name as string | undefined,
+			...payload
+		};
+	} catch (err) {
+		console.error('[firebaseAdmin] JWT verification failed:', err);
+		throw err;
+	}
 }
 
 export function getClaimedPlatformRole(

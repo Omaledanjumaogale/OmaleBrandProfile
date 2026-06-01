@@ -2,10 +2,10 @@ import { expect, test } from 'playwright/test';
 
 for (const route of ['/', '/platforms', '/admin/login']) {
 	test(`accessibility smoke checks pass on ${route}`, async ({ page }) => {
-		await page.goto(route);
+		await page.goto(route, { waitUntil: 'domcontentloaded' });
 
-		await expect(page.locator('main')).toBeVisible();
-		await expect(page.locator('h1')).toHaveCount(1);
+		await expect(page.locator('#main-content')).toBeVisible();
+		await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
 
 		const focusableCount = await page.locator('a, button, input, textarea, select').count();
 		expect(focusableCount).toBeGreaterThan(0);

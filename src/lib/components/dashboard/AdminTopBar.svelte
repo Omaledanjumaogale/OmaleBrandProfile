@@ -74,6 +74,7 @@
             <input 
                 type="text" 
                 bind:value={searchTerm}
+                aria-label="Search admin routes"
                 placeholder="Jump to routes, tools, or logs" 
                 class="bg-transparent border-none outline-none text-[13px] text-white/60 w-64 placeholder:text-white/20"
             />
