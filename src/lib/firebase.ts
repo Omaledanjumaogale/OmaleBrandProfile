@@ -14,24 +14,24 @@ import {
 	type Auth
 } from 'firebase/auth';
 
-// ── Firebase Config ────────────────────────────────────────────────
-// Values come from PUBLIC_ env vars (safe to expose client-side)
-const firebaseConfig = {
-	apiKey: env.PUBLIC_FIREBASE_API_KEY,
-	authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-	projectId: env.PUBLIC_FIREBASE_PROJECT_ID,
-	storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-	messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-	appId: env.PUBLIC_FIREBASE_APP_ID
-};
-
 // ── Singleton initialisation ───────────────────────────────────────
 let app: FirebaseApp;
 let auth: Auth;
 let googleProvider: GoogleAuthProvider;
-const firebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
 if (typeof window !== 'undefined') {
+	// ── Firebase Config ────────────────────────────────────────────────
+	// Values come from PUBLIC_ env vars (safe to expose client-side)
+	const firebaseConfig = {
+		apiKey: env.PUBLIC_FIREBASE_API_KEY,
+		authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
+		projectId: env.PUBLIC_FIREBASE_PROJECT_ID,
+		storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET,
+		messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+		appId: env.PUBLIC_FIREBASE_APP_ID
+	};
+	const firebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
+
 	if (!firebaseConfigured) {
 		console.warn('[firebase] Public configuration is missing. Authentication features are disabled.');
 	} else {
