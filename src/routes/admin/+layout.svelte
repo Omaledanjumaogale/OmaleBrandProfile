@@ -1,4 +1,6 @@
 <script lang="ts">
+    import BrandBanner from '$lib/components/BrandBanner.svelte';
+    import { page } from '$app/state';
     import AdminSidebar from '$lib/components/dashboard/AdminSidebar.svelte';
     import AdminTopBar from '$lib/components/dashboard/AdminTopBar.svelte';
     import { fade } from 'svelte/transition';
@@ -27,6 +29,9 @@
         <AdminTopBar bind:sidebarOpen role={data.adminRole ?? 'admin'} />
 
         <main class="flex-grow p-6 lg:p-8" in:fade={{ duration: 400 }}>
+            {#if page.url.pathname === '/admin'}
+                <BrandBanner variant="admin" />
+            {/if}
             {@render children()}
         </main>
 

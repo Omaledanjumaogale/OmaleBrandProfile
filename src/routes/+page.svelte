@@ -1,5 +1,8 @@
 <script lang="ts">
 	import Hero from '$lib/components/Hero.svelte';
+	import BrandStories from '$lib/components/BrandStories.svelte';
+	import BrandBanner from '$lib/components/BrandBanner.svelte';
+	import StoryCard from '$lib/components/StoryCard.svelte';
 	import Ticker from '$lib/components/Ticker.svelte';
 	import About from '$lib/components/About.svelte';
 	import Services from '$lib/components/Services.svelte';
@@ -36,7 +39,9 @@
 
 <Hero />
 <Ticker />
+<BrandStories />
 <About />
+<div class="px-4"><StoryCard image="sketch" alt="A designer sketches a handbag beside teal fabric swatches." title="Start with what you can make." text="A sketch gives you something to test. E-WIN helps you find tools for the step after that." href="/platforms" label="Find a platform" /></div>
 <Services />
 <IAMOnboarding />
 <Expertise />
@@ -44,8 +49,10 @@
 <Testimonials />
 <Career />
 <Ecosystem />
+<div class="px-4"><StoryCard image="plan" alt="Two coworkers map out a process on paper." title="Give good work a repeatable process." text="When a team outgrows its old routine, a clearer digital workflow can give people time back." href="/services" label="Find project support" /></div>
 <Philosophy />
 <ThoughtLeadership />
 <Certifications />
+<BrandBanner variant="public" />
 <Contact />
 

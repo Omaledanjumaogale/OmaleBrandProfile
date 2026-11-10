@@ -14,7 +14,7 @@
 	<div class="absolute top-[-20%] left-[-10%] w-[60%] h-[80%] bg-[radial-gradient(ellipse,rgba(160,120,32,0.06)_0%,transparent_70%)] pointer-events-none" aria-hidden="true"></div>
 
 	<!-- Left: Text Content -->
-	<div class="flex flex-col justify-center px-6 sm:px-8 lg:px-12 pt-28 sm:pt-32 lg:pt-[140px] pb-12 lg:pb-20 relative z-10 order-2 lg:order-1">
+	<div class="flex flex-col justify-center px-6 sm:px-8 lg:px-12 pt-10 lg:pt-[140px] pb-12 lg:pb-20 relative z-10 order-2 lg:order-1">
 		<div class="font-['Space_Mono'] text-[10px] tracking-[3px] uppercase text-[var(--gold)] mb-7 flex items-center gap-3 reveal">
 			<span class="w-7 h-[1px] bg-[var(--gold)]" aria-hidden="true"></span>
 			<span>AI-Augmented Developer &amp; Founder</span>
@@ -58,7 +58,7 @@
 	</div>
 
 	<!-- Right: Founder image — responsive, theme-safe, no bg-dependent gradient -->
-	<div class="relative order-1 lg:order-2 h-[55vw] min-h-[300px] max-h-[420px] sm:max-h-[480px] lg:max-h-none lg:h-auto overflow-hidden">
+	<div class="relative order-1 lg:order-2 mx-auto mt-24 lg:mt-0 lg:self-center w-[min(82%,24rem)] aspect-[4/5] overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-xl">
 		<!-- Image fills container with perfect scaling -->
 		<img
 			src="/danjuma-ogale.jpg"
@@ -68,7 +68,7 @@
 			fetchpriority="high"
 			width="800"
 			height="1000"
-			class="w-full h-full object-cover object-top"
+			class="w-full h-full object-contain object-top"
 		/>
 
 		<!-- Subtle dark vignette — works in BOTH light and dark mode (no var(--bg) dependency) -->
@@ -85,7 +85,7 @@
 	<!-- Scroll indicator -->
 	<div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 z-20 hidden sm:flex" aria-hidden="true">
 		<span class="font-['Space_Mono'] text-[9px] tracking-[2px] uppercase text-[var(--muted)] [writing-mode:vertical-rl]">Scroll</span>
-		<div class="w-[1px] h-[60px] bg-[linear-gradient(to_bottom,transparent,var(--gold))] animate-[scrollBeat_2s_ease-in-out_infinite]"></div>
+		<div class="scroll-line w-[1px] h-[60px] bg-[linear-gradient(to_bottom,transparent,var(--gold))] animate-[scrollBeat_2s_ease-in-out_infinite]"></div>
 	</div>
 </section>
 
@@ -93,5 +93,8 @@
 	@keyframes scrollBeat {
 		0%, 100% { opacity: 0.2; }
 		50% { opacity: 1; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.scroll-line { animation: none; }
 	}
 </style>

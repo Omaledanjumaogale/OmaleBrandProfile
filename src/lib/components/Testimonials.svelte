@@ -1,29 +1,26 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   const testimonials = [
     {
       name: "Chukwuma Obi",
       role: "CEO, TechFlow Solutions",
       quote: "Omale's vision for the E-WIN ecosystem is truly transformative. His ability to bridge complex software architecture with real-world workforce problems is unmatched in the region.",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chukwuma"
+      initials: "CO"
     },
     {
       name: "Sarah Alabi",
       role: "Operations Director, Innovate Lagos",
       quote: "Working with Omale on the workforce strategy was a game-changer for our hub. He doesn't just build software; he builds systems that empower people to thrive in the digital economy.",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+      initials: "SA"
     },
     {
       name: "Dr. Emmanuel Kalu",
       role: "Senior Consultant, AFRI-Dev",
       quote: "A rare breed of leader who understands that technology is only as good as the impact it leaves on the common man. His commitment to nation-building is inspiring.",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emmanuel"
+      initials: "EK"
     }
   ];
 
   let currentIndex = $state(0);
-  let interval: ReturnType<typeof setInterval>;
 
   function next() {
     currentIndex = (currentIndex + 1) % testimonials.length;
@@ -33,10 +30,6 @@
     currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
   }
 
-  onMount(() => {
-    interval = setInterval(next, 8000);
-    return () => clearInterval(interval);
-  });
 </script>
 
 <section id="testimonials" class="relative py-24 overflow-hidden bg-bg border-t border-border">
@@ -64,19 +57,14 @@
       <div class="relative min-h-[380px] md:min-h-[280px] flex items-center">
         {#each testimonials as testimonial, i}
           <div
-            class="absolute inset-0 flex flex-col md:flex-row items-center gap-8 transition-all duration-700 ease-in-out"
+            class="absolute inset-0 flex flex-col md:flex-row items-center gap-8 motion-safe:transition-all duration-700 ease-in-out"
             style="opacity: {currentIndex === i ? '1' : '0'}; visibility: {currentIndex === i ? 'visible' : 'hidden'}; transform: translateX({(i - currentIndex) * 40}px)"
             aria-hidden={currentIndex !== i}
           >
             <!-- Avatar -->
             <div class="w-24 h-24 md:w-40 md:h-40 flex-shrink-0 relative">
               <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold to-teal2 rotate-6 opacity-20"></div>
-              <img
-                src={testimonial.image}
-                alt="Portrait of {testimonial.name}"
-                class="relative z-10 w-full h-full object-cover rounded-2xl border border-border bg-surface2 shadow-lg"
-                loading="lazy"
-              />
+              <span aria-hidden="true" class="relative z-10 grid h-full w-full place-items-center rounded-lg border border-border bg-surface2 text-3xl font-bold text-gold">{testimonial.initials}</span>
             </div>
 
             <!-- Quote -->

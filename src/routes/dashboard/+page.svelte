@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BrandBanner from '$lib/components/BrandBanner.svelte';
 	import DashboardLayout from '$lib/components/dashboard/DashboardLayout.svelte';
 	import StatCard from '$lib/components/dashboard/StatCard.svelte';
 	import { convex } from '$lib/convex';
@@ -89,6 +90,7 @@
 </svelte:head>
 
 <DashboardLayout title="Member Command Center 🌍" isAdmin={false}>
+	<BrandBanner variant="member" />
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 reveal visible">
 		{#each metrics as metric}
 			<StatCard {...metric} />
