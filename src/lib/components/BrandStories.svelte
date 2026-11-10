@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ArrowLeft, ArrowRight } from 'lucide-svelte';
+	import { onMount } from 'svelte';
 
 	const stories = [
 		{ image: 'build', title: 'Build your first version.', keywords: 'Enterprise / Prototyping', text: 'Turn an idea into something customers can try. Explore tools for the next step.', href: '/platforms', label: 'Explore platforms', alt: 'A designer and her team gather around a handbag prototype.' },
@@ -7,7 +8,9 @@
 		{ image: 'grow', title: 'Give your team room to grow.', keywords: 'Operations / Digital strategy', text: 'Find support for the daily work that keeps your business moving.', href: '/services', label: 'Explore services', alt: 'A business owner shows colleagues a workflow in a fulfillment studio.' }
 	];
 	let index = $state(0);
+	let ready = $state(false);
 	let story = $derived(stories[index]);
+	onMount(() => { ready = true; });
 	function move(delta: number) {
 		index = (index + delta + stories.length) % stories.length;
 	}
@@ -26,9 +29,9 @@
 		{/key}
 	</div>
 	<div class="controls">
-		<button type="button" onclick={() => move(-1)} aria-label="Previous story"><ArrowLeft size={20} /></button>
+		<button type="button" disabled={!ready} onclick={() => move(-1)} aria-label="Previous story"><ArrowLeft size={20} /></button>
 		<span>{index + 1} / {stories.length}</span>
-		<button type="button" onclick={() => move(1)} aria-label="Next story"><ArrowRight size={20} /></button>
+		<button type="button" disabled={!ready} onclick={() => move(1)} aria-label="Next story"><ArrowRight size={20} /></button>
 	</div>
 </section>
 
