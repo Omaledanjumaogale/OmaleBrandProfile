@@ -3,7 +3,7 @@
  * Outputs valid XML with correct Content-Type for search engines.
  */
 export const GET = async () => {
-	const baseUrl = 'https://danjumaomaleogale.dev';
+	const baseUrl = 'https://omaledanjumaogale.ewinproject.org';
 	const now = new Date().toISOString();
 
 	type SitemapEntry = {
